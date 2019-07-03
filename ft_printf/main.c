@@ -6,7 +6,7 @@
 /*   By: jmartyn- <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/06 22:09:38 by jmartyn-          #+#    #+#             */
-/*   Updated: 2019/07/03 23:12:38 by jmartyn-         ###   ########.fr       */
+/*   Updated: 2019/07/03 23:59:03 by jmartyn-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,7 +55,6 @@ void    handle_d(const char *format, va_list list)
 			ft_putnbr(number);
 			i = i + 2;
 		}
-		write(1, &format[i], 1);
 		i++;
 	}
 }
@@ -80,45 +79,39 @@ void     handle_s(const char *format, va_list list)
             }
             i = i + 2;
         }
-        write(1, &format[i], 1);
         i++;
     }
-}
-
-int        parse_arg(const char *print)
-{
-    int i;
-    
-    i = 0;
-	while (print[i] != '\0')
-	{
-        if (print[i] == '%')
-		{
-        	if (print[i + 1] == 's')
-            {
-                return (1);
-            }
-            if (print[i + 1] == 'd')
-            {
-                return (2);
-            }
-        }
-		//write(1, &print[i], 1);
-        i++;
-    }
-    return (0);
 }
 
 void    ft_printf(const char *format, ...)
 {
-    va_list list;
+    int i;
+	va_list list;
+
+	i = 0;
 	va_start(list, format);
-    
-    if (parse_arg(format) == 1)
-        handle_s(format, list);
-    if (parse_arg(format) == 2)
-        handle_d(format, list);
-    va_end(list);
+   
+	while (format[i] != '\0')
+	{
+        if (format[i] == '%')
+		{
+			if (format[i + 1] == 's')
+			{
+				handle_s(format, list);
+				i = i + 2;
+			}
+    		if (format[i + 1] == 'd')
+			{
+				handle_d(format, list);
+				i = i + 2;
+			}
+			i--;
+		}
+		else
+			write(1, &format[i], 1);
+		i++;
+	}
+	va_end(list);
 }
 
 int main()
@@ -133,13 +126,13 @@ int main()
     printf("=====================\n");
     printf("Printf output:\n");
 //  char output
-	printf("Hello %s %s\n", hi, name);
+	printf("Hello %s %s %d end\n", hi, name, number);
 //	printf("hello %d\n", number);
 
     printf("=======\n");
     printf("ft_printf output:\n");
 //  char output
-    ft_printf("Hello %s %s\n", hi, name);
+    ft_printf("Hello %s %s %d end\n", hi, name, number);
 //	ft_printf("Hello %d\n", number);
     return (0);
 }
