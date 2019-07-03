@@ -6,7 +6,7 @@
 /*   By: jmartyn- <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/06 22:09:38 by jmartyn-          #+#    #+#             */
-/*   Updated: 2019/07/01 22:31:05 by jmartyn-         ###   ########.fr       */
+/*   Updated: 2019/07/03 23:12:38 by jmartyn-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,18 +16,57 @@
 #include <string.h>
 #include <stdlib.h> //atoi
 
-void    handle_d(const char *format, int arg)
-{
+//begin of lib
 
-    printf("%d", arg); //need to debug
-    
+void	ft_putchar(char c)
+{
+		write (1, &c, 1);
 }
 
-void     handle_s(const char *format, char *arg)
+void	ft_putnbr(int nb)
+{
+	if (nb < 0)
+	{
+		nb = -nb;
+	}
+	if (nb >= 10)
+	{
+		ft_putnbr(nb / 10);
+		ft_putnbr(nb % 10);
+	}
+	else
+		ft_putchar(nb + '0');
+}
+
+//end of lib
+
+void    handle_d(const char *format, va_list list)
+{
+
+    int i;
+	int number;
+
+	i = 0;
+	number = va_arg(list, int);
+	while(format[i] != '\0')
+	{
+		if (format[i] == '%' && format[i + 1] == 'd')
+		{
+			ft_putnbr(number);
+			i = i + 2;
+		}
+		write(1, &format[i], 1);
+		i++;
+	}
+}
+
+void     handle_s(const char *format, va_list list)
 {
     int i;
     int j;
+	char *arg;
     
+	arg = va_arg(list, char*);
     j = 0;
     i = 0;
     while (format[i] != '\0')
@@ -64,6 +103,7 @@ int        parse_arg(const char *print)
                 return (2);
             }
         }
+		//write(1, &print[i], 1);
         i++;
     }
     return (0);
@@ -71,20 +111,13 @@ int        parse_arg(const char *print)
 
 void    ft_printf(const char *format, ...)
 {
-    char *arg;
-    int number;
     va_list list;
 	va_start(list, format);
-	arg = va_arg(list, char*);
     
-    number = ((int)va_arg(list, char*)); //need to debug
-
     if (parse_arg(format) == 1)
-        handle_s(format, arg);
+        handle_s(format, list);
     if (parse_arg(format) == 2)
-    {
-        handle_d(format, number);
-    }
+        handle_d(format, list);
     va_end(list);
 }
 
@@ -93,18 +126,20 @@ int main()
     const char *name;
 	int number;
 	number = 42;
-    //name = "John";
-    
+    name = "John";
+	const char *hi;
+    hi = "i am";
+
     printf("=====================\n");
     printf("Printf output:\n");
 //  char output
-//    printf("Hello %s\n", name);
-	printf("hello %d\n", number);
+	printf("Hello %s %s\n", hi, name);
+//	printf("hello %d\n", number);
 
     printf("=======\n");
     printf("ft_printf output:\n");
 //  char output
-//    ft_printf("Hello %s\n", name);
-	ft_printf("Hello %d\n", number);
+    ft_printf("Hello %s %s\n", hi, name);
+//	ft_printf("Hello %d\n", number);
     return (0);
 }
