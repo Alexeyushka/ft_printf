@@ -6,7 +6,7 @@
 /*   By: jmartyn- <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/06 22:09:38 by jmartyn-          #+#    #+#             */
-/*   Updated: 2019/07/05 21:05:46 by jmartyn-         ###   ########.fr       */
+/*   Updated: 2019/07/05 23:01:33 by jmartyn-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,6 +50,62 @@ void	ft_putnbr_uint(unsigned int nb)
 }
 //end of lib
 
+//x begin
+int		is_upper(char c)
+{
+	if (c >= 65 && c <= 90)
+		return (1);
+	else
+		return (0);
+}
+
+void	handle_x(const char *format, va_list list)
+{
+	long decimal;
+	long quotient;
+	long remainder;
+	int i;
+	int j;
+	
+	i = 0;
+	j = 0;
+	char hexadecimal[100];
+	
+	decimal = va_arg(list, int);
+	quotient = decimal;
+	if (quotient == 0)
+		write(1, "0", 1);
+	while (quotient != 0)
+	{
+		remainder = quotient % 16;
+		if (remainder < 10)
+		{
+			hexadecimal[i] = 48 + remainder;
+			i++;
+		}
+		else
+		{
+			hexadecimal[i] = 55 + remainder;
+			i++;
+		}
+		quotient = quotient / 16;
+	}
+	j = i - 1;
+	char tmp;
+	while (j >= 0)
+	{
+		if (is_upper(hexadecimal[j]) == 1)
+		{
+			tmp = hexadecimal[j];
+			tmp = tmp + 32;
+			write(1, &tmp, 1);
+			j--;
+		}	
+		write(1, &hexadecimal[j], 1);
+		j--;
+	}
+}
+// x end
 
 
 //char begin
@@ -158,6 +214,11 @@ void    ft_printf(const char *format, ...)
 				handle_u(format, list, i);
 				i = i + 2;
 			}
+			if (format[i + 1] == 'x')
+			{
+				handle_x(format, list);
+				i = i + 2;
+			}
 			i--;
 		}
 		else
@@ -180,11 +241,13 @@ int main()
 	char character;
 	char character2;
 	character = 'c';
-	character2 = 'd';
+	character2 = 'h';
 	unsigned int unsignedint;
 	unsigned int unsignedint2;
-	unsignedint2 = 4294967295;
-	unsignedint = 4294967295;
+	unsignedint2 = 29;
+	unsignedint = 30;
+	int intx = -10000; //something wrong with <0 numbers, debug this shit
+	int intX = -10001;
 
     printf("=====================\n");
     printf("Printf output:\n");
@@ -201,7 +264,7 @@ int main()
 //	printf("hello %u %u\n", unsignedint, unsignedint2);
 //
 //	unsigned int output | %x, %X
-	printf("Hello %x %X\n", unsignedint, unsignedint2);
+	printf("Hello %x %x\n", intx, intX);
 
     printf("=======\n");
     printf("ft_printf output:\n");
@@ -217,7 +280,6 @@ int main()
 //	unsigned int output
 //	ft_printf("hello %u %u\n", unsignedint, unsignedint2);
 //
-//	
-//
+	ft_printf("Hello %x %x\n", intx, intX);
     return (0);
 }
