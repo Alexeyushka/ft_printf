@@ -6,7 +6,7 @@
 /*   By: jmartyn- <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/06 22:09:38 by jmartyn-          #+#    #+#             */
-/*   Updated: 2019/07/05 20:50:18 by jmartyn-         ###   ########.fr       */
+/*   Updated: 2019/07/05 21:05:46 by jmartyn-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,7 +78,8 @@ void    handle_d(const char *format, va_list list, int i)
 	
 	number = va_arg(list, int);
 	checksign(number);
-	if (format[i] == '%' && format[i + 1] == 'd')
+	if ((format[i] == '%' && format[i + 1] == 'd') ||
+			(format[i] == '%' && format[i + 1] == 'i')) 
 	{
 		ft_putnbr(number);
 	}
@@ -142,7 +143,7 @@ void    ft_printf(const char *format, ...)
 				handle_s(format, list);
 				i = i + 2;
 			}
-    		if (format[i + 1] == 'd')
+    		if (format[i + 1] == 'd' || format[i + 1] == 'i')
 			{
 				handle_d(format, list, i);
 				i = i + 2;
@@ -190,27 +191,33 @@ int main()
 //  string output	
 //	printf("Hello %s %s %d end\n", string2, string, number);
 //	
-//	integer output
-//	printf("hello %d %d\n", number, number2);
+//	integer output %d / %i
+//	printf("hello %i %i\n", number, number2);
 //
 //	char output
-	printf("hello %c %c\n", character, character2);
+//	printf("hello %c %c\n", character, character2);
 //
-//	unsigned int output
+//	unsigned int output %u
 //	printf("hello %u %u\n", unsignedint, unsignedint2);
+//
+//	unsigned int output | %x, %X
+	printf("Hello %x %X\n", unsignedint, unsignedint2);
 
     printf("=======\n");
     printf("ft_printf output:\n");
 //  string output
-//  ft_printf("Hello %s %s %d end\n", string2, string, number);
+//	ft_printf("Hello %s %s %d end\n", string2, string, number);
 //	
-//	integer output
-//	ft_printf("Hello %d %d\n", number, number2);
+//	integer output %d / %i
+//	ft_printf("Hello %i %i\n", number, number2);
 //	
 //	char output
-	ft_printf("hello %c %c\n", character, character2);
+//	ft_printf("hello %c %c\n", character, character2);
 //	
 //	unsigned int output
 //	ft_printf("hello %u %u\n", unsignedint, unsignedint2);
+//
+//	
+//
     return (0);
 }
