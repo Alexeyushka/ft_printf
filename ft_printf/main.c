@@ -6,7 +6,7 @@
 /*   By: jmartyn- <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/06 22:09:38 by jmartyn-          #+#    #+#             */
-/*   Updated: 2019/07/03 23:59:03 by jmartyn-         ###   ########.fr       */
+/*   Updated: 2019/07/05 20:17:21 by jmartyn-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,6 +40,28 @@ void	ft_putnbr(int nb)
 
 //end of lib
 
+
+
+//char begin
+void	handle_c(const char *format, va_list list)
+{
+	char character;
+
+	character = va_arg(list, int);
+	write(1, &character, 1);
+}
+//char end
+
+//integer begin
+int		checksign(int number)
+{
+	if (number < 0)
+		write(1, "-", 1);
+	if (number > 0)
+		return (0);
+	return (0);	
+}
+
 void    handle_d(const char *format, va_list list)
 {
 
@@ -48,6 +70,7 @@ void    handle_d(const char *format, va_list list)
 
 	i = 0;
 	number = va_arg(list, int);
+	checksign(number);
 	while(format[i] != '\0')
 	{
 		if (format[i] == '%' && format[i + 1] == 'd')
@@ -58,7 +81,27 @@ void    handle_d(const char *format, va_list list)
 		i++;
 	}
 }
+//integer end
 
+void	handle_u(const char *format, va_list list)
+{
+	int i;
+	unsigned int number;
+
+	i = 0;
+	number = va_arg(list, uint16_t);
+	while (format[i] != '\0')
+	{
+		if (format[i] == '%' && format[i + 1] == 'u')
+		{
+			ft_putnbr(number);
+			i = i + 2;
+		}
+		i++;
+	}
+}
+
+//string begin
 void     handle_s(const char *format, va_list list)
 {
     int i;
@@ -82,6 +125,7 @@ void     handle_s(const char *format, va_list list)
         i++;
     }
 }
+//string end
 
 void    ft_printf(const char *format, ...)
 {
@@ -105,6 +149,16 @@ void    ft_printf(const char *format, ...)
 				handle_d(format, list);
 				i = i + 2;
 			}
+			if (format[i + 1] == 'c')
+			{
+				handle_c(format, list);
+				i = i + 2;
+			}
+			if (format[i + 1] == 'u')
+			{
+				handle_u(format, list);
+				i = i + 2;
+			}
 			i--;
 		}
 		else
@@ -116,23 +170,43 @@ void    ft_printf(const char *format, ...)
 
 int main()
 {
-    const char *name;
+    const char *string;
 	int number;
-	number = 42;
-    name = "John";
-	const char *hi;
-    hi = "i am";
+	number = -42;
+    string = "John";
+	const char *string2;
+    string2 = "i am";
+	char character;
+	character = 'c';
+	unsigned int unsignedint;
+	unsignedint = 4294967294;
 
     printf("=====================\n");
     printf("Printf output:\n");
-//  char output
-	printf("Hello %s %s %d end\n", hi, name, number);
+//  string output	
+//	printf("Hello %s %s %d end\n", string2, string, number);
+//	
+//	integer output
 //	printf("hello %d\n", number);
+//
+//	char output
+//	printf("hello %c\n", character);
+//
+//	unsigned int output
+	printf("hello %u\n", unsignedint);
 
     printf("=======\n");
     printf("ft_printf output:\n");
-//  char output
-    ft_printf("Hello %s %s %d end\n", hi, name, number);
+//  string output
+//  ft_printf("Hello %s %s %d end\n", string2, string, number);
+//	
+//	integer output
 //	ft_printf("Hello %d\n", number);
+//	
+//	char output
+//	ft_printf("hello %c\n", character);
+//	
+//	unsigned int output
+	ft_printf("hello %u\n", unsignedint);
     return (0);
 }
