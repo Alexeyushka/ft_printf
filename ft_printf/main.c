@@ -6,7 +6,7 @@
 /*   By: jmartyn- <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/06 22:09:38 by jmartyn-          #+#    #+#             */
-/*   Updated: 2019/07/05 20:17:21 by jmartyn-         ###   ########.fr       */
+/*   Updated: 2019/07/05 20:50:18 by jmartyn-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,6 +38,16 @@ void	ft_putnbr(int nb)
 		ft_putchar(nb + '0');
 }
 
+void	ft_putnbr_uint(unsigned int nb)
+{
+	if (nb >= 10)
+	{
+		ft_putnbr(nb / 10);
+		ft_putnbr(nb % 10);
+	}
+	else
+		ft_putchar(nb + '0');
+}
 //end of lib
 
 
@@ -62,44 +72,32 @@ int		checksign(int number)
 	return (0);	
 }
 
-void    handle_d(const char *format, va_list list)
+void    handle_d(const char *format, va_list list, int i)
 {
-
-    int i;
 	int number;
-
-	i = 0;
+	
 	number = va_arg(list, int);
 	checksign(number);
-	while(format[i] != '\0')
+	if (format[i] == '%' && format[i + 1] == 'd')
 	{
-		if (format[i] == '%' && format[i + 1] == 'd')
-		{
-			ft_putnbr(number);
-			i = i + 2;
-		}
-		i++;
+		ft_putnbr(number);
 	}
 }
 //integer end
 
-void	handle_u(const char *format, va_list list)
+//unsigned integer begin
+void	handle_u(const char *format, va_list list, int i)
 {
-	int i;
-	unsigned int number;
+	uintmax_t number;
 
-	i = 0;
-	number = va_arg(list, uint16_t);
-	while (format[i] != '\0')
+	number = va_arg(list, uintmax_t);
+	if (format[i] == '%' && format[i + 1] == 'u')
 	{
-		if (format[i] == '%' && format[i + 1] == 'u')
-		{
-			ft_putnbr(number);
-			i = i + 2;
-		}
-		i++;
+		ft_putnbr_uint(number);
 	}
 }
+//unsigned integer end
+
 
 //string begin
 void     handle_s(const char *format, va_list list)
@@ -146,7 +144,7 @@ void    ft_printf(const char *format, ...)
 			}
     		if (format[i + 1] == 'd')
 			{
-				handle_d(format, list);
+				handle_d(format, list, i);
 				i = i + 2;
 			}
 			if (format[i + 1] == 'c')
@@ -156,7 +154,7 @@ void    ft_printf(const char *format, ...)
 			}
 			if (format[i + 1] == 'u')
 			{
-				handle_u(format, list);
+				handle_u(format, list, i);
 				i = i + 2;
 			}
 			i--;
@@ -173,13 +171,19 @@ int main()
     const char *string;
 	int number;
 	number = -42;
+	int number2;
+	number2 = -101;
     string = "John";
 	const char *string2;
     string2 = "i am";
 	char character;
+	char character2;
 	character = 'c';
+	character2 = 'd';
 	unsigned int unsignedint;
-	unsignedint = 4294967294;
+	unsigned int unsignedint2;
+	unsignedint2 = 4294967295;
+	unsignedint = 4294967295;
 
     printf("=====================\n");
     printf("Printf output:\n");
@@ -187,13 +191,13 @@ int main()
 //	printf("Hello %s %s %d end\n", string2, string, number);
 //	
 //	integer output
-//	printf("hello %d\n", number);
+//	printf("hello %d %d\n", number, number2);
 //
 //	char output
-//	printf("hello %c\n", character);
+	printf("hello %c %c\n", character, character2);
 //
 //	unsigned int output
-	printf("hello %u\n", unsignedint);
+//	printf("hello %u %u\n", unsignedint, unsignedint2);
 
     printf("=======\n");
     printf("ft_printf output:\n");
@@ -201,12 +205,12 @@ int main()
 //  ft_printf("Hello %s %s %d end\n", string2, string, number);
 //	
 //	integer output
-//	ft_printf("Hello %d\n", number);
+//	ft_printf("Hello %d %d\n", number, number2);
 //	
 //	char output
-//	ft_printf("hello %c\n", character);
+	ft_printf("hello %c %c\n", character, character2);
 //	
 //	unsigned int output
-	ft_printf("hello %u\n", unsignedint);
+//	ft_printf("hello %u %u\n", unsignedint, unsignedint2);
     return (0);
 }
