@@ -6,7 +6,7 @@
 /*   By: jmartyn- <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/06 22:09:38 by jmartyn-          #+#    #+#             */
-/*   Updated: 2019/07/10 20:35:30 by jmartyn-         ###   ########.fr       */
+/*   Updated: 2019/07/10 21:27:57 by jmartyn-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -264,7 +264,7 @@ int main()
 	unsigned int unsignedint2;
 	unsignedint2 = 29;
 	unsignedint = 30;
-	int intx = -14327; //something wrong with <0 numbers, debug this shit
+	int intx = -53; //something wrong with <0 numbers, debug this shit
 	int intX = 4326809; //
 
     printf("=====================\n");
