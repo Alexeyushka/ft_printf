@@ -6,7 +6,7 @@
 /*   By: jmartyn- <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/06 22:09:38 by jmartyn-          #+#    #+#             */
-/*   Updated: 2019/07/10 23:40:15 by jmartyn-         ###   ########.fr       */
+/*   Updated: 2019/07/11 00:08:19 by jmartyn-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -222,6 +222,42 @@ void    handle_d(const char *format, va_list list, int i)
 }
 // handle integer end
 
+// handle o begin
+void	handle_o(const char *format, va_list list)
+{
+	int decimal;
+	long remainder;
+	long quotient;
+	int tmp;
+	int octal[100];
+	int i;
+	int j;
+
+	i = 0;
+	j = 0;
+	decimal = va_arg(list, int);
+	if (decimal == 0)
+	{
+		write(1, "0", 1);
+		return ;
+	}
+	while (decimal != 0)
+	{
+		octal[i] = decimal % 8;
+		decimal = decimal / 8;
+		i++;
+	}
+	j = i - 1;
+	while (j >= 0)
+	{
+		tmp = octal[j];
+		ft_putnbr(tmp);
+		j--;
+	}
+}
+
+// handle o end
+
 // handle unsigned integer begin
 void	handle_u(const char *format, va_list list, int i)
 {
@@ -304,6 +340,11 @@ void    ft_printf(const char *format, ...)
 				handle_X(format, list);
 				i = i + 2;
 			}
+			if (format[i + 1] == 'o')
+			{
+				handle_o(format, list);
+				i = i + 2;
+			}
 			i--;
 		}
 		else
@@ -335,6 +376,8 @@ int main()
 	//unsigned long long int intX = 18446744073709551615;
 	int intx = -112;
 	int intX = -1221313;
+	int oct1 = 2147483647;
+	int oct2 = 0;
 
     printf("=====================\n");
     printf("Printf output:\n");
@@ -352,6 +395,10 @@ int main()
 //
 //	x, X output
 //	printf("Hello %x %X\n", intx, intX);
+//
+//	Octal output
+	printf("Hello %o %o\n", oct1, oct2);
+
 
     printf("=======\n");
     printf("ft_printf output:\n");
@@ -369,5 +416,9 @@ int main()
 //
 //	x, X output
 //	ft_printf("Hello %x %X\n", intx, intX);
+//
+//	Octal output
+	ft_printf("Hello %o %o\n", oct1, oct2);
+
     return (0);
 }
