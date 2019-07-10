@@ -6,7 +6,7 @@
 /*   By: jmartyn- <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/06 22:09:38 by jmartyn-          #+#    #+#             */
-/*   Updated: 2019/07/05 23:01:33 by jmartyn-         ###   ########.fr       */
+/*   Updated: 2019/07/10 20:35:30 by jmartyn-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,6 +59,14 @@ int		is_upper(char c)
 		return (0);
 }
 
+int		is_digit(char c)
+{
+	if (c >= 48 && c <= 57)
+		return (1);
+	else
+		return (0);
+}
+
 void	handle_x(const char *format, va_list list)
 {
 	long decimal;
@@ -100,9 +108,19 @@ void	handle_x(const char *format, va_list list)
 			tmp = tmp + 32;
 			write(1, &tmp, 1);
 			j--;
-		}	
-		write(1, &hexadecimal[j], 1);
-		j--;
+		}
+		if (is_upper(hexadecimal[j]) == 0)
+		{
+			tmp = hexadecimal[j];
+			write(1, &tmp, 1);
+			j--;
+		}
+		if (is_digit(hexadecimal[j] == 1))
+		{
+			
+			write(1, &hexadecimal[j], 1);
+			j--;
+		}
 	}
 }
 // x end
@@ -246,8 +264,8 @@ int main()
 	unsigned int unsignedint2;
 	unsignedint2 = 29;
 	unsignedint = 30;
-	int intx = -10000; //something wrong with <0 numbers, debug this shit
-	int intX = -10001;
+	int intx = -14327; //something wrong with <0 numbers, debug this shit
+	int intX = 4326809; //
 
     printf("=====================\n");
     printf("Printf output:\n");
