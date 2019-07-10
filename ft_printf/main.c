@@ -6,7 +6,7 @@
 /*   By: jmartyn- <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/06 22:09:38 by jmartyn-          #+#    #+#             */
-/*   Updated: 2019/07/10 21:27:57 by jmartyn-         ###   ########.fr       */
+/*   Updated: 2019/07/10 22:39:01 by jmartyn-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,6 +67,12 @@ int		is_digit(char c)
 		return (0);
 }
 
+long	handle_negative_x(long decimal)
+{
+	return (4294967296 + decimal);
+}
+
+
 void	handle_x(const char *format, va_list list)
 {
 	long decimal;
@@ -81,6 +87,11 @@ void	handle_x(const char *format, va_list list)
 	
 	decimal = va_arg(list, int);
 	quotient = decimal;
+	if (decimal < 0)
+	{
+		quotient = handle_negative_x(decimal);
+	}
+	//quotient = decimal;
 	if (quotient == 0)
 		write(1, "0", 1);
 	while (quotient != 0)
@@ -264,8 +275,8 @@ int main()
 	unsigned int unsignedint2;
 	unsignedint2 = 29;
 	unsignedint = 30;
-	int intx = -53; //something wrong with <0 numbers, debug this shit
-	int intX = 4326809; //
+	unsigned long long int intx = -18446744073709551615;
+	int intX = 18446744073709551615;
 
     printf("=====================\n");
     printf("Printf output:\n");
