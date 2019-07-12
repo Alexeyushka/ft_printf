@@ -225,11 +225,9 @@ void    handle_d(const char *format, va_list list, int i)
 // handle o begin
 void	handle_o(const char *format, va_list list)
 {
-	int decimal;
-	long remainder;
-	long quotient;
+	long decimal;
 	int tmp;
-	int octal[100];
+	long octal[100];
 	int i;
 	int j;
 
@@ -241,6 +239,8 @@ void	handle_o(const char *format, va_list list)
 		write(1, "0", 1);
 		return ;
 	}
+	if (decimal < 0)
+		decimal = 4294967296 + decimal;
 	while (decimal != 0)
 	{
 		octal[i] = decimal % 8;
@@ -375,9 +375,9 @@ int main()
 	//int intx = -2147483648;
 	//unsigned long long int intX = 18446744073709551615;
 	int intx = -112;
-	int intX = -1221313;
-	int oct1 = 2147483647;
-	int oct2 = 0;
+	int intX = -20;
+	int oct1 = 1000001;
+	int oct2 = -2147483647;
 
     printf("=====================\n");
     printf("Printf output:\n");
@@ -397,7 +397,7 @@ int main()
 //	printf("Hello %x %X\n", intx, intX);
 //
 //	Octal output
-	printf("Hello %o %o\n", oct1, oct2);
+//	printf("Hello %o %o\n", oct1, oct2);
 
 
     printf("=======\n");
@@ -418,7 +418,7 @@ int main()
 //	ft_printf("Hello %x %X\n", intx, intX);
 //
 //	Octal output
-	ft_printf("Hello %o %o\n", oct1, oct2);
+//	ft_printf("Hello %o %o\n", oct1, oct2);
 
     return (0);
 }
