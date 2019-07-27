@@ -6,7 +6,7 @@
 /*   By: jmartyn- <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/06 22:09:38 by jmartyn-          #+#    #+#             */
-/*   Updated: 2019/07/11 00:09:11 by jmartyn-         ###   ########.fr       */
+/*   Updated: 2019/07/27 15:42:48 by jmartyn-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -298,6 +298,93 @@ void     handle_s(const char *format, va_list list)
 }
 // handle string end
 
+// handle float let's try
+
+int n_tu(int number, int count)
+{
+	int result = 1;
+	while (count-- > 0)
+		result *= number;
+
+	return result;
+}
+
+/*** Convert float to string ***/
+void handle_f(const char *format, va_list list)
+{
+	long long int length, length2, number, i, position, sign;
+	float number2;
+	float f;
+	char *r;
+
+	f = va_arg(list, double);
+
+
+	sign = -1;   // -1 == positive number
+	if (f < 0)
+	{
+		sign = '-';
+		f *= -1;
+	}
+
+	number2 = f;
+	number = f;
+	length = 0;  // Size of decimal part
+	length2 = 0; // Size of tenth
+
+	/* Calculate length2 tenth part */
+	while((number2 - (float)number) != 0.0 && !((number2 - (float)number) < 0.0) )
+	{
+		number2 = f * (n_tu(10.0, length2 + 1));
+		printf("%f\n", number2);
+		number = number2;
+
+		length2++;
+	}
+
+	/* Calculate length decimal part */
+	for (length = (f > 1) ? 0 : 1; f > 1; length++)
+		f /= 10;
+
+	position = length;
+	length = length + 1 + length2;
+	number = number2;
+	if (sign == '-')
+	{
+		length++;
+		position++;
+	}
+	r = malloc(sizeof(char *) * length);
+	for (i = length; i >= 0 ; i--)
+	{
+		if (i == (length))
+			r[i] = '\0';
+		else if(i == (position))
+			r[i] = '.';
+		else if(sign == '-' && i == 0)
+			r[i] = '-';
+		else
+		{
+			r[i] = (number % 10) + '0';
+			number /=10;
+		}
+	}
+
+	i = 0;
+	while (r[i] != '\0')
+	{
+		write(1, &r[i], 1);
+		i++;
+	}
+	free(r);
+}
+
+
+// handle float end
+
+
+
+
 void    ft_printf(const char *format, ...)
 {
     int i;
@@ -345,6 +432,11 @@ void    ft_printf(const char *format, ...)
 				handle_o(format, list);
 				i = i + 2;
 			}
+			if (format[i + 1] == 'f')
+			{
+				handle_f(format, list);
+				i = i + 2;
+			}
 			i--;
 		}
 		else
@@ -378,7 +470,9 @@ int main()
 	int intX = -20;
 	int oct1 = 1000001;
 	int oct2 = -2147483647;
-
+	float float1 = 10.14754353;
+	float float2 = 43.5365348;
+	float float3 = 1.5435346235;
     printf("=====================\n");
     printf("Printf output:\n");
 //  string output	
@@ -398,6 +492,9 @@ int main()
 //
 //	Octal output
 //	printf("Hello %o %o\n", oct1, oct2);
+//
+//	float output
+	printf("Hello %f %f %f\n", float1, float2, float3);
 
 
     printf("=======\n");
@@ -419,6 +516,9 @@ int main()
 //
 //	Octal output
 //	ft_printf("Hello %o %o\n", oct1, oct2);
+//
+//	float output
+	ft_printf("Hello %f %f %f\n", float1, float2, float3); /* Works not for all floats, Need to debug this shit */
 
     return (0);
 }
