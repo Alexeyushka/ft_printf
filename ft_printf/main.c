@@ -6,7 +6,7 @@
 /*   By: jmartyn- <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/06 22:09:38 by jmartyn-          #+#    #+#             */
-/*   Updated: 2019/07/31 21:59:36 by jmartyn-         ###   ########.fr       */
+/*   Updated: 2019/07/31 22:44:56 by jmartyn-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -415,7 +415,6 @@ void handle_f(const char *format, va_list list)
 		}
 		i++;
 	}
-	printf("len: %d", len);
 	while (k > 0)
 	{
 		write(1, "0", 1);
@@ -482,6 +481,11 @@ void    ft_printf(const char *format, ...)
 				handle_f(format, list);
 				i = i + 2;
 			}
+			if (format[i + 1] == '%')
+			{
+				write(1, "%", 1);
+				i = i + 2;
+			}
 			i--;
 		}
 		else
@@ -515,8 +519,8 @@ int main()
 	int intX = -20;
 	int oct1 = 1000001;
 	int oct2 = -2147483647;
-	float float1 = 10.1435783543;
-	float float2 = 43.348;
+	float float1 = -1432423320.1435783543;
+	float float2 = 43.0;
 	float float3 = 1.546235;
     printf("=====================\n");
     printf("Printf output:\n");
@@ -539,8 +543,8 @@ int main()
 //	printf("Hello %o %o\n", oct1, oct2);
 //
 //	float output
-	printf("Hello %f %f %f\n", float1, float2, float3);
-
+//	printf("Hello %f %f %f\n", float1, float2, float3);
+	printf("Hello %% and %%\n");
 
     printf("=======\n");
     printf("ft_printf output:\n");
@@ -563,7 +567,10 @@ int main()
 //	ft_printf("Hello %o %o\n", oct1, oct2);
 //
 //	float output
-	ft_printf("Hello %f %f %f\n", float1, float2, float3); /* Works not for all floats, Need to debug this shit */
+//	ft_printf("Hello %f %f %f\n", float1, float2, float3);
+
+//	%% output
+	ft_printf("Hello %% and %%\n");
 
     return (0);
 }
