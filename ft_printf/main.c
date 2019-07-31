@@ -6,7 +6,7 @@
 /*   By: jmartyn- <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/06 22:09:38 by jmartyn-          #+#    #+#             */
-/*   Updated: 2019/07/27 15:42:48 by jmartyn-         ###   ########.fr       */
+/*   Updated: 2019/07/31 21:47:36 by jmartyn-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,6 +48,29 @@ void	ft_putnbr_uint(unsigned int nb)
 	else
 		ft_putchar(nb + '0');
 }
+
+int		ft_strlen_double(char *str)
+{
+	int i;
+	int len;
+
+	i = 0;
+	len = 0;
+	while (str[i] != '\0')
+	{
+		if (str[i] == '.')
+		{
+			while(str[i] != '\0')
+			{
+				len++;
+				i++;
+			}
+		}
+		i++;
+	}
+	return (len);
+}
+
 //end of lib
 
 // handle x begin
@@ -316,10 +339,10 @@ void handle_f(const char *format, va_list list)
 	float number2;
 	float f;
 	char *r;
+	char *str;
+	int len;
 
 	f = va_arg(list, double);
-
-
 	sign = -1;   // -1 == positive number
 	if (f < 0)
 	{
@@ -336,7 +359,7 @@ void handle_f(const char *format, va_list list)
 	while((number2 - (float)number) != 0.0 && !((number2 - (float)number) < 0.0) )
 	{
 		number2 = f * (n_tu(10.0, length2 + 1));
-		printf("%f\n", number2);
+		//printf("%f\n", number2);
 		number = number2;
 
 		length2++;
@@ -357,7 +380,7 @@ void handle_f(const char *format, va_list list)
 	r = malloc(sizeof(char *) * length);
 	for (i = length; i >= 0 ; i--)
 	{
-		if (i == (length))
+	if (i == (length))
 			r[i] = '\0';
 		else if(i == (position))
 			r[i] = '.';
@@ -370,11 +393,33 @@ void handle_f(const char *format, va_list list)
 		}
 	}
 
+	len = ft_strlen_double(r);
 	i = 0;
+	int k;
+	k = 7 - len;
+	printf("len: %d", len);
 	while (r[i] != '\0')
 	{
 		write(1, &r[i], 1);
+		if (r[i] == '.')
+		{
+			while (len > 1 && r[i] != '\0')
+			{
+				i++;
+				if (r[i] >= 48 && r[i] <= 57) 
+				{	
+					write(1, &r[i], 1);
+				}
+			len--;
+			}
+		}
 		i++;
+	}
+	printf("len: %d", len);
+	while (k > 0)
+	{
+		write(1, "0", 1);
+		k--;
 	}
 	free(r);
 }
@@ -470,9 +515,9 @@ int main()
 	int intX = -20;
 	int oct1 = 1000001;
 	int oct2 = -2147483647;
-	float float1 = 10.14754353;
-	float float2 = 43.5365348;
-	float float3 = 1.5435346235;
+	float float1 = 10.1435783;
+	float float2 = 43.348;
+	float float3 = 1.546235;
     printf("=====================\n");
     printf("Printf output:\n");
 //  string output	
