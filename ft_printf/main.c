@@ -6,7 +6,7 @@
 /*   By: jmartyn- <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/06 22:09:38 by jmartyn-          #+#    #+#             */
-/*   Updated: 2019/08/01 22:18:55 by jmartyn-         ###   ########.fr       */
+/*   Updated: 2019/08/01 22:57:42 by jmartyn-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -429,6 +429,30 @@ void handle_f(const char *format, va_list list)
 // parse argument flags
 // parse argument flags 
 
+int		parse_flag_plus(const char *format, int i)
+{
+	int res;
+	int k;
+	int count;
+	res = 0;
+	count = 2;
+	k = 1;
+
+	while (format[i + count] >= 48 && format[i + count] <= 57)
+	{
+		res = res * 10;
+		res = res + ((int)format[i + count] - '0');
+		count++;
+	}
+	while (res > 0)
+	{
+		write(1, " ", 1);
+		res--;
+	}
+	write(1, "+", 1);
+	return (count);
+}
+
 int		check_flags(const char *format, int i)
 {
 	int k;
@@ -437,8 +461,15 @@ int		check_flags(const char *format, int i)
 	{
 		if (format[i + 1] == '+')	
 		{
-			write(1, "+", 1);
-			k++;
+			if (format[i + 2] == 'd')
+			{
+				write(1, "+", 1);
+				k++;
+			}
+			if (format[i + 2] != 'd')
+			{
+				k = parse_flag_plus(format, i) - 1;
+			}
 		}
 		if (format[i + 1] == '-')
 		{
@@ -595,7 +626,7 @@ int main()
 //
 //	float output
 //	printf("Hello %f %f %f\n", float1, float2, float3);
-	printf("Hello %-10d %d \n", number, number2);
+	printf("Hello %+54d %d \n", number, number2);
 //                 099999999999
     printf("=======\n");
     printf("ft_printf output:\n");
@@ -603,7 +634,7 @@ int main()
 //	ft_printf("Hello %s %s %d end\n", string2, string, number);
 //	
 //	integer output %d / %i
-	ft_printf("Hello %+d %d\n", number, number2);
+	ft_printf("Hello %+54d %d\n", number, number2);
 //	
 //	char output
 //	ft_printf("hello %c %c\n", character, character2);
