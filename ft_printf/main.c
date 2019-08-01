@@ -6,7 +6,7 @@
 /*   By: jmartyn- <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/06 22:09:38 by jmartyn-          #+#    #+#             */
-/*   Updated: 2019/07/31 22:44:56 by jmartyn-         ###   ########.fr       */
+/*   Updated: 2019/08/01 22:18:55 by jmartyn-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -226,7 +226,7 @@ int		checksign(int number)
 	return (0);	
 }
 
-void    handle_d(const char *format, va_list list, int i)
+void    handle_d(const char *format, va_list list, int i, int k)
 {
 	int number;
 	
@@ -237,8 +237,8 @@ void    handle_d(const char *format, va_list list, int i)
 		return ;
 	}
 	checksign(number);
-	if ((format[i] == '%' && format[i + 1] == 'd') ||
-			(format[i] == '%' && format[i + 1] == 'i')) 
+	if ((format[i] == '%' && format[i + 1 + k] == 'd') ||
+			(format[i] == '%' && format[i + 1 + k] == 'i')) 
 	{
 		ft_putnbr(number);
 	}
@@ -397,7 +397,6 @@ void handle_f(const char *format, va_list list)
 	i = 0;
 	int k;
 	k = 7 - len;
-	printf("len: %d", len);
 	while (r[i] != '\0')
 	{
 		write(1, &r[i], 1);
@@ -426,67 +425,119 @@ void handle_f(const char *format, va_list list)
 
 // handle float end
 
+// parse argument
+// parse argument flags
+// parse argument flags 
 
+int		check_flags(const char *format, int i)
+{
+	int k;
+	k = 0;
+	if (format[i] == '%')
+	{
+		if (format[i + 1] == '+')	
+		{
+			write(1, "+", 1);
+			k++;
+		}
+		if (format[i + 1] == '-')
+		{
+		}
+	}
+	return (k);
+}
+
+int		start_checking_arg(const char *format, int i)
+{
+	int k;
+	k = check_flags(format, i);
+
+	return (k);
+}
+
+int		parse_arg(const char *format, int i)
+{
+	int k;
+	k = 0;
+	if (format[i] == '%' && (
+				format[i + 1] == 's' ||
+				format[i + 1] == 'd' ||
+				format[i + 1] == 'i' ||
+				format[i + 1] == 'c' ||
+				format[i + 1] == 'u' ||
+				format[i + 1] == 'x' ||
+				format[i + 1] == 'X' ||
+				format[i + 1] == 'o' ||
+				format[i + 1] == 'f' ||
+				format[i + 1] == '%'))
+	{
+		return(k);
+	}
+	else
+		k = start_checking_arg(format, i);
+	return (k);
+}
 
 
 void    ft_printf(const char *format, ...)
 {
     int i;
 	va_list list;
+	int k;
 
 	i = 0;
 	va_start(list, format);
-   
+
 	while (format[i] != '\0')
 	{
         if (format[i] == '%')
 		{
+			k = parse_arg(format, i);
 			if (format[i + 1] == 's')
 			{
 				handle_s(format, list);
-				i = i + 2;
+				i = i + 1;
 			}
-    		if (format[i + 1] == 'd' || format[i + 1] == 'i')
+    		if (format[i + 1 + k] == 'd' || format[i + 1] == 'i')
 			{
-				handle_d(format, list, i);
-				i = i + 2;
+				handle_d(format, list, i, k);
+				i = i + 1 + k;
 			}
 			if (format[i + 1] == 'c')
 			{
 				handle_c(format, list);
-				i = i + 2;
+				i = i + 1;
 			}
 			if (format[i + 1] == 'u')
 			{
 				handle_u(format, list, i);
-				i = i + 2;
+				i = i + 1;
 			}
 			if (format[i + 1] == 'x')
 			{
 				handle_x(format, list);
-				i = i + 2;
+				i = i + 1;
 			}
 			if (format[i + 1] == 'X')
 			{
 				handle_X(format, list);
-				i = i + 2;
+				i = i + 1;
 			}
 			if (format[i + 1] == 'o')
 			{
 				handle_o(format, list);
-				i = i + 2;
+				i = i + 1;
 			}
 			if (format[i + 1] == 'f')
 			{
 				handle_f(format, list);
-				i = i + 2;
+				i = i + 1;
 			}
-			if (format[i + 1] == '%')
+			if (format[i] == '%' && format[i + 1] == '%')
 			{
 				write(1, "%", 1);
-				i = i + 2;
+				i = i + 1;
 			}
-			i--;
 		}
 		else
 			write(1, &format[i], 1);
@@ -499,9 +550,9 @@ int main()
 {
     const char *string;
 	int number;
-	number = -2147483648;
+	number = 27;
 	int number2;
-	number2 = 2147483647;
+	number2 = 30;
     string = "John";
 	const char *string2;
     string2 = "i am";
@@ -544,15 +595,15 @@ int main()
 //
 //	float output
 //	printf("Hello %f %f %f\n", float1, float2, float3);
-	printf("Hello %% and %%\n");
-
+	printf("Hello %-10d %d \n", number, number2);
+//                 099999999999
     printf("=======\n");
     printf("ft_printf output:\n");
 //  string output
 //	ft_printf("Hello %s %s %d end\n", string2, string, number);
 //	
 //	integer output %d / %i
-//	ft_printf("Hello %i %i\n", number, number2);
+	ft_printf("Hello %+d %d\n", number, number2);
 //	
 //	char output
 //	ft_printf("hello %c %c\n", character, character2);
@@ -570,7 +621,7 @@ int main()
 //	ft_printf("Hello %f %f %f\n", float1, float2, float3);
 
 //	%% output
-	ft_printf("Hello %% and %%\n");
+//	ft_printf("Hello %% and %%\n");
 
     return (0);
 }
