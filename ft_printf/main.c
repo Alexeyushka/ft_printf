@@ -6,7 +6,7 @@
 /*   By: jmartyn- <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/06 22:09:38 by jmartyn-          #+#    #+#             */
-/*   Updated: 2019/08/01 22:57:42 by jmartyn-         ###   ########.fr       */
+/*   Updated: 2019/08/01 23:45:23 by jmartyn-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -427,9 +427,33 @@ void handle_f(const char *format, va_list list)
 
 // parse argument
 // parse argument flags
-// parse argument flags 
+// parse argument flags PLUS 
 
-int		parse_flag_plus(const char *format, int i)
+void		print_flags_plus(const char *format, va_list list, int res)
+{
+	int number;
+	int size;
+	va_list cpy;
+	va_copy(cpy, list);
+	size = 0;
+	number = va_arg(cpy, int);
+	while (number > 0)
+	{
+		size++;
+		number = number / 10;
+	}
+	res = res - size - 1;
+	while (res > 0)
+	{
+		write(1, " ", 1);
+		res--;
+	}
+	write(1, "+", 1);
+	va_end(cpy);
+}
+
+
+int		parse_flag_plus(const char *format, va_list list, int i)
 {
 	int res;
 	int k;
@@ -444,16 +468,13 @@ int		parse_flag_plus(const char *format, int i)
 		res = res + ((int)format[i + count] - '0');
 		count++;
 	}
-	while (res > 0)
-	{
-		write(1, " ", 1);
-		res--;
-	}
-	write(1, "+", 1);
+	print_flags_plus(format, list, res);
 	return (count);
 }
+// Parse argument flags PLUS end
 
-int		check_flags(const char *format, int i)
+
+int		check_flags(const char *format, va_list list, int i)
 {
 	int k;
 	k = 0;
@@ -468,7 +489,7 @@ int		check_flags(const char *format, int i)
 			}
 			if (format[i + 2] != 'd')
 			{
-				k = parse_flag_plus(format, i) - 1;
+				k = parse_flag_plus(format, list, i) - 1;
 			}
 		}
 		if (format[i + 1] == '-')
@@ -478,15 +499,15 @@ int		check_flags(const char *format, int i)
 	return (k);
 }
 
-int		start_checking_arg(const char *format, int i)
+int		start_checking_arg(const char *format, va_list list, int i)
 {
 	int k;
-	k = check_flags(format, i);
+	k = check_flags(format, list, i);
 
 	return (k);
 }
 
-int		parse_arg(const char *format, int i)
+int		parse_arg(const char *format, va_list list, int i)
 {
 	int k;
 	k = 0;
@@ -505,7 +526,7 @@ int		parse_arg(const char *format, int i)
 		return(k);
 	}
 	else
-		k = start_checking_arg(format, i);
+		k = start_checking_arg(format, list,  i);
 	return (k);
 }
 
@@ -523,7 +544,7 @@ void    ft_printf(const char *format, ...)
 	{
         if (format[i] == '%')
 		{
-			k = parse_arg(format, i);
+			k = parse_arg(format, list, i);
 			if (format[i + 1] == 's')
 			{
 				handle_s(format, list);
@@ -606,53 +627,60 @@ int main()
 	float float3 = 1.546235;
     printf("=====================\n");
     printf("Printf output:\n");
-//  string output	
-//	printf("Hello %s %s %d end\n", string2, string, number);
+  	printf("String:\n");
+	printf("---> Hello %s %s %d end\n", string2, string, number);
 //	
-//	integer output %d / %i
-//	printf("hello %i %i\n", number, number2);
+	printf("Integer d / i\n");
+	printf("---> Hello %d %i\n", number, number2);
 //
-//	char output
-//	printf("hello %c %c\n", character, character2);
+	printf("Char\n");
+	printf("---> Hello %c %c\n", character, character2);
 //
-//	unsigned int output %u
-//	printf("hello %u %u\n", unsignedint, unsignedint2);
+	printf("Unsigned int output u\n");
+	printf("---> Hello %u %u\n", unsignedint, unsignedint2);
 //
-//	x, X output
-//	printf("Hello %x %X\n", intx, intX);
+	printf("x, X\n");
+	printf("---> Hello %x %X\n", intx, intX);
 //
-//	Octal output
-//	printf("Hello %o %o\n", oct1, oct2);
+	printf("Octal\n");
+	printf("---> Hello %o %o\n", oct1, oct2);
 //
-//	float output
-//	printf("Hello %f %f %f\n", float1, float2, float3);
-	printf("Hello %+54d %d \n", number, number2);
+	printf("Float\n");
+	printf("---> Hello %f %f %f\n", float1, float2, float3);
+	
+	printf("FLAGS: plus +6 +10\n");
+	printf("---> Hello %+6d %+10d\n", number, number2);
 //                 099999999999
-    printf("=======\n");
+	printf("Percent \n");
+	printf("---> Hello %% and %%\n");
+    printf("===================\n\n");
     printf("ft_printf output:\n");
-//  string output
-//	ft_printf("Hello %s %s %d end\n", string2, string, number);
+	ft_printf("String\n");
+	ft_printf("---> Hello %s %s %d end\n", string2, string, number);
 //	
-//	integer output %d / %i
-	ft_printf("Hello %+54d %d\n", number, number2);
+	ft_printf("Integer d / i\n");
+	ft_printf("---> Hello %d %i\n", number, number2);
 //	
-//	char output
-//	ft_printf("hello %c %c\n", character, character2);
+	ft_printf("Char\n");
+	ft_printf("---> Hello %c %c\n", character, character2);
 //	
-//	unsigned int output
-//	ft_printf("hello %u %u\n", unsignedint, unsignedint2);
+	ft_printf("Unsigned int\n");
+	ft_printf("---> Hello %u %u\n", unsignedint, unsignedint2);
 //
-//	x, X output
-//	ft_printf("Hello %x %X\n", intx, intX);
+	ft_printf("x, X\n");
+	ft_printf("---> Hello %x %X\n", intx, intX);
 //
-//	Octal output
-//	ft_printf("Hello %o %o\n", oct1, oct2);
+	ft_printf("Octal\n");
+	ft_printf("---> Hello %o %o\n", oct1, oct2);
 //
-//	float output
-//	ft_printf("Hello %f %f %f\n", float1, float2, float3);
+	ft_printf("Float\n");
+	ft_printf("---> Hello %f %f %f\n", float1, float2, float3);
 
-//	%% output
-//	ft_printf("Hello %% and %%\n");
+	ft_printf("FLAGS: plus +6 +10\n");
+	ft_printf("---> Hello %+6d %+10d\n", number, number2);
+
+	ft_printf("Percent \n");
+	ft_printf("---> Hello %% and %%\n");
 
     return (0);
 }
