@@ -6,7 +6,7 @@
 /*   By: jmartyn- <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/06 22:09:38 by jmartyn-          #+#    #+#             */
-/*   Updated: 2019/08/05 21:27:22 by jmartyn-         ###   ########.fr       */
+/*   Updated: 2019/08/05 22:47:36 by jmartyn-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -620,6 +620,58 @@ int		parse_flag_blank(const char *format, va_list list, int i)
 }
 // FLAG blank end
 
+// FLAG hash begin
+
+void		print_flag_hash_blanks(const char *format, va_list list, int res)
+{
+	int number;
+	int size;
+	va_list cpy;
+	va_copy(cpy, list);
+	size = 0;
+	number = va_arg(cpy, int);
+	while (number > 0)
+	{
+		size++;
+		number = number / 10;
+	}
+	res = res - size - 1;
+	while (res > 0)
+	{
+		write(1, " ", 1);
+		res--;
+	}
+	va_end(cpy);
+}
+
+
+int		parse_flag_hash_oxX(const char *format, va_list list, int i)
+{
+	int count;
+	int res;
+	res = 0;
+	count = 2;
+	if (format[i] == '%')
+	{
+		if (format[i + 1] == '#')
+		{
+			while (format[i + count] >= 48 && format[i + count] <= 57)
+			{
+				res = res * 10;
+				res = res + ((int)format[i + count] - '0');
+				count++;
+			}
+			print_flag_hash_blanks(format, list, res);
+			if (format[i + count] == 'o')
+			{
+				write(1, "0", 1);
+			}
+		}
+	}
+	return (count);
+}
+
+
 
 int		check_flags(const char *format, va_list list, int i)
 {
@@ -651,6 +703,10 @@ int		check_flags(const char *format, va_list list, int i)
 		{
 			k = parse_flag_blank(format, list, i) - 1;
 		}
+		if (format[i + 1] == '#')
+		{
+			k = parse_flag_hash_oxX(format, list, i) - 1;
+		}
 	}
 	return (k);
 }
@@ -677,7 +733,8 @@ int		parse_arg(const char *format, va_list list, int i)
 				format[i + 1] == 'X' ||
 				format[i + 1] == 'o' ||
 				format[i + 1] == 'f' ||
-				format[i + 1] == '%'))
+				format[i + 1] == '%' ||
+				format[i + 1] == '#'))
 	{
 		return(k);
 	}
@@ -686,12 +743,20 @@ int		parse_arg(const char *format, va_list list, int i)
 	return (k);
 }
 
+int		parse_arg_o(const char *format, va_list list, int i)
+{
+	int k;
+	if (format[i + 1] == '#')
+		k = check_flags(format, list, i);
+	return (k);
+}
 
 void    ft_printf(const char *format, ...)
 {
     int i;
 	va_list list;
 	int k;
+	int m;
 	int tmp;
 	int res;
 	i = 0;
@@ -702,6 +767,7 @@ void    ft_printf(const char *format, ...)
         if (format[i] == '%')
 		{
 			k = parse_arg(format, list, i);
+			m = parse_arg_o(format, list, i);
 			if (format[i + 1] == 's')
 			{
 				handle_s(format, list);
@@ -719,7 +785,7 @@ void    ft_printf(const char *format, ...)
 						res--;
 					}
 				}
-				i = i + 1 + k;
+				i = i + 1 + k;	
 			}
 			if (format[i + 1] == 'c')
 			{
@@ -741,10 +807,10 @@ void    ft_printf(const char *format, ...)
 				handle_X(format, list);
 				i = i + 1;
 			}
-			if (format[i + 1] == 'o')
+			if (format[i + 1 + m] == 'o')
 			{
 				handle_o(format, list);
-				i = i + 1;
+				i = i + 1 + m;
 			}
 			if (format[i + 1] == 'f')
 			{
@@ -821,8 +887,14 @@ int main()
 //	printf("FLAGS: minus -6 -10\n");
 //	printf("---> Hello %-2147483649d %-10d\n", number, number2);
 
-	printf("FLAGS: 0\n");
-	printf("---> Hello % 4d %015d\n", number, number2);
+//	printf("FLAGS: 0\n");
+//	printf("---> Hello %04d %015d\n", number, number2);
+
+//	printf("FLAGS: blank\n");
+//	printf("---> Hello % 4d % 15d\n", number, number2);
+
+	printf("FLAGS: #\n");
+	printf("---> Hello %#15o\n", oct1);
 
 //                 099999999999
 //	printf("Percent \n");
@@ -856,8 +928,14 @@ int main()
 //	ft_printf("FLAGS: minus -6 -10\n");
 //	ft_printf("---> Hello %-2147483649d %-10d\n", number, number2);
 
-	ft_printf("FLAGS: 0\n");
-	ft_printf("---> Hello % 4d %015d\n", number, number2);
+//	ft_printf("FLAGS: 0\n");
+//	ft_printf("---> Hello %04d %015d\n", number, number2);
+
+//	ft_printf("FLAGS: blank\n");
+//	ft_printf("---> Hello % 4d % 15d\n", number, number2);
+
+	ft_printf("FLAGS: #\n");
+	ft_printf("---> Hello %#15o\n", oct1);
 
 //	ft_printf("Percent \n");
 //	ft_printf("---> Hello %% and %%\n");
