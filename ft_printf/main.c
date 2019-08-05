@@ -6,7 +6,7 @@
 /*   By: jmartyn- <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/06 22:09:38 by jmartyn-          #+#    #+#             */
-/*   Updated: 2019/08/05 22:47:36 by jmartyn-         ###   ########.fr       */
+/*   Updated: 2019/08/06 00:21:45 by jmartyn-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -644,8 +644,109 @@ void		print_flag_hash_blanks(const char *format, va_list list, int res)
 	va_end(cpy);
 }
 
+void		print_flag_hash_blanks_o(const char *format, va_list list, int res)
+{
+	int number;
+	int size;
+	va_list cpy;
+	va_copy(cpy, list);
+	size = 0;
+	number = va_arg(cpy, int);
+	while (number > 0)
+	{
+		size++;
+		number = number / 10;
+	}
+	res = res - size;
+	while (res > 0)
+	{
+		write(1, " ", 1);
+		res--;
+	}
+	va_end(cpy);
+}
 
-int		parse_flag_hash_oxX(const char *format, va_list list, int i)
+void		print_flag_hash_blanks_x(const char *format, va_list list, int res)
+{
+	int number;
+	int size;
+	va_list cpy;
+	va_copy(cpy, list);
+	size = 0;
+	number = va_arg(cpy, int);
+	while (number > 0)
+	{
+		size++;
+		number = number / 10;
+	}
+//	size = 9; ------------------------------------------------------- debug this shit, need to calculate size properly depemding on intx
+	printf("%d", number);
+	res = res - size - 1;
+	while (res > 0)
+	{
+		write(1, " ", 1);
+		res--;
+	}
+	va_end(cpy);
+}
+
+
+int		parse_flag_hash_x(const char *format, va_list list, int i)
+{
+	int count;
+	int res;
+	res = 0;
+	count = 2;
+	if (format[i] == '%')
+	{
+		if (format[i + 1] == '#')
+		{
+			while (format[i + count] >= 48 && format[i + count] <= 57)
+			{
+				res = res * 10;
+				res = res + ((int)format[i + count] - '0');
+				count++;
+			}
+			if (format[i + count] == 'x')
+				print_flag_hash_blanks_x(format, list, res);
+			if (format[i + count] == 'x')
+			{
+				write(1, "0x", 2);
+			}
+		}
+	}
+	return (count);
+}
+
+
+int		parse_flag_hash_o(const char *format, va_list list, int i)
+{
+	int count;
+	int res;
+	res = 0;
+	count = 2;
+	if (format[i] == '%')
+	{
+		if (format[i + 1] == '#')
+		{
+			while (format[i + count] >= 48 && format[i + count] <= 57)
+			{
+				res = res * 10;
+				res = res + ((int)format[i + count] - '0');
+				count++;
+			}
+			if (format[i + count] == 'o')
+				print_flag_hash_blanks_o(format, list, i);
+			if (format[i + count] == 'o')
+			{
+				write(1, "0", 1);
+			}
+		}
+	}
+	return (count);
+}
+
+int		parse_flag_hash(const char *format, va_list list, int i)
 {
 	int count;
 	int res;
@@ -662,16 +763,42 @@ int		parse_flag_hash_oxX(const char *format, va_list list, int i)
 				count++;
 			}
 			print_flag_hash_blanks(format, list, res);
-			if (format[i + count] == 'o')
+			if (format[i + count] == 'x')
 			{
-				write(1, "0", 1);
+				write(1, "0x", 2);
 			}
 		}
 	}
 	return (count);
 }
 
+int		check_flags_x(const char *format, va_list list, int i)
+{
+	int k;
+	k = 0;
+	if (format[i] == '%')
+	{
+		if (format[i + 1] == '#')
+		{
+			k = parse_flag_hash_x(format, list, i) - 1;
+		}
+	}
+	return (k);
+}
 
+int		check_flags_o(const char *format, va_list list, int i)
+{
+	int k;
+	k = 0;
+	if (format[i] == '%')
+	{
+		if (format[i + 1] == '#')
+		{
+			k = parse_flag_hash_o(format, list, i) - 1;
+		}
+	}
+	return (k);
+}
 
 int		check_flags(const char *format, va_list list, int i)
 {
@@ -702,10 +829,6 @@ int		check_flags(const char *format, va_list list, int i)
 		if (format[i + 1] == ' ')
 		{
 			k = parse_flag_blank(format, list, i) - 1;
-		}
-		if (format[i + 1] == '#')
-		{
-			k = parse_flag_hash_oxX(format, list, i) - 1;
 		}
 	}
 	return (k);
@@ -746,17 +869,33 @@ int		parse_arg(const char *format, va_list list, int i)
 int		parse_arg_o(const char *format, va_list list, int i)
 {
 	int k;
+
 	if (format[i + 1] == '#')
-		k = check_flags(format, list, i);
+		k  = check_flags_o(format, list, i);
+	else
+		return (0);
 	return (k);
 }
+
+int		parse_arg_x(const char *format, va_list list, int i)
+{
+	int k;
+
+	if (format[i + 1] == '#')
+		k = check_flags_x(format, list, i);
+	else
+		return (0);
+	return (k);
+}
+
 
 void    ft_printf(const char *format, ...)
 {
     int i;
 	va_list list;
-	int k;
-	int m;
+	int d;
+	int o;
+	int x;
 	int tmp;
 	int res;
 	i = 0;
@@ -766,16 +905,17 @@ void    ft_printf(const char *format, ...)
 	{
         if (format[i] == '%')
 		{
-			k = parse_arg(format, list, i);
-			m = parse_arg_o(format, list, i);
+			d = parse_arg(format, list, i);
+			o = parse_arg_o(format, list, i);
+			x = parse_arg_x(format, list, i);
 			if (format[i + 1] == 's')
 			{
 				handle_s(format, list);
 				i = i + 1;
 			}
-    		if (format[i + 1 + k] == 'd' || format[i + 1] == 'i')
+    		if (format[i + 1 + d] == 'd' || format[i + 1] == 'i')
 			{
-				handle_d(format, list, i, k);
+				handle_d(format, list, i, d);
 				if (format[i + 1] == '-')
 				{
 					res = print_flag_minus(format, list, i);
@@ -785,7 +925,7 @@ void    ft_printf(const char *format, ...)
 						res--;
 					}
 				}
-				i = i + 1 + k;	
+				i = i + 1 + d;	
 			}
 			if (format[i + 1] == 'c')
 			{
@@ -797,20 +937,20 @@ void    ft_printf(const char *format, ...)
 				handle_u(format, list, i);
 				i = i + 1;
 			}
-			if (format[i + 1] == 'x')
+			if (format[i + 1 + x] == 'x')
 			{
 				handle_x(format, list);
-				i = i + 1;
+				i = i + 1 + x;
 			}
 			if (format[i + 1] == 'X')
 			{
 				handle_X(format, list);
 				i = i + 1;
 			}
-			if (format[i + 1 + m] == 'o')
+			if (format[i + 1 + o] == 'o')
 			{
 				handle_o(format, list);
-				i = i + 1 + m;
+				i = i + 1 + o;
 			}
 			if (format[i + 1] == 'f')
 			{
@@ -894,7 +1034,7 @@ int main()
 //	printf("---> Hello % 4d % 15d\n", number, number2);
 
 	printf("FLAGS: #\n");
-	printf("---> Hello %#15o\n", oct1);
+	printf("---> Hello %#12x\n", intx);
 
 //                 099999999999
 //	printf("Percent \n");
@@ -935,7 +1075,7 @@ int main()
 //	ft_printf("---> Hello % 4d % 15d\n", number, number2);
 
 	ft_printf("FLAGS: #\n");
-	ft_printf("---> Hello %#15o\n", oct1);
+	ft_printf("---> Hello %#12x \n",intx);
 
 //	ft_printf("Percent \n");
 //	ft_printf("---> Hello %% and %%\n");
