@@ -6,7 +6,7 @@
 /*   By: jmartyn- <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/06 22:09:38 by jmartyn-          #+#    #+#             */
-/*   Updated: 2019/08/05 21:23:24 by jmartyn-         ###   ########.fr       */
+/*   Updated: 2019/08/05 21:27:22 by jmartyn-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -574,7 +574,51 @@ int		parse_flag_zero(const char *format, va_list list, int i)
 	print_flags_zero(format, list, res);
 	return (count);
 }
+// FLAG zero end
 
+// FLAG blank begin
+void		print_flags_blank(const char *format, va_list list, int res)
+{
+	int number;
+	int size;
+	va_list cpy;
+	va_copy(cpy, list);
+	size = 0;
+	number = va_arg(cpy, int);
+	while (number > 0)
+	{
+		size++;
+		number = number / 10;
+	}
+	res = res - size;
+	while (res > 0)
+	{
+		write(1, " ", 1);
+		res--;
+	}
+	va_end(cpy);
+}
+
+
+int		parse_flag_blank(const char *format, va_list list, int i)
+{
+	int res;
+	int k;
+	int count;
+	res = 0;
+	count = 2;
+	k = 1;
+
+	while (format[i + count] >= 48 && format[i + count] <= 57)
+	{
+		res = res * 10;
+		res = res + ((int)format[i + count] - '0');
+		count++;
+	}
+	print_flags_blank(format, list, res);
+	return (count);
+}
+// FLAG blank end
 
 
 int		check_flags(const char *format, va_list list, int i)
@@ -602,6 +646,10 @@ int		check_flags(const char *format, va_list list, int i)
 		if (format[i + 1] == '0')
 		{
 			k = parse_flag_zero(format, list, i) - 1;
+		}
+		if (format[i + 1] == ' ')
+		{
+			k = parse_flag_blank(format, list, i) - 1;
 		}
 	}
 	return (k);
@@ -774,7 +822,7 @@ int main()
 //	printf("---> Hello %-2147483649d %-10d\n", number, number2);
 
 	printf("FLAGS: 0\n");
-	printf("---> Hello %04d %015d\n", number, number2);
+	printf("---> Hello % 4d %015d\n", number, number2);
 
 //                 099999999999
 //	printf("Percent \n");
@@ -809,7 +857,7 @@ int main()
 //	ft_printf("---> Hello %-2147483649d %-10d\n", number, number2);
 
 	ft_printf("FLAGS: 0\n");
-	ft_printf("---> Hello %04d %015d\n", number, number2);
+	ft_printf("---> Hello % 4d %015d\n", number, number2);
 
 //	ft_printf("Percent \n");
 //	ft_printf("---> Hello %% and %%\n");
