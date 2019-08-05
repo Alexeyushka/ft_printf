@@ -6,7 +6,7 @@
 /*   By: jmartyn- <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/06 22:09:38 by jmartyn-          #+#    #+#             */
-/*   Updated: 2019/08/05 21:02:54 by jmartyn-         ###   ########.fr       */
+/*   Updated: 2019/08/05 21:23:24 by jmartyn-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -530,6 +530,50 @@ int		parse_flag_minus(const char *format, va_list list, int i)
 	}
 	return (count);
 }
+// FLAG minus end
+
+// FLAG Zero begin
+void		print_flags_zero(const char *format, va_list list, int res)
+{
+	int number;
+	int size;
+	va_list cpy;
+	va_copy(cpy, list);
+	size = 0;
+	number = va_arg(cpy, int);
+	while (number > 0)
+	{
+		size++;
+		number = number / 10;
+	}
+	res = res - size;
+	while (res > 0)
+	{
+		write(1, "0", 1);
+		res--;
+	}
+	va_end(cpy);
+}
+
+
+int		parse_flag_zero(const char *format, va_list list, int i)
+{
+	int res;
+	int k;
+	int count;
+	res = 0;
+	count = 2;
+	k = 1;
+
+	while (format[i + count] >= 48 && format[i + count] <= 57)
+	{
+		res = res * 10;
+		res = res + ((int)format[i + count] - '0');
+		count++;
+	}
+	print_flags_zero(format, list, res);
+	return (count);
+}
 
 
 
@@ -554,6 +598,10 @@ int		check_flags(const char *format, va_list list, int i)
 		if (format[i + 1] == '-')
 		{
 			k = parse_flag_minus(format, list, i) - 1;
+		}
+		if (format[i + 1] == '0')
+		{
+			k = parse_flag_zero(format, list, i) - 1;
 		}
 	}
 	return (k);
@@ -722,8 +770,11 @@ int main()
 //	printf("FLAGS: plus +6 +10\n");
 //	printf("---> Hello %+6d %+10d\n", number, number2);
 
-	printf("FLAGS: minus -6 -10\n");
-	printf("---> Hello %-2147483649d %-10d\n", number, number2);
+//	printf("FLAGS: minus -6 -10\n");
+//	printf("---> Hello %-2147483649d %-10d\n", number, number2);
+
+	printf("FLAGS: 0\n");
+	printf("---> Hello %04d %015d\n", number, number2);
 
 //                 099999999999
 //	printf("Percent \n");
@@ -754,8 +805,11 @@ int main()
 	ft_printf("FLAGS: plus +6 +10\n");
 	ft_printf("---> Hello %+6d %+10d\n", number, number2);
 */
-	ft_printf("FLAGS: minus -6 -10\n");
-	ft_printf("---> Hello %-2147483649d %-10d\n", number, number2);
+//	ft_printf("FLAGS: minus -6 -10\n");
+//	ft_printf("---> Hello %-2147483649d %-10d\n", number, number2);
+
+	ft_printf("FLAGS: 0\n");
+	ft_printf("---> Hello %04d %015d\n", number, number2);
 
 //	ft_printf("Percent \n");
 //	ft_printf("---> Hello %% and %%\n");
