@@ -6,7 +6,7 @@
 /*   By: jmartyn- <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/06 22:09:38 by jmartyn-          #+#    #+#             */
-/*   Updated: 2019/08/05 20:53:11 by jmartyn-         ###   ########.fr       */
+/*   Updated: 2019/08/05 21:02:54 by jmartyn-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -723,7 +723,7 @@ int main()
 //	printf("---> Hello %+6d %+10d\n", number, number2);
 
 	printf("FLAGS: minus -6 -10\n");
-	printf("---> Hello %-1d %-10d\n", number, number2);
+	printf("---> Hello %-2147483649d %-10d\n", number, number2);
 
 //                 099999999999
 //	printf("Percent \n");
@@ -755,7 +755,7 @@ int main()
 	ft_printf("---> Hello %+6d %+10d\n", number, number2);
 */
 	ft_printf("FLAGS: minus -6 -10\n");
-	ft_printf("---> Hello %-1d %-10d\n", number, number2);
+	ft_printf("---> Hello %-2147483649d %-10d\n", number, number2);
 
 //	ft_printf("Percent \n");
 //	ft_printf("---> Hello %% and %%\n");
