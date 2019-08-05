@@ -6,7 +6,7 @@
 /*   By: jmartyn- <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/06 22:09:38 by jmartyn-          #+#    #+#             */
-/*   Updated: 2019/08/01 23:45:23 by jmartyn-         ###   ########.fr       */
+/*   Updated: 2019/08/05 20:53:11 by jmartyn-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,7 @@
 #include <stdarg.h>
 #include <string.h>
 #include <stdlib.h> //atoi
+
 
 //begin of lib
 
@@ -473,6 +474,64 @@ int		parse_flag_plus(const char *format, va_list list, int i)
 }
 // Parse argument flags PLUS end
 
+// Parse argument flags MINUS begin
+
+int		print_flag_minus_corr(const char *format, va_list list, int res)
+{
+	int number;
+	int size;
+	va_list cpy;
+	va_copy(cpy, list);
+	size = 0;
+	number = va_arg(cpy, int);
+	while (number > 0)
+	{
+		size++;
+		number = number / 10;
+	}
+	va_end(cpy);
+	return (size);
+}
+
+
+int		print_flag_minus(const char *format, va_list list, int i)
+{
+	int res;
+	int k;
+	int count;
+	res = 0;
+	count = 2;
+	k = 1;
+
+	while (format[i + count] >= 48 && format[i + count] <= 57)
+	{
+		res = res * 10;
+		res = res + ((int)format[i + count] - '0');
+		count++;
+	}
+	res = res - print_flag_minus_corr(format, list, res);
+	return (res);
+}
+
+int		parse_flag_minus(const char *format, va_list list, int i)
+{
+	int res;
+	int k;
+	int count;
+	res = 0;
+	count = 2;
+	k = 1;
+
+	while (format[i + count] >= 48 && format[i + count] <= 57)
+	{
+		res = res * 10;
+		res = res + ((int)format[i + count] - '0');
+		count++;
+	}
+	return (count);
+}
+
+
 
 int		check_flags(const char *format, va_list list, int i)
 {
@@ -494,6 +553,7 @@ int		check_flags(const char *format, va_list list, int i)
 		}
 		if (format[i + 1] == '-')
 		{
+			k = parse_flag_minus(format, list, i) - 1;
 		}
 	}
 	return (k);
@@ -536,7 +596,8 @@ void    ft_printf(const char *format, ...)
     int i;
 	va_list list;
 	int k;
-
+	int tmp;
+	int res;
 	i = 0;
 	va_start(list, format);
 
@@ -553,6 +614,15 @@ void    ft_printf(const char *format, ...)
     		if (format[i + 1 + k] == 'd' || format[i + 1] == 'i')
 			{
 				handle_d(format, list, i, k);
+				if (format[i + 1] == '-')
+				{
+					res = print_flag_minus(format, list, i);
+					while (res > 0)
+					{
+						write(1, " ", 1);
+						res--;
+					}
+				}
 				i = i + 1 + k;
 			}
 			if (format[i + 1] == 'c')
@@ -627,60 +697,68 @@ int main()
 	float float3 = 1.546235;
     printf("=====================\n");
     printf("Printf output:\n");
-  	printf("String:\n");
+//  	printf("String:\n");
+/*
 	printf("---> Hello %s %s %d end\n", string2, string, number);
-//	
+	
 	printf("Integer d / i\n");
 	printf("---> Hello %d %i\n", number, number2);
-//
+
 	printf("Char\n");
 	printf("---> Hello %c %c\n", character, character2);
-//
+
 	printf("Unsigned int output u\n");
 	printf("---> Hello %u %u\n", unsignedint, unsignedint2);
-//
+
 	printf("x, X\n");
 	printf("---> Hello %x %X\n", intx, intX);
-//
+
 	printf("Octal\n");
 	printf("---> Hello %o %o\n", oct1, oct2);
-//
+
 	printf("Float\n");
 	printf("---> Hello %f %f %f\n", float1, float2, float3);
-	
-	printf("FLAGS: plus +6 +10\n");
-	printf("---> Hello %+6d %+10d\n", number, number2);
+*/	
+//	printf("FLAGS: plus +6 +10\n");
+//	printf("---> Hello %+6d %+10d\n", number, number2);
+
+	printf("FLAGS: minus -6 -10\n");
+	printf("---> Hello %-1d %-10d\n", number, number2);
+
 //                 099999999999
-	printf("Percent \n");
-	printf("---> Hello %% and %%\n");
+//	printf("Percent \n");
+//	printf("---> Hello %% and %%\n");
     printf("===================\n\n");
     printf("ft_printf output:\n");
-	ft_printf("String\n");
+/*	ft_printf("String\n");
 	ft_printf("---> Hello %s %s %d end\n", string2, string, number);
-//	
+	
 	ft_printf("Integer d / i\n");
 	ft_printf("---> Hello %d %i\n", number, number2);
-//	
+	
 	ft_printf("Char\n");
 	ft_printf("---> Hello %c %c\n", character, character2);
-//	
+	
 	ft_printf("Unsigned int\n");
 	ft_printf("---> Hello %u %u\n", unsignedint, unsignedint2);
-//
+
 	ft_printf("x, X\n");
 	ft_printf("---> Hello %x %X\n", intx, intX);
-//
+
 	ft_printf("Octal\n");
 	ft_printf("---> Hello %o %o\n", oct1, oct2);
-//
+
 	ft_printf("Float\n");
 	ft_printf("---> Hello %f %f %f\n", float1, float2, float3);
 
 	ft_printf("FLAGS: plus +6 +10\n");
 	ft_printf("---> Hello %+6d %+10d\n", number, number2);
+*/
+	ft_printf("FLAGS: minus -6 -10\n");
+	ft_printf("---> Hello %-1d %-10d\n", number, number2);
 
-	ft_printf("Percent \n");
-	ft_printf("---> Hello %% and %%\n");
+//	ft_printf("Percent \n");
+//	ft_printf("---> Hello %% and %%\n");
 
     return (0);
 }
