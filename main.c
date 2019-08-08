@@ -6,7 +6,7 @@
 /*   By: jmartyn- <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/06 22:09:38 by jmartyn-          #+#    #+#             */
-/*   Updated: 2019/08/05 21:27:22 by jmartyn-         ###   ########.fr       */
+/*   Updated: 2019/08/06 00:21:45 by jmartyn-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -620,6 +620,279 @@ int		parse_flag_blank(const char *format, va_list list, int i)
 }
 // FLAG blank end
 
+// FLAG hash begin
+
+void		print_flag_hash_blanks(const char *format, va_list list, int res)
+{
+	int number;
+	int size;
+	va_list cpy;
+	va_copy(cpy, list);
+	size = 0;
+	number = va_arg(cpy, int);
+	while (number > 0)
+	{
+		size++;
+		number = number / 10;
+	}
+	res = res - size - 1;
+	while (res > 0)
+	{
+		write(1, " ", 1);
+		res--;
+	}
+	va_end(cpy);
+}
+
+void		print_flag_hash_blanks_o(const char *format, va_list list, int res)
+{
+	int number;
+	int size;
+	va_list cpy;
+	va_copy(cpy, list);
+	size = 0;
+	number = va_arg(cpy, int);
+	while (number > 0)
+	{
+		size++;
+		number = number / 10;
+	}
+	res = res - size;
+	while (res > 0)
+	{
+		write(1, " ", 1);
+		res--;
+	}
+	va_end(cpy);
+}
+
+int	handle_x_flags(const char *format, va_list list)
+{
+	char hexadecimal[100];
+	long decimal;
+	long quotient;
+	long remainder;
+	int i;
+	int j;
+
+	i = 0;
+	j = 0;
+	va_list cpy;
+	va_copy(cpy, list);
+
+	decimal = va_arg(cpy, int);
+	quotient = decimal;
+	if (decimal < 0)
+		quotient = handle_negative_x(decimal);
+	if (quotient == 0)
+		i--;
+	while (quotient != 0)
+	{
+		remainder = quotient % 16;
+		if (remainder < 10)
+			hexadecimal[i] = 48 + remainder;
+		else
+			hexadecimal[i] = 55 + remainder;
+		i++;
+		quotient = quotient / 16;
+	}
+	write(1, "0x", 2);
+	handle_x(format, list);
+	va_end(cpy);
+	return (i);
+}
+
+int		print_flag_hash_blanks_x(const char *format, va_list list, int res)
+{
+	int size;
+
+	size = 0;
+	size = handle_x_flags(format, list) + 1;
+	res = res - size - 1;
+	while (res > 0)
+	{
+		write(1, " ", 1);
+		res--;
+	}
+	return (res);
+}
+
+int		print_flag_hash_blanks_x_hash_minus(const char *format, va_list list, int res)
+{
+	int size;
+
+	size = 0;
+	size = handle_x_flags(format, list) + 1;
+	printf("%d", size);
+	res = res - size;
+	printf("%d", res);
+	while (res > 0)
+		{
+			write(1, " ", 1);
+			res--;
+		}
+	return (res);
+}
+
+int		print_flag_hash_wo_blanks_x(const char *format, va_list list, int res)
+{
+	int size;
+
+	size = 0;
+	size = handle_x_flags(format, list) + 1;
+	res = res - size - 1;
+	return (res);
+}
+
+int		parse_flag_hash_x(const char *format, va_list list, int i)
+{
+	int count;
+	int res;
+	res = 0;
+	count = 2;
+	int k;
+	if (format[i] == '%')
+	{
+		if (format[i + 1] == '#')
+		{
+			while (format[i + count] >= 48 && format[i + count] <= 57)
+			{
+				res = res * 10;
+				res = res + ((int)format[i + count] - '0');
+				count++;
+			}
+			if (format[i + count] == 'x')
+				k = print_flag_hash_blanks_x(format, list, res);					
+				if (k == 0)
+					k = print_flag_hash_blanks_x(format, list, 1);
+			if (format[i + count] == 'x' && k != 0)
+			{
+				write(1, "0x", 2);
+			}
+			if (format[i + 2] == '-')
+			{
+				count++;
+				while (format[i + count] >= 48 && format[i + count] <= 57)
+				{
+					res = res * 10;
+					res = res + ((int)format[i + count] - '0');
+					count++;
+				}
+				if (format[i + count] == 'x')
+					k = print_flag_hash_blanks_x_hash_minus(format, list, res);
+					// if (k == 0)
+					// 	k = print_flag_hash_blanks_x(format, list, 1);
+				if (format[i + count] == 'x' && k != 0)
+				{
+					write(1, "0x", 2);
+				}
+			}
+
+		}
+		if (format[i + 1] == '-')
+		{
+			if (format[i + 2] == '#')
+				count++;
+			while (format[i + count] >= 48 && format[i + count] <= 57)
+			{
+				res = res * 10;
+				res = res + ((int)format[i + count] - '0');
+				count++;
+			}
+			if (format[i + count] == 'x')
+				k = print_flag_hash_wo_blanks_x(format, list, 2);
+				if (k == 1)
+					k = print_flag_hash_blanks_x(format, list, 1);	
+			if (format[i + count] == 'x' && k != 0)
+			{
+				write(1, "0x", 2);
+			}
+		}
+	}
+	return (count);
+}
+
+
+int		parse_flag_hash_o(const char *format, va_list list, int i)
+{
+	int count;
+	int res;
+	res = 0;
+	count = 2;
+	if (format[i] == '%')
+	{
+		if (format[i + 1] == '#')
+		{
+			while (format[i + count] >= 48 && format[i + count] <= 57)
+			{
+				res = res * 10;
+				res = res + ((int)format[i + count] - '0');
+				count++;
+			}
+			if (format[i + count] == 'o')
+				print_flag_hash_blanks_o(format, list, i);
+			if (format[i + count] == 'o')
+			{
+				write(1, "0", 1);
+			}
+		}
+	}
+	return (count);
+}
+
+int		parse_flag_hash(const char *format, va_list list, int i)
+{
+	int count;
+	int res;
+	res = 0;
+	count = 2;
+	if (format[i] == '%')
+	{
+		if (format[i + 1] == '#')
+		{
+			while (format[i + count] >= 48 && format[i + count] <= 57)
+			{
+				res = res * 10;
+				res = res + ((int)format[i + count] - '0');
+				count++;
+			}
+			print_flag_hash_blanks(format, list, res);
+			if (format[i + count] == 'x')
+			{
+				write(1, "0x", 2);
+			}
+		}
+	}
+	return (count);
+}
+
+int		check_flags_x(const char *format, va_list list, int i)
+{
+	int k;
+	k = 0;
+	if (format[i] == '%')
+	{
+		if (format[i + 1] == '#' || format[i + 1] == '-')
+		{
+			k = parse_flag_hash_x(format, list, i) - 1;
+		}
+	}
+	return (k);
+}
+
+int		check_flags_o(const char *format, va_list list, int i)
+{
+	int k;
+	k = 0;
+	if (format[i] == '%')
+	{
+		if (format[i + 1] == '#')
+		{
+			k = parse_flag_hash_o(format, list, i) - 1;
+		}
+	}
+	return (k);
+}
 
 int		check_flags(const char *format, va_list list, int i)
 {
@@ -677,7 +950,8 @@ int		parse_arg(const char *format, va_list list, int i)
 				format[i + 1] == 'X' ||
 				format[i + 1] == 'o' ||
 				format[i + 1] == 'f' ||
-				format[i + 1] == '%'))
+				format[i + 1] == '%' ||
+				format[i + 1] == '#'))
 	{
 		return(k);
 	}
@@ -686,12 +960,36 @@ int		parse_arg(const char *format, va_list list, int i)
 	return (k);
 }
 
+int		parse_arg_o(const char *format, va_list list, int i)
+{
+	int k;
+
+	if (format[i + 1] == '#')
+		k  = check_flags_o(format, list, i);
+	else
+		return (0);
+	return (k);
+}
+
+int		parse_arg_x(const char *format, va_list list, int i)
+{
+	int k;
+
+	if (format[i + 1] == '#' || format[i + 1] == '-')
+		k = check_flags_x(format, list, i);
+	else
+		return (0);
+	return (k);
+}
+
 
 void    ft_printf(const char *format, ...)
 {
     int i;
 	va_list list;
-	int k;
+	int d;
+	int o;
+	int x;
 	int tmp;
 	int res;
 	i = 0;
@@ -701,15 +999,17 @@ void    ft_printf(const char *format, ...)
 	{
         if (format[i] == '%')
 		{
-			k = parse_arg(format, list, i);
+			d = parse_arg(format, list, i);
+			o = parse_arg_o(format, list, i);
+			x = parse_arg_x(format, list, i);
 			if (format[i + 1] == 's')
 			{
 				handle_s(format, list);
 				i = i + 1;
 			}
-    		if (format[i + 1 + k] == 'd' || format[i + 1] == 'i')
+    		if (format[i + 1 + d] == 'd' || format[i + 1] == 'i')
 			{
-				handle_d(format, list, i, k);
+				handle_d(format, list, i, d);
 				if (format[i + 1] == '-')
 				{
 					res = print_flag_minus(format, list, i);
@@ -719,7 +1019,7 @@ void    ft_printf(const char *format, ...)
 						res--;
 					}
 				}
-				i = i + 1 + k;
+				i = i + 1 + d;	
 			}
 			if (format[i + 1] == 'c')
 			{
@@ -731,20 +1031,20 @@ void    ft_printf(const char *format, ...)
 				handle_u(format, list, i);
 				i = i + 1;
 			}
-			if (format[i + 1] == 'x')
+			if (format[i + 1 + x] == 'x')
 			{
 				handle_x(format, list);
-				i = i + 1;
+				i = i + 1 + x;
 			}
 			if (format[i + 1] == 'X')
 			{
 				handle_X(format, list);
 				i = i + 1;
 			}
-			if (format[i + 1] == 'o')
+			if (format[i + 1 + o] == 'o')
 			{
 				handle_o(format, list);
-				i = i + 1;
+				i = i + 1 + o;
 			}
 			if (format[i + 1] == 'f')
 			{
@@ -784,9 +1084,9 @@ int main()
 	unsignedint = -0;
 	//int intx = -2147483648;
 	//unsigned long long int intX = 18446744073709551615;
-	int intx = -112;
-	int intX = -20;
-	int oct1 = 1000001;
+	int intx = 1212121;
+	int intX = 14;
+	int oct1 = 10;
 	int oct2 = -2147483647;
 	float float1 = -1432423320.1435783543;
 	float float2 = 43.0;
@@ -821,8 +1121,14 @@ int main()
 //	printf("FLAGS: minus -6 -10\n");
 //	printf("---> Hello %-2147483649d %-10d\n", number, number2);
 
-	printf("FLAGS: 0\n");
-	printf("---> Hello % 4d %015d\n", number, number2);
+//	printf("FLAGS: 0\n");
+//	printf("---> Hello %04d %015d\n", number, number2);
+
+//	printf("FLAGS: blank\n");
+//	printf("---> Hello % 4d % 15d\n", number, number2);
+
+	printf("FLAGS: #\n");
+	printf("---> Hello %20x %-#20x %#-20x %#20x \n", intx, intx, intx, intx);
 
 //                 099999999999
 //	printf("Percent \n");
@@ -856,8 +1162,14 @@ int main()
 //	ft_printf("FLAGS: minus -6 -10\n");
 //	ft_printf("---> Hello %-2147483649d %-10d\n", number, number2);
 
-	ft_printf("FLAGS: 0\n");
-	ft_printf("---> Hello % 4d %015d\n", number, number2);
+//	ft_printf("FLAGS: 0\n");
+//	ft_printf("---> Hello %04d %015d\n", number, number2);
+
+//	ft_printf("FLAGS: blank\n");
+//	ft_printf("---> Hello % 4d % 15d\n", number, number2);
+
+	ft_printf("FLAGS: #\n");
+	ft_printf("---> Hello %20x %-#20x %#-20x %#20x \n", intx, intx, intx, intx);
 
 //	ft_printf("Percent \n");
 //	ft_printf("---> Hello %% and %%\n");
