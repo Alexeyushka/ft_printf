@@ -16,6 +16,11 @@
 #include <string.h>
 #include <stdlib.h> //atoi
 
+typedef struct parser
+{
+	int printed;
+} structparser_x;
+
 
 //begin of lib
 
@@ -124,7 +129,7 @@ void	handle_x_continue(int j, int i, char *hexadecimal)
 	}
 }
 
-void	handle_x(const char *format, va_list list)
+void	handle_x(const char *format, va_list list, struct parser parsed_x)
 {
 	char hexadecimal[100];
 	long decimal;
@@ -135,6 +140,11 @@ void	handle_x(const char *format, va_list list)
 	
 	i = 0;
 	j = 0;
+
+	if (parsed_x.printed == 1)
+		parsed_x.printed = 0;
+	else
+	{
 	decimal = va_arg(list, int);
 	quotient = decimal;
 	if (decimal < 0)
@@ -152,6 +162,7 @@ void	handle_x(const char *format, va_list list)
 		quotient = quotient / 16;
 	}
 	handle_x_continue(j, i, hexadecimal);
+	}
 }
 // handle x end
 
@@ -679,7 +690,7 @@ int	handle_x_flags(const char *format, va_list list)
 	j = 0;
 	va_list cpy;
 	va_copy(cpy, list);
-
+	struct parser parsed;
 	decimal = va_arg(cpy, int);
 	quotient = decimal;
 	if (decimal < 0)
@@ -697,7 +708,7 @@ int	handle_x_flags(const char *format, va_list list)
 		quotient = quotient / 16;
 	}
 	write(1, "0x", 2);
-	handle_x(format, list);
+	handle_x(format, list, parsed);
 	va_end(cpy);
 	return (i);
 }
@@ -974,7 +985,6 @@ int		parse_arg_o(const char *format, va_list list, int i)
 int		parse_arg_x(const char *format, va_list list, int i)
 {
 	int k;
-
 	if (format[i + 1] == '#' || format[i + 1] == '-')
 		k = check_flags_x(format, list, i);
 	else
@@ -994,7 +1004,7 @@ void    ft_printf(const char *format, ...)
 	int res;
 	i = 0;
 	va_start(list, format);
-
+	struct parser parsed_x;
 	while (format[i] != '\0')
 	{
         if (format[i] == '%')
@@ -1002,6 +1012,10 @@ void    ft_printf(const char *format, ...)
 			d = parse_arg(format, list, i);
 			o = parse_arg_o(format, list, i);
 			x = parse_arg_x(format, list, i);
+			if (x != 0)
+			{
+				parsed_x.printed = 1;
+			}
 			if (format[i + 1] == 's')
 			{
 				handle_s(format, list);
@@ -1033,7 +1047,7 @@ void    ft_printf(const char *format, ...)
 			}
 			if (format[i + 1 + x] == 'x')
 			{
-				handle_x(format, list);
+				handle_x(format, list, parsed_x);
 				i = i + 1 + x;
 			}
 			if (format[i + 1] == 'X')
