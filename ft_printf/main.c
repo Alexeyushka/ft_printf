@@ -874,12 +874,111 @@ int		print_flag_hash_blanks_x_hash_minus(const char *format, va_list list, int r
 	return (res);
 }
 
+int	handle_x_flags_wo_blanks_print(const char *format, va_list list)
+{
+	char hexadecimal[100];
+	long decimal;
+	long quotient;
+	long remainder;
+	int i;
+	int j;
+
+	i = 0;
+	j = 0;
+	va_list cpy;
+	va_copy(cpy, list);
+	struct parser parsed;
+	parsed.printed = 0;
+	decimal = va_arg(cpy, int);
+	quotient = decimal;
+	if (decimal < 0)
+	{
+		quotient = handle_negative_x(decimal);
+		i--;
+	}
+	if (quotient == 0)
+		i--;
+	while (quotient != 0)
+	{
+		remainder = quotient % 16;
+		if (remainder < 10)
+			hexadecimal[i] = 48 + remainder;
+		else
+			hexadecimal[i] = 55 + remainder;
+		i++;
+		quotient = quotient / 16;
+	}
+	handle_x(format, list, parsed);
+	va_end(cpy);
+	return (i);
+}
+
 int		print_flag_hash_wo_blanks_x(const char *format, va_list list, int res)
 {
 	int size;
 
 	size = 0;
-	size = handle_x_flags(format, list) + 1;
+
+	size = handle_x_flags_wo_blanks_print(format, list) - 1;
+	if (res == size)
+	{
+		write(1, " ", 1);
+	}
+	if (size == -2)
+		size = 0;
+	res = res - size - 1;
+	while (res > 0)
+	{
+		write(1, " ", 1);
+		res--;
+	}
+	res = 1;
+	return (res);
+}
+
+int	handle_x_flags_wo_blanks_print_w_hash(const char *format, va_list list)
+{
+	char hexadecimal[100];
+	long decimal;
+	long quotient;
+	long remainder;
+	int i;
+	int j;
+
+	i = 0;
+	j = 0;
+	va_list cpy;
+	va_copy(cpy, list);
+	struct parser parsed;
+	parsed.printed = 0;
+	decimal = va_arg(cpy, int);
+	quotient = decimal;
+	if (decimal < 0)
+		quotient = handle_negative_x(decimal);
+	if (quotient == 0)
+		i--;
+	while (quotient != 0)
+	{
+		remainder = quotient % 16;
+		if (remainder < 10)
+			hexadecimal[i] = 48 + remainder;
+		else
+			hexadecimal[i] = 55 + remainder;
+		i++;
+		quotient = quotient / 16;
+	}
+	write(1, "0x", 2);
+	handle_x(format, list, parsed);
+	va_end(cpy);
+	return (i);
+}
+
+int		print_flag_hash_wo_blanks_x_w_hash(const char *format, va_list list, int res)
+{
+	int size;
+
+	size = 0;
+	size = handle_x_flags_wo_blanks_print_w_hash(format, list) + 1;
 	res = res - size - 1;
 	while (res > 0)
 	{
@@ -895,8 +994,12 @@ int		parse_flag_hash_x(const char *format, va_list list, int i)
 {
 	int count;
 	int res;
+	int hash;
+	hash = 0;
 	res = 0;
 	count = 2;
+	int minus;
+	minus = 0;
 	int k;
 	if (format[i] == '%')
 	{
@@ -918,6 +1021,7 @@ int		parse_flag_hash_x(const char *format, va_list list, int i)
 			}
 			if (format[i + 2] == '-')
 			{
+				minus = 1;
 				count++;
 				while (format[i + count] >= 48 && format[i + count] <= 57)
 				{
@@ -926,9 +1030,18 @@ int		parse_flag_hash_x(const char *format, va_list list, int i)
 					count++;
 				}
 				if (format[i + count] == 'x')
-					k = print_flag_hash_blanks_x_hash_minus(format, list, res);
+				{	
+					if (minus == 0)
+						k = print_flag_hash_blanks_x_hash_minus(format, list, res);
+					if (minus == 1)
+					{
+						k = print_flag_hash_blanks_x_hash_minus(format, list, res);
+						k = 0;
+						minus = 0;
+					}
 					//if (k == 0)
 						//k = print_flag_hash_blanks_x(format, list, 1);
+				}
 				if (format[i + count] == 'x' && k != 0)
 				{
 					write(1, "0x", 2);
@@ -939,7 +1052,10 @@ int		parse_flag_hash_x(const char *format, va_list list, int i)
 		if (format[i + 1] == '-')
 		{
 			if (format[i + 2] == '#')
+			{	
 				count++;
+				hash = 1;
+			}
 			while (format[i + count] >= 48 && format[i + count] <= 57)
 			{
 				res = res * 10;
@@ -948,12 +1064,18 @@ int		parse_flag_hash_x(const char *format, va_list list, int i)
 			}
 			if (format[i + count] == 'x')
 			{	
-				k = print_flag_hash_wo_blanks_x(format, list, res);
+				if (hash == 0)
+					k = print_flag_hash_wo_blanks_x(format, list, res);
+				if (hash == 1)
+				{	
+					k = print_flag_hash_wo_blanks_x_w_hash(format, list, res);
+					hash = 0;
+				}
 			}
-			printf("k = %d", k);	
 			if (k == 1)
+			{	
 				return (count);
-				//k = print_flag_hash_blanks_x(format, list, 1);	
+			}	//k = print_flag_hash_blanks_x(format, list, 1);	
 			if (format[i + count] == 'x' && k != 0)
 			{
 				write(1, "0x", 2);
@@ -1139,7 +1261,10 @@ int	handle_x_print_only_blanks(const char *format, va_list list)
 	decimal = va_arg(cpy, int);
 	quotient = decimal;
 	if (decimal < 0)
+	{
 		quotient = handle_negative_x(decimal);
+		i++;
+	}
 	if (quotient == 0)
 		i--;
 	while (quotient != 0)
@@ -1174,6 +1299,8 @@ int		print_blanks_for_x(const char *format, va_list list, int i)
 		count++;
 	}
 	size = handle_x_print_only_blanks(format, list);
+	if (size == -1)
+		size = 1;
 	while (res - size > 0)
 	{
 		write(1, " ", 1);
@@ -1218,7 +1345,7 @@ void    ft_printf(const char *format, ...)
 			d = parse_arg(format, list, i);
 			o = parse_arg_o(format, list, i);
 			x = parse_arg_x(format, list, i);
-			printf("%d, %d, %d", d, o, x);
+			//printf("%d, %d, %d", d, o, x);
 			if (x != 0)
 			{
 				parsed_x.printed = 1;
@@ -1305,7 +1432,7 @@ int main()
 	unsignedint = -0;
 	//int intx = -2147483648;
 	//unsigned long long int intX = 18446744073709551615;
-	int intx = 1212121;
+	int intx = 0;
 	int intX = 14;
 	int oct1 = 10;
 	int oct2 = -2147483647;
@@ -1349,7 +1476,7 @@ int main()
 //	printf("---> Hello % 4d % 15d\n", number, number2);
 
 	printf("FLAGS: #\n");
-	printf("---> Hello %7x %-7x %-#7x %#-7x %20x %-20x %#20x %-#20x %#-20x 1\n", intx, intx, intx, intx, intx, intx, intx, intx, intx);
+	printf("---> Hello %7x xxxx %-7x xxxx 1 %-#7x xxxx %#-7x xxxx %20x xxxx %-20x xxxx 1 %#20x xxxx %-#20x xxxx %#-20x 1\n", intx, intx, intx, intx, intx, intx, intx, intx, intx);
 
 //                 099999999999
 //	printf("Percent \n");
@@ -1390,7 +1517,7 @@ int main()
 //	ft_printf("---> Hello % 4d % 15d\n", number, number2);
 
 	ft_printf("FLAGS: #\n");
-	ft_printf("---> Hello %7x %-7x %-#7x %#-7x %20x %-20x %#20x %-#20x %#-20x 1\n", intx, intx, intx, intx, intx, intx, intx, intx, intx);
+	ft_printf("---> Hello %7x xxxx %-7x xxxx 1 %-#7x xxxx %#-7x xxxx %20x xxxx %-20x xxxx 1 %#20x xxxx %-#20x xxxx %#-20x 1\n", intx, intx, intx, intx, intx, intx, intx, intx, intx);
 
 //	ft_printf("Percent \n");
 //	ft_printf("---> Hello %% and %%\n");
