@@ -785,6 +785,8 @@ void	handle_x_blanks(const char *format, va_list list, struct parser parsed_x)
 		i++;
 		quotient = quotient / 16;
 	}
+		if (decimal != 0)
+		write(1, "0x", 2);
 	handle_x_continue_blanks(j, i, hexadecimal);
 }
 
@@ -1025,7 +1027,6 @@ int	handle_x_flags_blanks_print_zero(const char *format, va_list list)
 	}
 	if (decimal != 0)
 		write(1, "0x", 2);
-	//handle_x_blanks(format, list, parsed);
 	va_end(cpy);
 	return (i);
 }
@@ -1683,27 +1684,116 @@ int		flag_hash_only(const char *format, va_list list, int i, struct parser parse
 
 //	==========================      flag hash_and_zero begin     =============================
 
+void	flag_hash_and_zero_print_continue(int j, int i, char *hexadecimal)
+{
+	j = i - 1;
+	char tmp;
+	while (j >= 0)
+	{
+		if (is_upper(hexadecimal[j]) == 1)
+		{
+			tmp = hexadecimal[j];
+			tmp = tmp + 32;
+			write(1, &tmp, 1);
+			j--;
+		}
+		if (is_upper(hexadecimal[j]) == 0)
+		{
+			tmp = hexadecimal[j];
+			write(1, &tmp, 1);
+			j--;
+		}
+		if (is_digit(hexadecimal[j] == 1))
+		{
+			
+			write(1, &hexadecimal[j], 1);
+			j--;
+		}
+	}
+}
+
+void	flag_hash_and_zero_print(const char *format, va_list list, struct parser parsed_x)
+{
+	char hexadecimal[100];
+	long decimal;
+	long quotient;
+	long remainder;
+	int i;
+	int j;
+	
+	i = 0;
+	j = 0;
+
+	decimal = va_arg(list, int);
+	quotient = decimal;
+	if (decimal < 0)
+		quotient = handle_negative_x(decimal);
+	if (quotient == 0)
+		write(1, "0", 1);
+	while (quotient != 0)
+	{
+		remainder = quotient % 16;
+		if (remainder < 10)
+			hexadecimal[i] = 48 + remainder;
+		else
+			hexadecimal[i] = 55 + remainder;
+		i++;
+		quotient = quotient / 16;
+	}
+		if (decimal != 0)
+		write(1, "0x", 2);
+	flag_hash_and_zero_print_continue(j, i, hexadecimal);
+}
+
 int		flag_hash_and_zero(const char *format, va_list list, int res, struct parser parsed)
 {
-	int size;
-	size = parsed.size;
-	//size = handle_x_flags_blanks(format, list) + 1;
-	res = res - size;
-	handle_x_flags_blanks_print_zero(format, list);
-	//if (res == 1)
-	//	res = 0;
-	//printf("res %d, parse.size %d", res, parsed.size);
-
-	while (res - 1 > 0)
-	{
-		write(1, "0", 1);
-		res--;
-	}
-	handle_x_blanks(format, list, parsed);
+	res = res - parsed.size;
+	flag_hash_and_zero_print(format, list, parsed);
 	return (res);
 }
 
 // 	--------------------------       flag hash_and_zero end       -----------------------------
+
+//	==========================      flag zero_and_hash begin     =============================
+
+void	flag_zero_and_hash_print(const char *format, va_list list, struct parser parsed_x)
+{
+	char hexadecimal[100];
+	long decimal;
+	long quotient;
+	long remainder;
+	int i;
+	int j;
+	
+	i = 0;
+	j = 0;
+
+	decimal = va_arg(list, int);
+	quotient = decimal;
+	if (decimal != 0)
+	{
+	if (decimal < 0)
+		quotient = handle_negative_x(decimal);
+
+	while (quotient != 0)
+	{
+		remainder = quotient % 16;
+		if (remainder < 10)
+			hexadecimal[i] = 48 + remainder;
+		else
+			hexadecimal[i] = 55 + remainder;
+		i++;
+		quotient = quotient / 16;
+	}
+	handle_x_continue(j, i, hexadecimal);
+	}
+	else
+		write(1, "0", 1);
+}
+
+
+//	-------------------------       flag zero_and_hash end       -----------------------------
+
 
 
 int		print_flags(const char *format, va_list list, int i, struct parser parsed)
@@ -1722,13 +1812,21 @@ int		print_flags(const char *format, va_list list, int i, struct parser parsed)
 			count = 1;
 		parsed.hash_only = 0;
 	}
+
 //	hash_and_zero
 	if (parsed.hash_and_zero == 1)
 	{
 		res = flag_count_res(format, (i + 2));
 		count = flag_hash_and_zero(format, list, res, parsed) + parsed.size + 2;
 		parsed.hash_and_zero = 0;
-		printf("res %d, count %d", res, count);
+	}
+
+//	zero_and_hash
+	if (parsed.zero_and_hash == 1)
+	{
+		flag_hash_and_zero(format, list, res, parsed);
+		parsed.zero_and_hash = 0;
+		count = 2;
 	}
 	return (count);
 }
@@ -1740,6 +1838,7 @@ int		parse_arg_x_init(const char *format, va_list list, int i)
 	struct parser parsed;
 	parsed.hash_only = 0;
 	parsed.hash_and_zero = 0;
+	parsed.zero_and_hash = 0;
 
 	if (format[i + 1] == '#' && format[i + 2] == 'x')
 		parsed.hash_only = 1;
@@ -1877,7 +1976,7 @@ int main()
 	unsignedint = -0;
 	//int intx = -2147483648;
 	//unsigned long long int intX = 18446744073709551615;
-	int intx = -1000;
+	int intx = -1;
 	int intX = 14;
 	int oct1 = 10;
 	int oct2 = -2147483647;
@@ -1922,7 +2021,7 @@ int main()
 
 	printf("FLAGS: #\n");
 //	printf("---> Hello %#x xxxx %#0x xxxx 1 %0#x xxxx %#010x xxxx %#10x xxxx %#-x xxxx %#-10x xxxx %-#x xxxx 1 %-#10x xxxx %-10x xxxx %10x xxxx %010x \n", intx, intx, intx, intx, intx, intx, intx, intx, intx, intx, intx, intx);
-	printf("---> Hello --- %#0x ---" , intx);
+	printf("---> Hello --- %#x --- %#0x --- %0#x ---" ,intx, intx, intx);
 //                 099999999999
 //	printf("Percent \n");
 //	printf("---> Hello %% and %%\n");
@@ -1962,7 +2061,7 @@ int main()
 //	ft_printf("---> Hello % 4d % 15d\n", number, number2);
 
 //	ft_printf("FLAGS: #\n");
-	ft_printf("---> Hello --- %#0x ---" , intx);
+	ft_printf("---> Hello --- %#x --- %#0x --- %0#x ---" ,intx, intx, intx);
 	printf("\n");
 //	ft_printf("---> Hello %015x xxxx %-7x xxxx 1 %-#7x xxxx %#-7x xxxx %#07x xxxx %#09x xxxx %020x xxxx %-20x xxxx 1 %#020x xxxx %-#20x xxxx %#-20x 1\n", intx, intx, intx, intx, intx, intx, intx, intx, intx, intx, intx);
 
