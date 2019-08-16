@@ -1795,6 +1795,16 @@ void	flag_zero_and_hash_print(const char *format, va_list list, struct parser pa
 //	-------------------------       flag zero_and_hash end       -----------------------------
 
 
+//	==========================      flag zero_and_hash_and_digit begin     =============================
+
+int 	flag_zero_and_hash_and_digit(const char *format, va_list list, int res, struct parser parsed)
+{
+
+}
+
+//	-------------------------       flag zero_and_hash_and_digit end       -----------------------------
+
+
 
 int		print_flags(const char *format, va_list list, int i, struct parser parsed)
 {
@@ -1827,6 +1837,12 @@ int		print_flags(const char *format, va_list list, int i, struct parser parsed)
 		flag_hash_and_zero(format, list, res, parsed);
 		parsed.zero_and_hash = 0;
 		count = 2;
+	}
+
+//	zero_and_hash_and_digit
+	if (parsed.zero_and_hash_and_digit == 1)
+	{
+		flag_zero_and_hash_and_digit(format, list, res, parsed);
 	}
 	return (count);
 }
