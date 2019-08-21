@@ -549,10 +549,12 @@ int		parse_flag_minus(const char *format, va_list list, int i)
 
 	while (format[i + count] >= 48 && format[i + count] <= 57)
 	{
+		printf("== res: %d", res);
 		res = res * 10;
 		res = res + ((int)format[i + count] - '0');
 		count++;
 	}
+	printf("count %d, res %d", count, res);
 	return (count);
 }
 // FLAG minus end
@@ -1990,9 +1992,9 @@ int		flag_hash_and_digit(const char *format, va_list list, int i, struct parser 
 
 	zero_blanks = count_zero_blanks(format, list, i);
 	size = flag_hash_and_digit_blanks(format, list);
-	res = flag_count_res(format, (i + 2)) - zero_blanks;
+	res = flag_count_res(format, (i + 2));
 	digits = ft_numlen(res);
-	while (res - size > 0)
+	while (res - size - zero_blanks > 0)
 	{
 		write(1, " ", 1);
 		res--;
@@ -2049,7 +2051,10 @@ void	flag_hash_and_minus_continue(const char *format, va_list list)
 int		flag_hash_and_minus(const char *format, va_list list, int i, struct parser parsed)
 {
 	int result;
+	// int size;
+	// int res;
 
+	//size = flag_count_size(format, list, parsed);
 	result = 3;
 	flag_hash_and_minus_continue(format, list);
 	return (result);
@@ -2139,10 +2144,10 @@ int		flag_hash_and_minus_and_digit(const char *format, va_list list, int i, stru
 
 	zero_blanks = count_zero_blanks(format, list, i);
 	size = flag_hash_and_minus_and_digit_blanks(format, list);
-	res = flag_count_res(format, (i + 3)) - zero_blanks;
+	res = flag_count_res(format, (i + 3));
 	digits = ft_numlen(res);
 	flag_hash_and_minus_and_digit_print(format, list, parsed);
-	while (res - size > 0)
+	while (res - size  - zero_blanks > 0)
 	{
 		write(1, " ", 1);
 		res--;
@@ -2232,10 +2237,10 @@ int		flag_minus_and_digit(const char *format, va_list list, int i, struct parser
 
 	zero_blanks = count_zero_blanks(format, list, i);
 	size = flag_minus_and_digit_blanks(format, list);
-	res = flag_count_res(format, (i + 2)) - zero_blanks;
+	res = flag_count_res(format, (i + 2));
 	digits = ft_numlen(res);
 	flag_minus_and_digit_print(format, list, parsed);
-	while (res - size > 0)
+	while (res - size  - zero_blanks > 0)
 	{
 		write(1, " ", 1);
 		res--;
@@ -2332,7 +2337,6 @@ int		flag_minus_and_hash_and_digit(const char *format, va_list list, int i, stru
 	res = flag_count_res(format, (i + 2)) - zero_blanks;
 	digits = ft_numlen(res);
 	flag_minus_and_digit_print(format, list, parsed);
-	printf("zero_blanks = %d, size = %d, res = %d, digits = %d", zero_blanks, size, res, digits);
 	while (res - size > 0)
 	{
 		write(1, " ", 1);
@@ -2398,11 +2402,12 @@ int		print_flags(const char *format, va_list list, int i, struct parser parsed)
 		count = flag_hash_and_minus(format, list, i, parsed) - 1;
 		parsed.hash_and_minus = 0;
 	}
-//	hash_and_minus_and_digit
-	if (parsed.hash_and_minus_and_digit == 1)
+//	hash_and_minus_and_digit --- and --- minus_and_hash_and_digit
+	if (parsed.hash_and_minus_and_digit == 1 || parsed.minus_and_hash_and_digit == 1)
 	{
-		count = flag_hash_and_minus_and_digit(format, list, i, parsed) + 2;		
+		count = flag_hash_and_minus_and_digit(format, list, i, parsed) + 2;
 		parsed.hash_and_minus_and_digit = 0;
+		parsed.minus_and_hash_and_digit = 0;
 	}
 
 //	minus_and_hash
@@ -2427,12 +2432,6 @@ int		print_flags(const char *format, va_list list, int i, struct parser parsed)
 		parsed.zero_and_digit = 0;
 	}
 
-//	minus_and_hash_and_digit
-	if(parsed.minus_and_hash_and_digit == 1)
-	{
-		count = flag_hash_and_minus_and_digit(format, list, i, parsed) + 2; //debug below size
-		parsed.minus_and_hash_and_digit = 0;
-	}
 	return (count);
 
 
@@ -2589,7 +2588,7 @@ int main()
 	unsignedint = -0;
 	//int intx = -2147483648;
 	//unsigned long long int intX = 18446744073709551615;
-	int intx = -123;
+	int intx = -10000;
 	int intX = 14;
 	int oct1 = 10;
 	int oct2 = -2147483647;
@@ -2620,21 +2619,21 @@ int main()
 	printf("Float\n");
 	printf("---> Hello %f %f %f\n", float1, float2, float3);
 */	
-//	printf("FLAGS: plus +6 +10\n");
-//	printf("---> Hello %+6d %+10d\n", number, number2);
+	printf("FLAGS: plus +6 +10\n");
+	printf("---> Hello %+6d %+10d\n", number, number2);
 
-//	printf("FLAGS: minus -6 -10\n");
-//	printf("---> Hello %-2147483649d %-10d\n", number, number2);
+	printf("FLAGS: minus -6 -10\n");
+	printf("---> Hello %-21d %-10d\n", number, number2);
 
-//	printf("FLAGS: 0\n");
-//	printf("---> Hello %04d %015d\n", number, number2);
+	printf("FLAGS: 0\n");
+	printf("---> Hello %04d %015d\n", number, number2);
 
-//	printf("FLAGS: blank\n");
-//	printf("---> Hello % 4d % 15d\n", number, number2);
+	printf("FLAGS: blank\n");
+	printf("---> Hello % 4d % 15d\n", number, number2);
 
 	printf("FLAGS: #\n");
 //	printf("---> Hello %#x xxxx %#0x xxxx 1 %0#x xxxx %#010x xxxx %#10x xxxx %#-x xxxx %#-10x xxxx %-#x xxxx 1 %-#10x xxxx %-10x xxxx %10x xxxx %010x \n", intx, intx, intx, intx, intx, intx, intx, intx, intx, intx, intx, intx);
-	printf("---> Hello --- %#x --- %#0x --- %0#x --- %0#15x --- %#17x --- %#017x --- %#-x --- %#-17x --- %-#x --- %-8x --- %04x --- %-#11x ---", intx, intx, intx,  intx, intx, intx, intx, intx, intx ,intx, intx, intx);
+//	printf("---> Hello --- %#x --- %#0x --- %0#x --- %0#1x --- %#1x --- %#01x --- %#-x --- %#-1x --- %-#x --- %-1x --- %01x --- %-#1x ---", intx, intx, intx, intx, intx, intx, intx, intx, intx ,intx, intx, intx);
 //                 099999999999
 //	printf("Percent \n");
 //	printf("---> Hello %% and %%\n");
@@ -2660,21 +2659,21 @@ int main()
 
 	ft_printf("Float\n");
 	ft_printf("---> Hello %f %f %f\n", float1, float2, float3);
-
+*/
 	ft_printf("FLAGS: plus +6 +10\n");
 	ft_printf("---> Hello %+6d %+10d\n", number, number2);
-*/
-//	ft_printf("FLAGS: minus -6 -10\n");
-//	ft_printf("---> Hello %-2147483649d %-10d\n", number, number2);
 
-//	ft_printf("FLAGS: 0\n");
-//	ft_printf("---> Hello %04d %015d\n", number, number2);
+	ft_printf("FLAGS: minus -6 -10\n");
+	ft_printf("---> Hello %-21d %-10d\n", number, number2);
 
-//	ft_printf("FLAGS: blank\n");
-//	ft_printf("---> Hello % 4d % 15d\n", number, number2);
+	ft_printf("FLAGS: 0\n");
+	ft_printf("---> Hello %04d %015d\n", number, number2);
+
+	ft_printf("FLAGS: blank\n");
+	ft_printf("---> Hello % 4d % 15d\n", number, number2);
 
 //	ft_printf("FLAGS: #\n");
-	ft_printf("---> Hello --- %#x --- %#0x --- %0#x --- %0#15x --- %#17x --- %#017x --- %#-x --- %#-17x --- %-#x --- %-8x --- %04x --- %-#17x ---", intx, intx, intx, intx, intx, intx, intx, intx, intx ,intx, intx, intx);
+//	ft_printf("---> Hello --- %#x --- %#0x --- %0#x --- %0#1x --- %#1x --- %#01x --- %#-x --- %#-1x --- %-#x --- %-1x --- %01x --- %-#1x ---", intx, intx, intx, intx, intx, intx, intx, intx, intx ,intx, intx, intx);
 	printf("\n");
 //	ft_printf("---> Hello %015x xxxx %-7x xxxx 1 %-#7x xxxx %#-7x xxxx %#07x xxxx %#09x xxxx %020x xxxx %-20x xxxx 1 %#020x xxxx %-#20x xxxx %#-20x 1\n", intx, intx, intx, intx, intx, intx, intx, intx, intx, intx, intx);
 
