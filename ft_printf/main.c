@@ -92,9 +92,6 @@ int		ft_strlen_double(char *str)
 	return (len);
 }
 
-//end of lib
-
-// handle x begin
 int		is_upper(char c)
 {
 	if (c >= 65 && c <= 90)
@@ -110,6 +107,10 @@ int		is_digit(char c)
 	else
 		return (0);
 }
+
+//end of lib
+
+// handle x begin
 
 long	handle_negative_x(long decimal)
 {
@@ -256,8 +257,9 @@ int		checksign(int number)
 void    handle_d(const char *format, va_list list, int i, int k)
 {
 	int number;
-	
-	number = va_arg(list, int);
+	va_list cpy;
+	va_copy(cpy, list);
+	number = va_arg(cpy, int);
 	if (number == -2147483648)
 	{
 		write(1, "-2147483648", 11);
@@ -269,6 +271,7 @@ void    handle_d(const char *format, va_list list, int i, int k)
 	{
 		ft_putnbr(number);
 	}
+	va_end(cpy);
 }
 // handle integer end
 
@@ -494,7 +497,8 @@ int		parse_flag_plus(const char *format, va_list list, int i)
 		res = res + ((int)format[i + count] - '0');
 		count++;
 	}
-	print_flags_plus(format, list, res);
+	printf("count %d", count);
+//	print_flags_plus(format, list, res);
 	return (count);
 }
 // Parse argument flags PLUS end
@@ -598,7 +602,7 @@ int		parse_flag_zero(const char *format, va_list list, int i)
 		res = res + ((int)format[i + count] - '0');
 		count++;
 	}
-	print_flags_zero(format, list, res);
+	printf("count %d", count);
 	return (count);
 }
 // FLAG zero end
@@ -1328,9 +1332,14 @@ int		check_flags(const char *format, va_list list, int i)
 		{
 			k = parse_flag_minus(format, list, i) - 1;
 		}
-		if (format[i + 1] == '0')
+		if ((format[i + 1] == '0') && ((format[i + 2] == 'd') || (format[i + 3] == 'd') ||
+			(format[i + 4] == 'd') || (format[i + 5] == 'd') ||
+			(format[i + 6] == 'd') || (format[i + 7] == 'd') ||
+			(format[i + 8] == 'd') || (format[i + 9] == 'd') ||
+			(format[i + 10] == 'd') || (format[i + 11] == 'd')))
+
 		{
-			//k = parse_flag_zero(format, list, i) - 1;
+			k = parse_flag_zero(format, list, i) - 1;
 		}
 		if (format[i + 1] == ' ')
 		{
@@ -2458,27 +2467,40 @@ int		parse_arg_x_init(const char *format, va_list list, int i)
 		parsed.hash_and_zero = 1;
 	else if (format[i + 1] == '0' && format[i + 2] == '#' && format[i + 3] == 'x')
 		parsed.zero_and_hash = 1;
-	else if (format[i + 1] == '0' && format[i + 2] == '#' && (format[i + 3] >= 49 && format[i + 3] <= 57))
+	else if (format[i + 1] == '0' && format[i + 2] == '#' && (format[i + 3] >= 48 && format[i + 3] <= 57))
 		parsed.zero_and_hash_and_digit = 1;
 	else if (format[i + 1] == '#' && (format[i + 2] >= 49 && format[i + 2] <= 57))
 		parsed.hash_and_digit = 1;
-	else if (format[i + 1] == '#' && format[i + 2] == '0' && (format[i + 3] >= 49 && format[i + 3] <= 57))
+	else if (format[i + 1] == '#' && format[i + 2] == '0' && (format[i + 3] >= 48 && format[i + 3] <= 57))
 		parsed.hash_and_zero_and_digit = 1;
 	else if (format[i + 1] == '#' && format[i + 2] == '-' && format[i + 3] == 'x')
 		parsed.hash_and_minus = 1;
-	else if (format[i + 1] == '#' && format[i + 2] == '-' && (format[i + 3] >= 49 && format[i + 3] <= 57))
+	else if (format[i + 1] == '#' && format[i + 2] == '-' && (format[i + 3] >= 48 && format[i + 3] <= 57))
 		parsed.hash_and_minus_and_digit = 1;
 	else if (format[i + 1] == '-' && format[i + 2] == '#' && format[i + 3] == 'x')
 		parsed.minus_and_hash = 1;
-	else if (format[i + 1] == '-' && (format[i + 2] >= 49 && format[i + 2] <= 57))
+	else if (format[i + 1] == '-' && (format[i + 2] >= 48 && format[i + 2] <= 57))
 		parsed.minus_and_digit = 1;
-	else if (format[i + 1] == '0' && (format[i + 2] >= 49 && format[i + 2] <= 57))
+	else if (format[i + 1] == '0' && (format[i + 2] >= 48 && format[i + 2] <= 57))
 		parsed.zero_and_digit = 1;
-	else if (format[i + 1] == '-' && format[i + 2] == '#' && (format[i + 3] >= 49 && format[i + 3] <= 57))
+	else if (format[i + 1] == '-' && format[i + 2] == '#' && (format[i + 3] >= 48 && format[i + 3] <= 57))
 		parsed.minus_and_hash_and_digit = 1;
 	else
 		return (0);
 	result = print_flags(format, list, i, parsed);
+	return (result);
+}
+
+int		parse_arg_d_init(const char *format, va_list list, int i)
+{
+	int result;
+	struct parser parsed;
+	
+	parsed.hash_only = 0;
+	parsed.hash_and_zero = 0;
+	parsed.zero_and_hash = 0;
+	parsed.zero_and_hash_and_digit = 0;
+	parsed.hash_and_digit = 0;
 	return (result);
 }
 
@@ -2500,8 +2522,37 @@ void    ft_printf(const char *format, ...)
         if (format[i] == '%')
 		{
 			d = parse_arg(format, list, i);
+			printf("%d", d);
 			o = parse_arg_o(format, list, i);
-			x = parse_arg_x_init(format, list, i);
+			// 4e to ne prishlo v golovu kak mozhno izbezhat', 4tobu naprimer %#3x ne prohodil sna4ala 4eres parse_arg_d, zatem parse_arg_o... esli pridumaesh 4to-to pointeresnei - welcome
+			if ((format[i + 1] == '#' && format[i + 2] == 'x') || 
+				(format[i + 1] == '#' && format[i + 2] == '0' && format[i + 3] == 'x') ||
+				(format[i + 1] == '#' && format[i + 2] == '-' && format[i + 3] == 'x') ||
+				(format[i + 1] == '0' && format[i + 2] == '#' && format[i + 3] == 'x') ||
+				(format[i + 1] == '-' && format[i + 2] == '#' && format[i + 3] == 'x') ||
+				(((format[i + 1] == '#') || (format[i + 1] == '-') || (format[i + 1] == '0')) && 
+				(((format[i + 2] >= 48 && format[i + 2] <= 57) && (format[i + 3] == 'x')) ||
+				((format[i + 2] >= 48 && format[i + 2] <= 57) && (format[i + 3] >= 48 && format[i + 3] <= 57) && format[i + 4] == 'x') ||
+				((format[i + 2] >= 48 && format[i + 2] <= 57) && (format[i + 3] >= 48 && format[i + 3] <= 57) && (format[i + 4] >= 48 && format[i + 4] <= 57) && format[i + 5] == 'x') ||
+				((format[i + 2] >= 48 && format[i + 2] <= 57) && (format[i + 3] >= 48 && format[i + 3] <= 57) && (format[i + 4] >= 48 && format[i + 4] <= 57) && (format[i + 5] >= 48 && format[i + 5] <= 57) && format[i + 6] == 'x') ||
+				((format[i + 2] >= 48 && format[i + 2] <= 57) && (format[i + 3] >= 48 && format[i + 3] <= 57) && (format[i + 4] >= 48 && format[i + 4] <= 57) && (format[i + 5] >= 48 && format[i + 5] <= 57) && (format[i + 6] >= 48 && format[i + 6] <= 57) && format[i + 7] == 'x') ||
+				((format[i + 2] >= 48 && format[i + 2] <= 57) && (format[i + 3] >= 48 && format[i + 3] <= 57) && (format[i + 4] >= 48 && format[i + 4] <= 57) && (format[i + 5] >= 48 && format[i + 5] <= 57) && (format[i + 6] >= 48 && format[i + 6] <= 57) && (format[i + 7] >= 48 && format[i + 7] <= 57) && format[i + 8] == 'x') ||
+				((format[i + 2] >= 48 && format[i + 2] <= 57) && (format[i + 3] >= 48 && format[i + 3] <= 57) && (format[i + 4] >= 48 && format[i + 4] <= 57) && (format[i + 5] >= 48 && format[i + 5] <= 57) && (format[i + 6] >= 48 && format[i + 6] <= 57) && (format[i + 7] >= 48 && format[i + 7] <= 57) && (format[i + 8] >= 48 && format[i + 8] <= 57) && format[i + 9] == 'x') ||
+				((format[i + 2] >= 48 && format[i + 2] <= 57) && (format[i + 3] >= 48 && format[i + 3] <= 57) && (format[i + 4] >= 48 && format[i + 4] <= 57) && (format[i + 5] >= 48 && format[i + 5] <= 57) && (format[i + 6] >= 48 && format[i + 6] <= 57) && (format[i + 7] >= 48 && format[i + 7] <= 57) && (format[i + 8] >= 48 && format[i + 8] <= 57) && (format[i + 9] >= 48 && format[i + 9] <= 57) && format[i + 10] == 'x') ||
+				((format[i + 2] >= 48 && format[i + 2] <= 57) && (format[i + 3] >= 48 && format[i + 3] <= 57) && (format[i + 4] >= 48 && format[i + 4] <= 57) && (format[i + 5] >= 48 && format[i + 5] <= 57) && (format[i + 6] >= 48 && format[i + 6] <= 57) && (format[i + 7] >= 48 && format[i + 7] <= 57) && (format[i + 8] >= 48 && format[i + 8] <= 57)  && (format[i + 9] >= 48 && format[i + 9] <= 57) && (format[i + 10] >= 48 && format[i + 10] <= 57) && format[i + 11] == 'x') ||
+				((format[i + 2] >= 48 && format[i + 2] <= 57) && (format[i + 3] >= 48 && format[i + 3] <= 57) && (format[i + 4] >= 48 && format[i + 4] <= 57) && (format[i + 5] >= 48 && format[i + 5] <= 57) && (format[i + 6] >= 48 && format[i + 6] <= 57) && (format[i + 7] >= 48 && format[i + 7] <= 57) && (format[i + 8] >= 48 && format[i + 8] <= 57)  && (format[i + 9] >= 48 && format[i + 9] <= 57) && (format[i + 10] >= 48 && format[i + 10] <= 57) && (format[i + 11] >= 48 && format[i + 11] <= 57) && format[i + 12] == 'x'))) ||
+				((((format[i + 1] == '#') && (format[i + 2] == '0')) || ((format[i + 1] == '0') && (format[i + 2] == '#')) || ((format[i + 1] == '#') && (format[i + 2] == '-')) || ((format[i + 1] == '-') && (format[i + 2] == '#'))) && 
+				(((format[i + 3] >= 48 && format[i + 3] <= 57) && (format[i + 4] == 'x')) ||
+				((format[i + 3] >= 48 && format[i + 3] <= 57) && (format[i + 4] >= 48 && format[i + 4] <= 57) && format[i + 5] == 'x') ||
+				((format[i + 3] >= 48 && format[i + 3] <= 57) && (format[i + 4] >= 48 && format[i + 4] <= 57) && (format[i + 5] >= 48 && format[i + 5] <= 57) && format[i + 6] == 'x') ||
+				((format[i + 3] >= 48 && format[i + 3] <= 57) && (format[i + 4] >= 48 && format[i + 4] <= 57) && (format[i + 5] >= 48 && format[i + 5] <= 57) && (format[i + 6] >= 48 && format[i + 6] <= 57) && format[i + 7] == 'x') ||
+				((format[i + 3] >= 48 && format[i + 3] <= 57) && (format[i + 4] >= 48 && format[i + 4] <= 57) && (format[i + 5] >= 48 && format[i + 5] <= 57) && (format[i + 6] >= 48 && format[i + 6] <= 57) && (format[i + 7] >= 48 && format[i + 7] <= 57) && format[i + 8] == 'x') ||
+				((format[i + 3] >= 48 && format[i + 3] <= 57) && (format[i + 4] >= 48 && format[i + 4] <= 57) && (format[i + 5] >= 48 && format[i + 5] <= 57) && (format[i + 6] >= 48 && format[i + 6] <= 57) && (format[i + 7] >= 48 && format[i + 7] <= 57) && (format[i + 8] >= 48 && format[i + 8] <= 57) && format[i + 9] == 'x') ||
+				((format[i + 3] >= 48 && format[i + 3] <= 57) && (format[i + 4] >= 48 && format[i + 4] <= 57) && (format[i + 5] >= 48 && format[i + 5] <= 57) && (format[i + 6] >= 48 && format[i + 6] <= 57) && (format[i + 7] >= 48 && format[i + 7] <= 57) && (format[i + 8] >= 48 && format[i + 8] <= 57) && (format[i + 9] >= 48 && format[i + 9] <= 57) && format[i + 10] == 'x') ||
+				((format[i + 3] >= 48 && format[i + 3] <= 57) && (format[i + 4] >= 48 && format[i + 4] <= 57) && (format[i + 5] >= 48 && format[i + 5] <= 57) && (format[i + 6] >= 48 && format[i + 6] <= 57) && (format[i + 7] >= 48 && format[i + 7] <= 57) && (format[i + 8] >= 48 && format[i + 8] <= 57) && (format[i + 9] >= 48 && format[i + 9] <= 57) && (format[i + 10] >= 48 && format[i + 10] <= 57) && format[i + 11] == 'x') ||
+				((format[i + 3] >= 48 && format[i + 3] <= 57) && (format[i + 4] >= 48 && format[i + 4] <= 57) && (format[i + 5] >= 48 && format[i + 5] <= 57) && (format[i + 6] >= 48 && format[i + 6] <= 57) && (format[i + 7] >= 48 && format[i + 7] <= 57) && (format[i + 8] >= 48 && format[i + 8] <= 57) && (format[i + 9] >= 48 && format[i + 9] <= 57) && (format[i + 10] >= 48 && format[i + 10] <= 57) && (format[i + 11] >= 48 && format[i + 11] <= 57) && format[i + 12] == 'x') ||
+				((format[i + 3] >= 48 && format[i + 3] <= 57) && (format[i + 4] >= 48 && format[i + 4] <= 57) && (format[i + 5] >= 48 && format[i + 5] <= 57) && (format[i + 6] >= 48 && format[i + 6] <= 57) && (format[i + 7] >= 48 && format[i + 7] <= 57) && (format[i + 8] >= 48 && format[i + 8] <= 57) && (format[i + 9] >= 48 && format[i + 9] <= 57) && (format[i + 10] >= 48 && format[i + 10] <= 57) && (format[i + 11] >= 48 && format[i + 11] <= 57) && (format[i + 12] >= 48 && format[i + 12] <= 57) && format[i + 13] == 'x'))))	
+				x = parse_arg_x_init(format, list, i);
 			if (x != 0)
 			{
 				parsed_x.printed = 1;
@@ -2588,10 +2639,10 @@ int main()
 	unsignedint = -0;
 	//int intx = -2147483648;
 	//unsigned long long int intX = 18446744073709551615;
-	int intx = -10000;
+	int intx = 1;
 	int intX = 14;
 	int oct1 = 10;
-	int oct2 = -2147483647;
+	int oct2 = -1;
 	float float1 = -1432423320.1435783543;
 	float float2 = 43.0;
 	float float3 = 1.546235;
@@ -2622,6 +2673,9 @@ int main()
 	printf("FLAGS: plus +6 +10\n");
 	printf("---> Hello %+6d %+10d\n", number, number2);
 
+	printf("FLAGS: plus +6 +10\n");
+	printf("---> Hello %+d %+d\n", number, number2);
+
 	printf("FLAGS: minus -6 -10\n");
 	printf("---> Hello %-21d %-10d\n", number, number2);
 
@@ -2631,23 +2685,23 @@ int main()
 	printf("FLAGS: blank\n");
 	printf("---> Hello % 4d % 15d\n", number, number2);
 
-	printf("FLAGS: #\n");
+	// printf("FLAGS: #\n");
 //	printf("---> Hello %#x xxxx %#0x xxxx 1 %0#x xxxx %#010x xxxx %#10x xxxx %#-x xxxx %#-10x xxxx %-#x xxxx 1 %-#10x xxxx %-10x xxxx %10x xxxx %010x \n", intx, intx, intx, intx, intx, intx, intx, intx, intx, intx, intx, intx);
-//	printf("---> Hello --- %#x --- %#0x --- %0#x --- %0#1x --- %#1x --- %#01x --- %#-x --- %#-1x --- %-#x --- %-1x --- %01x --- %-#1x ---", intx, intx, intx, intx, intx, intx, intx, intx, intx ,intx, intx, intx);
-//                 099999999999
+//	printf("---> Hello --- %#x --- %#0000x --- %0#x --- %0#2x --- %#1x --- %#01x --- %#-x --- %#-1x --- %-#x --- %-1x --- %01x --- %-#1x ---", intx, intx, intx, intx, intx, intx, intx, intx, intx ,intx, intx, intx);
+// //                 099999999999
 //	printf("Percent \n");
 //	printf("---> Hello %% and %%\n");
     printf("\n===================\n\n");
     printf("ft_printf output:\n");
-/*	ft_printf("String\n");
-	ft_printf("---> Hello %s %s %d end\n", string2, string, number);
+	ft_printf("String\n");
+//	ft_printf("---> Hello %s %s %d end\n", string2, string, number2);
 	
 	ft_printf("Integer d / i\n");
-	ft_printf("---> Hello %d %i\n", number, number2);
+//	ft_printf("---> Hello %d %i\n", number, number2);
 	
 	ft_printf("Char\n");
 	ft_printf("---> Hello %c %c\n", character, character2);
-	
+/* 	
 	ft_printf("Unsigned int\n");
 	ft_printf("---> Hello %u %u\n", unsignedint, unsignedint2);
 
@@ -2661,21 +2715,24 @@ int main()
 	ft_printf("---> Hello %f %f %f\n", float1, float2, float3);
 */
 	ft_printf("FLAGS: plus +6 +10\n");
-	ft_printf("---> Hello %+6d %+10d\n", number, number2);
+	// ft_printf("---> Hello %+6d %+10d\n", number, number2);
 
-	ft_printf("FLAGS: minus -6 -10\n");
-	ft_printf("---> Hello %-21d %-10d\n", number, number2);
+	// ft_printf("FLAGS: plus +6 +10\n");
+	// ft_printf("---> Hello %+d %+d\n", number, number2);
 
-	ft_printf("FLAGS: 0\n");
-	ft_printf("---> Hello %04d %015d\n", number, number2);
+	// ft_printf("FLAGS: minus -6 -10\n");
+	// ft_printf("---> Hello %-21d %-10d\n", number, number2);
 
-	ft_printf("FLAGS: blank\n");
-	ft_printf("---> Hello % 4d % 15d\n", number, number2);
+	// ft_printf("FLAGS: 0\n");
+	// ft_printf("---> Hello %04d %015d\n", number, number2);
+
+	// ft_printf("FLAGS: blank\n");
+	// ft_printf("---> Hello % 4d % 15d\n", number, number2);
 
 //	ft_printf("FLAGS: #\n");
-//	ft_printf("---> Hello --- %#x --- %#0x --- %0#x --- %0#1x --- %#1x --- %#01x --- %#-x --- %#-1x --- %-#x --- %-1x --- %01x --- %-#1x ---", intx, intx, intx, intx, intx, intx, intx, intx, intx ,intx, intx, intx);
-	printf("\n");
-//	ft_printf("---> Hello %015x xxxx %-7x xxxx 1 %-#7x xxxx %#-7x xxxx %#07x xxxx %#09x xxxx %020x xxxx %-20x xxxx 1 %#020x xxxx %-#20x xxxx %#-20x 1\n", intx, intx, intx, intx, intx, intx, intx, intx, intx, intx, intx);
+//	 ft_printf("---> Hello --- %#x --- %#2147111111x --- %0#x --- %0#12x --- %#1x --- %#01x --- %#-x --- %#-1x --- %-#x --- %-1x --- %01x --- %-#1x ---", intx, intx, intx, intx, intx, intx, intx, intx, intx ,intx, intx, intx);
+	// printf("\n");
+//ft_printf("---> Hello %015x xxxx %-7x xxxx 1 %-#7x xxxx %#-7x xxxx %#07x xxxx %#09x xxxx %020x xxxx %-20x xxxx 1 %#020x xxxx %-#20x xxxx %#-20x 1\n", intx, intx, intx, intx, intx, intx, intx, intx, intx, intx, intx);
 
 //	ft_printf("Percent \n");
 //	ft_printf("---> Hello %% and %%\n");
