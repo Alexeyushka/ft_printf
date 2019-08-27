@@ -1428,6 +1428,12 @@ void	flag_plus_and_digit(const char *format, va_list list, int res)
 	va_copy(cpy, list);
 	size = 0;
 	number = va_arg(cpy, int);
+	if (number < 0)
+	{
+		number = number * (-1);
+	}
+	if (number == 0)
+		size++;
 	while (number > 0)
 	{
 		size++;
@@ -1679,6 +1685,13 @@ int		print_flags_more(const char *format, va_list list, int i, struct parser par
 		count = flag_minus(format, list, i);
 		parsed.minus = 0;
 	}
+
+// minus_and_digit
+	if (parsed.minus_and_digit == 1)
+	{
+		count = flag_minus_and_digit(format, list, i); // do this
+		parsed.minus_and_digit = 0;
+	}
 	return (count);
 }
 
@@ -1920,9 +1933,9 @@ int main()
 {
     const char *string;
 	int number;
-	number = -300;
+	number = 300;
 	int number2;
-	number2 = -30;
+	number2 = 0;
     string = "John";
 	const char *string2;
     string2 = "i am";
@@ -1971,10 +1984,11 @@ int main()
 	 printf("---> Hello %+6d %+10d%+16d\n", number, number2, number);
 
 	// printf("FLAGS: plus +6 +10\n");
-	 printf("---> Hello %+d %+d\n", number, number2);
+	 printf("---> Hello %+d %+d%+d\n", number, number2, number);
 
 	// printf("FLAGS: minus -6 -10\n");
 	  printf("---> Hello %-d %-d\n", number, number2);
+	printf("---> Hello --- %-6d --- %-10d ---\n", number, number2);
 
 	// // printf("FLAGS: 0\n");
 	//  printf("---> Hello %0d %015d\n", number, number2);
@@ -2015,11 +2029,11 @@ int main()
 	ft_printf("---> Hello %+6d %+10d%+16d\n", number, number2, number);
 
 	// ft_printf("FLAGS: plus +6 +10\n");
-	ft_printf("---> Hello %+d %+d\n", number, number2);
+	ft_printf("---> Hello %+d %+d%+d\n", number, number2, number);
 
 	// // ft_printf("FLAGS: minus -6 -10\n");
-	 ft_printf("---> Hello %-d %-d\n", number, number2);
-
+	ft_printf("---> Hello %-d %-d\n", number, number2);
+	ft_printf("---> Hello --- %-6d --- %-10d ---\n", number, number2);
 	// // ft_printf("FLAGS: 0\n");
 	// ft_printf("---> Hello %04d %015d\n", number, number2);
 
