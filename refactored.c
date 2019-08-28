@@ -1382,21 +1382,15 @@ int		checksign(int number)
 void    handle_d_without_flags(const char *format, va_list list, int i, int k)
 {
 	int number;
-	va_list cpy;
-	va_copy(cpy, list);
-	number = va_arg(cpy, int);
+
+	number = va_arg(list, int);
 	if (number == -2147483648)
 	{
 		write(1, "-2147483648", 11);
 		return ;
 	}
 	checksign(number);
-	if ((format[i] == '%' && format[i + 1 + k] == 'd') ||
-			(format[i] == '%' && format[i + 1 + k] == 'i')) 
-	{
-		ft_putnbr(number);
-	}
-	va_end(cpy);
+	ft_putnbr(number);
 }
 
 //	==========================      flag plus_and_digit begin     =============================
@@ -1412,7 +1406,6 @@ void    flag_plus_and_digit_print(const char *format, va_list list, int i, int k
 	}
 	if (checksign(number) == 0)
 		write(1, "+", 1);
-	printf("k = %d", k);
 	if ((format[i] == '%' && format[i + k] == 'd') ||
 			(format[i] == '%' && format[i + k] == 'i')) 
 	{
@@ -1466,7 +1459,6 @@ int		parse_flag_plus_and_digit(const char *format, va_list list, int i)
 	}
 	flag_plus_and_digit(format, list, res);
 	flag_plus_and_digit_print(format, list, i, count);
-	printf("count = %d", count);
 	return (count);
 }
 
@@ -1519,10 +1511,16 @@ int		print_flag_minus_corr(const char *format, va_list list, int res)
 {
 	int number;
 	int size;
+	number = 0;
 	va_list cpy;
 	va_copy(cpy, list);
-	size = 0;
 	number = va_arg(cpy, int);
+	size = 0;
+	
+	if (number < 0)
+		number = number * (-1);
+	if (number == 0)
+		size++;
 	while (number > 0)
 	{
 		size++;
@@ -1570,7 +1568,177 @@ int		flag_minus(const char *format, va_list list, int i)
 
 //	-------------------------       flag minus end       -----------------------------
 
+//	==========================      flag minus_and_digit begin     =============================
 
+void    flag_minus_and_digit_print_d(const char *format, va_list list, int i, int number)
+{
+	if (number == -2147483648)
+	{
+		write(1, "-2147483648", 11);
+		return ;
+	}
+	if (number < 0)
+	{	
+		write(1, "-", 1);
+		number = number * (-1);
+	}
+	ft_putnbr(number);
+}
+
+int		flag_minus_and_digit_cont_d(const char *format, va_list list, int res)
+{
+	int number;
+	int size;
+	size = 0;
+	number = va_arg(list, int);
+	if (number < 0)
+	{
+		size++;
+	}
+	if (number == 0)
+		size++;
+	flag_minus_and_digit_print_d(format, list, size, number);
+	if (number < 0)
+		number = number * (-1);
+	while (number > 0)
+	{
+		size++;
+		number = number / 10;
+	}
+	return (size);
+}
+
+
+int		flag_minus_and_digit_d(const char *format, va_list list, int i)
+{
+	int res;
+	int k;
+	int count;
+	res = 0;
+	count = 2;
+	k = 1;
+
+	while (format[i + count] >= 48 && format[i + count] <= 57)
+	{
+		res = res * 10;
+		res = res + ((int)format[i + count] - '0');
+		count++;
+	}
+	res = res - flag_minus_and_digit_cont_d(format, list, res);
+	while (res > 0)
+	{
+		write(1, " ", 1);
+		res--;
+	}
+	return (count);
+}
+//	-------------------------       flag minus_and_digit end       -----------------------------
+
+//	==========================      flag zero begin     =============================
+void		print_flags_zero_d(const char *format, va_list list, int res)
+{
+	int number;
+	int number2;
+
+	int size;
+	// va_list cpy;
+	// va_copy(cpy, list);
+	size = 0;
+	number = va_arg(list, int);
+	number2 = number;
+	if (number2 < 0)
+	{	
+		write(1, "-", 1);
+		size = size + 2;
+	}
+	while (number > 0)
+	{
+		size++;
+		number = number / 10;
+	}
+	res = res - size;
+	while (res > 0)
+	{
+		write(1, "0", 1);
+		res--;
+	}
+	ft_putnbr(number2);
+	// va_end(cpy);
+}
+
+
+int		parse_flag_zero_d(const char *format, va_list list, int i)
+{
+	int res;
+	int k;
+	int count;
+	res = 0;
+	count = 2;
+	k = 1;
+
+	while (format[i + count] >= 48 && format[i + count] <= 57)
+	{
+		res = res * 10;
+		res = res + ((int)format[i + count] - '0');
+		count++;
+	}
+	print_flags_zero_d(format, list, res);
+	return (count);
+}
+//	-------------------------       flag zero end       -----------------------------
+//	==========================      flag zero_and_digit begin     =============================
+void		print_flags_zero_and_digit_d(const char *format, va_list list, int res)
+{
+	int number;
+	int number2;
+
+	int size;
+	// va_list cpy;
+	// va_copy(cpy, list);
+	size = 0;
+	number = va_arg(list, int);
+	number2 = number;
+	if (number2 < 0)
+	{	
+		write(1, "-", 1);
+		size = size + 2;
+	}
+	while (number > 0)
+	{
+		size++;
+		number = number / 10;
+	}
+	res = res - size;
+	while (res > 0)
+	{
+		write(1, "0", 1);
+		res--;
+	}
+	if (number2 != 0)
+		ft_putnbr(number2);
+	// va_end(cpy);
+}
+
+
+int		parse_flag_zero_and_digit_d(const char *format, va_list list, int i)
+{
+	int res;
+	int k;
+	int count;
+	res = 0;
+	count = 2;
+	k = 1;
+
+	while (format[i + count] >= 48 && format[i + count] <= 57)
+	{
+		res = res * 10;
+		res = res + ((int)format[i + count] - '0');
+		count++;
+	}
+	print_flags_zero_and_digit_d(format, list, res);
+	return (count);
+}
+//	-------------------------       flag zero_and_digit end       -----------------------------
 int		print_flags(const char *format, va_list list, int i, struct parser parsed)
 {
 	int res;
@@ -1689,8 +1857,22 @@ int		print_flags_more(const char *format, va_list list, int i, struct parser par
 // minus_and_digit
 	if (parsed.minus_and_digit == 1)
 	{
-		count = flag_minus_and_digit(format, list, i); // do this
+		count = flag_minus_and_digit_d(format, list, i);
 		parsed.minus_and_digit = 0;
+	}
+
+//	zero
+	if (parsed.zero == 1)
+	{
+		count = parse_flag_zero_d(format, list, i);
+		parsed.zero = 0;
+	}
+
+//	zero_and_digit
+	if (parsed.zero_and_digit == 1)
+	{
+		count = parse_flag_zero_and_digit_d(format, list, i);
+		parsed.zero_and_digit = 0;
 	}
 	return (count);
 }
@@ -1771,13 +1953,13 @@ int		handle_d(const char *format, va_list list, int i)
 	else if (format[i + 1] == '-' && (format[i + 2] >= 48 && format[i + 2] <= 57))
 		parsed.minus_and_digit = 1;
 	else if (format[i + 1] == '0' && format[i + 2] == 'd')
-		parsed.zero = 0;
+		parsed.zero = 1;
 	else if (format[i + 1] == '0' && (format[i + 2] >= 48 && format[i + 2] <= 57))
-		parsed.zero_and_digit = 0;
+		parsed.zero_and_digit = 1;
 	else if (format[i + 1] == ' ' && format[i + 2] == 'd')
-		parsed.blank = 0;
+		parsed.blank = 1;
 	else if (format[i + 1] == ' ' && (format[i + 2] >= 48 && format[i + 2] <= 57))
-		parsed.blank_and_digit = 0;
+		parsed.blank_and_digit = 1;
 	else
 	{
 		handle_d_without_flags(format, list, i, 1);
@@ -1847,7 +2029,6 @@ void    ft_printf(const char *format, ...)
 	{
         if (format[i] == '%')
 		{
-			printf("i = %d", i);
             ch = parse_format(format, list, i);
 		//	d = parse_arg(format, list, i);
 		//	printf("%d", d);
@@ -1933,9 +2114,9 @@ int main()
 {
     const char *string;
 	int number;
-	number = 300;
+	number = -100;
 	int number2;
-	number2 = 0;
+	number2 = -100;
     string = "John";
 	const char *string2;
     string2 = "i am";
@@ -1988,11 +2169,12 @@ int main()
 
 	// printf("FLAGS: minus -6 -10\n");
 	  printf("---> Hello %-d %-d\n", number, number2);
-	printf("---> Hello --- %-6d --- %-10d ---\n", number, number2);
+	printf("---> Hello --- %-7d --- %-14d ---\n", number, number2);
 
 	// // printf("FLAGS: 0\n");
-	//  printf("---> Hello %0d %015d\n", number, number2);
+	printf("---> Hello %0d %0d\n", number, number2);
 
+	printf("---> Hello %010d %03d\n", number, number2);
 	// // printf("FLAGS: blank\n");
 	//  printf("---> Hello % d % 15d\n", number, number2);
 
@@ -2033,10 +2215,10 @@ int main()
 
 	// // ft_printf("FLAGS: minus -6 -10\n");
 	ft_printf("---> Hello %-d %-d\n", number, number2);
-	ft_printf("---> Hello --- %-6d --- %-10d ---\n", number, number2);
+	ft_printf("---> Hello --- %-7d --- %-14d ---\n", number, number2);
 	// // ft_printf("FLAGS: 0\n");
-	// ft_printf("---> Hello %04d %015d\n", number, number2);
-
+	ft_printf("---> Hello %0d %0d\n", number, number2);
+	ft_printf("---> Hello %010d %03d\n", number, number2);
 	// // ft_printf("FLAGS: blank\n");
 	// ft_printf("---> Hello % d % 15d\n", number, number2);
 
