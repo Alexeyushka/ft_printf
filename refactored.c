@@ -1698,10 +1698,11 @@ void		print_flags_zero_and_digit_d(const char *format, va_list list, int res)
 	size = 0;
 	number = va_arg(list, int);
 	number2 = number;
-	if (number2 < 0)
+	if (number < 0)
 	{	
 		write(1, "-", 1);
-		size = size + 2;
+		size = size + 1;
+		number = number * (-1);
 	}
 	while (number > 0)
 	{
@@ -2114,9 +2115,9 @@ int main()
 {
     const char *string;
 	int number;
-	number = -100;
+	number = 0;
 	int number2;
-	number2 = -100;
+	number2 = 0;
     string = "John";
 	const char *string2;
     string2 = "i am";
