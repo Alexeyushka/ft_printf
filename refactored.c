@@ -1816,6 +1816,17 @@ void	printf_flags_blank_and_zero_and_digit(const char *format, va_list list, int
 	size = 1;
 	number = va_arg(list, int);
 	number2 = number;
+	if (number < 0)
+	{
+		number = number * (-1);
+		size++;
+		write(1, "-", 1);
+	}
+	else
+	{
+		write(1, " ", 1);
+		size++;
+	}
 	while (number > 0)
 	{
 		size++;
@@ -1827,7 +1838,6 @@ void	printf_flags_blank_and_zero_and_digit(const char *format, va_list list, int
 		return ;
 	}
 	res = res - size;
-	write(1, " ", 1);
 	while (res > 0)
 	{
 		write(1, "0", 1);
@@ -1849,18 +1859,22 @@ void	print_flags_blanks_zero(const char *format, va_list list, int res)
 		size++;
 		number = number / 10;
 	}
-	if (res == 0)
-	{	
-		write(1, " 0", 2);
-		return ;
-	}
+	// if (res == 0)
+	// {	
+	// 	write(1, " 0", 2);
+	// 	return ;
+	// }
 	res = res - size;
-	write(1, " ", 1);
+	if (number2 >= 0)
+		write(1, " ", 1);
+	else
+		write(1, "-", 1);
 	while (res > 0)
 	{
 		write(1, "0", 1);
 		res--;
 	}
+	ft_putnbr(number2);
 }
 
 int		flag_blank_and_digit_d(const char *format, va_list list, int i)
@@ -2281,9 +2295,9 @@ int main()
 {
     const char *string;
 	int number;
-	number = 11;
+	number = 12121;
 	int number2;
-	number2 = 3231210;
+	number2 = -1;
     string = "John";
 	const char *string2;
     string2 = "i am";
@@ -2345,7 +2359,9 @@ int main()
 	// // printf("FLAGS: blank\n");
 	printf("---> Hello % d % d\n", number, number2);
 
-	printf("---> Hello % 5d % 11d\n", number, number2); //debug this!
+	printf("---> Hello % 0d % 0d\n", number, number2);
+
+	printf("---> Hello % 05d % 02d\n", number, number2);
 	// printf("FLAGS: #\n");
 //	printf("---> Hello %#x xxxx %#0x xxxx 1 %0#x xxxx %#010x xxxx %#10x xxxx %#-x xxxx %#-10x xxxx %-#x xxxx 1 %-#10x xxxx %-10x xxxx %10x xxxx %010x \n", intx, intx, intx, intx, intx, intx, intx, intx, intx, intx, intx, intx);
 //	printf("---> Hello %015x xxxx %-7x xxxx 1 %-#7x xxxx %#-7x xxxx %#07x xxxx %#09x xxxx %020x xxxx %-20x xxxx 1 %#020x xxxx %-#20x xxxx %#-20x xxxx %x xxxx %x\n", intx, intx, intx, intx, intx, intx, intx, intx, intx, intx, intx, intx, intx);
@@ -2389,7 +2405,8 @@ int main()
 	ft_printf("---> Hello %010d %03d\n", number, number2);
 	// // ft_printf("FLAGS: blank\n");
 	ft_printf("---> Hello % d % d\n", number, number2);
-	ft_printf("---> Hello % 5d % 11d\n", number, number2);
+	ft_printf("---> Hello % 0d % 0d\n", number, number2);
+	ft_printf("---> Hello % 05d % 02d\n", number, number2);
 //	ft_printf("FLAGS: #\n");
 //	ft_printf("---> Hello --- %#x --- %#2147111111x --- %0#x --- %0#12x --- %#1x --- %#01x --- %#-x --- %#-1x --- %-#x --- %-1x --- %01x --- %-#1x ---", intx, intx, intx, intx, intx, intx, intx, intx, intx ,intx, intx, intx);
 // 	printf("\n");
