@@ -11,6 +11,7 @@
 /* ************************************************************************** */
 
 #include <unistd.h>
+#include <limits.h>
 #include <stdio.h>
 #include <stdarg.h>
 #include <string.h>
@@ -66,6 +67,21 @@ void	ft_putnbr(int nb)
 	{
 		ft_putnbr(nb / 10);
 		ft_putnbr(nb % 10);
+	}
+	else
+		ft_putchar(nb + '0');
+}
+
+void	ft_putnbr_long(long nb)
+{
+	if (nb < 0)
+	{
+		nb = -nb;
+	}
+	if (nb >= 10)
+	{
+		ft_putnbr_long(nb / 10);
+		ft_putnbr_long(nb % 10);
 	}
 	else
 		ft_putchar(nb + '0');
@@ -1385,11 +1401,38 @@ int		checksign(int number)
 	return (0);
 }
 
+int		checksign_long(long long int number)
+{
+	if (number < 0)
+	{
+		write(1, "-", 1);
+		return (1);
+	}
+	if (number >= 0)
+		return (0);
+	return (0);
+}
+
+void	handle_long_flag(const char *format, va_list list, int i, struct parser parsed)
+{
+	long number;
+	number = va_arg(list, long);
+	checksign_long(number);
+	ft_putnbr_long(number);
+	parsed.l = 0;
+
+}
 
 void    handle_d_without_flags(const char *format, va_list list, int i, struct parser parsed)
 {
 	int number;
 
+	if (parsed.l == 1)
+	{
+		parsed.l = 0;
+		handle_long_flag(format, list, i, parsed);
+		return ;
+	}
 	number = va_arg(list, int);
 	if (number == -2147483648)
 	{
@@ -1460,6 +1503,10 @@ int		parse_flag_plus_and_digit(const char *format, va_list list, int i, struct p
 		res = res + ((int)format[i + count] - '0');
 		count++;
 	}
+//	++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+//													   add long 
+//	++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
 	flag_plus_and_digit(format, list, res, parsed);
 	flag_plus_and_digit_print(format, list, i, count);
 	return (count);
@@ -2129,19 +2176,19 @@ int		handle_d(const char *format, va_list list, int i, struct parser parsed)
 	parsed.zero_and_digit = 0;
 	parsed.blank = 0;
 	parsed.blank_and_digit = 0;
-	if (format[i + 1] == '+' && (format[i + 2] == 'd' || format[i + 2] == 'h'))
+	if (format[i + 1] == '+' && (format[i + 2] == 'd' || format[i + 2] == 'h' || format[i + 2] == 'l'))
 		parsed.plus = 1;
 	else if (format[i + 1] == '+' && (format[i + 2] >= 48 && format[i + 2] <= 57))
 		parsed.plus_and_digit = 1;
-	else if (format[i + 1] == '-' && (format[i + 2] == 'd' || format[i + 2] == 'h'))
+	else if (format[i + 1] == '-' && (format[i + 2] == 'd' || format[i + 2] == 'h' || format[i + 2] == 'l'))
 		parsed.minus = 1;
 	else if (format[i + 1] == '-' && (format[i + 2] >= 48 && format[i + 2] <= 57))
 		parsed.minus_and_digit = 1;
-	else if (format[i + 1] == '0' && (format[i + 2] == 'd' || format[i + 2] == 'h'))
+	else if (format[i + 1] == '0' && (format[i + 2] == 'd' || format[i + 2] == 'h' || format[i + 2] == 'l'))
 		parsed.zero = 1;
 	else if (format[i + 1] == '0' && (format[i + 2] >= 48 && format[i + 2] <= 57))
 		parsed.zero_and_digit = 1;
-	else if (format[i + 1] == ' ' && (format[i + 2] == 'd' || format[i + 2] == 'h'))
+	else if (format[i + 1] == ' ' && (format[i + 2] == 'd' || format[i + 2] == 'h' || format[i + 2] == 'l'))
 		parsed.blank = 1;
 	else if (format[i + 1] == ' ' && (format[i + 2] >= 48 && format[i + 2] <= 57))
 		parsed.blank_and_digit = 1;
@@ -2346,8 +2393,10 @@ int main()
 	float float1 = -1432423320.1435783543;
 	float float2 = 43.0;
 	float float3 = 1.546235;
-	short short1 = 0;
-	short short2 = 0;
+	short short1 = -21000;
+	short short2 = 22000;
+	long long1 = 9223372036854775806;
+	long long2 = -922337203685477580;
     printf("=====================\n");
     printf("Printf output:\n");
   	printf("String:\n");
@@ -2395,27 +2444,71 @@ int main()
 
 	printf("---> Hello % d", number);
 */	// printf("FLAGS: #\n");
-	printf("---> Hello %+6hhd %+10hhd%+16hhd\n", character, character, character);
+	// printf("---> Hello %+6hd %+10hd%+16hd\n", short1, short1, short2);
 
-	// printf("FLAGS: plus +6 +10\n");
-	printf("---> Hello %+hhd %+hhd%+hhd\n", character, character, character);
+	// // printf("FLAGS: plus +6 +10\n");
+	// printf("---> Hello %+hd %+hd%+hd\n", short1, short1, short1);
 
-	// printf("FLAGS: minus -6 -10\n");
-	printf("---> Hello %-hhd %-hhd\n", character, character);
-	printf("---> Hello --- %-7hhd --- %-14hhd ---\n", character, character);
+	// // printf("FLAGS: minus -6 -10\n");
+	// printf("---> Hello %-hd %-hd\n", short1, short1);
+	// ft_printf("---> Hello --- %-7hd --- %-14hd ---\n", short1, short1);
 
-	// // printf("FLAGS: 0\n");
-	printf("---> Hello %0hhd %0hhd\n", character, character);
+	// // // printf("FLAGS: 0\n");
+	// printf("---> Hello %0hd %0hd\n", short1, short1);
 
-	printf("---> Hello %010hhd %03hhd\n", character, character);
-	// // printf("FLAGS: blank\n");
-	printf("---> Hello % hhd % hhd\n", character, character);
+	// printf("---> Hello %010hd %03hd\n", short1, short1);
+	// // // printf("FLAGS: blank\n");
+	// printf("---> Hello % hd % hd\n", short1, short1);
 
-	printf("---> Hello % 0hhd % 0hhd\n", character, character);
+	// printf("---> Hello % 0hd % 0hd\n", short1, short1);
 
-	printf("---> Hello % 015hhd % 025hhd\n", character, character);
+	// printf("---> Hello % 05hd % 02hd\n", short1, short1);
 
-	printf("---> Hello % hhd", character);
+	// printf("---> Hello % hd\n", short1);
+
+	// printf("---> Hello %+6hhd %+10hhd%+16hhd\n", character, character, character);
+
+	// // printf("FLAGS: plus +6 +10\n");
+	// printf("---> Hello %+hhd %+hhd%+hhd\n", character, character, character);
+
+	// // printf("FLAGS: minus -6 -10\n");
+	// printf("---> Hello %-hhd %-hhd\n", character, character);
+	// printf("---> Hello --- %-7hhd --- %-14hhd ---\n", character, character);
+
+	// // // printf("FLAGS: 0\n");
+	// printf("---> Hello %0hhd %0hhd\n", character, character);
+
+	// printf("---> Hello %010hhd %03hhd\n", character, character);
+	// // // printf("FLAGS: blank\n");
+	// printf("---> Hello % hhd % hhd\n", character, character);
+
+	// printf("---> Hello % 0hhd % 0hhd\n", character, character);
+
+	// printf("---> Hello % 015hhd % 025hhd\n", character, character);
+
+	// printf("---> Hello % hhd", character);
+	printf("---> Hello %ld %ld %ld\n", long1, long2, long1);
+	printf("---> Hello %+6ld %+10ld%+16ld\n", long1, long2, long1);
+
+	// // printf("FLAGS: plus +6 +10\n");
+	// printf("---> Hello %+ld %+ld%+ld\n", long1, long2, long1);
+
+	// // printf("FLAGS: minus -6 -10\n");
+	// printf("---> Hello %-ld %-ld\n", long1, long2);
+	// printf("---> Hello --- %-7ld --- %-14ld ---\n", long1, long2);
+
+	// // // printf("FLAGS: 0\n");
+	// printf("---> Hello %0ld %0ld\n", long1, long2);
+
+	// printf("---> Hello %010ld %03ld\n", long1, long2);
+	// // // printf("FLAGS: blank\n");
+	// printf("---> Hello % ld % ld\n", long1, long2);
+
+	// printf("---> Hello % 0ld % 0ld\n", long1, long2);
+
+	// printf("---> Hello % 05ld % 02ld\n", long1, long2);
+
+	// printf("---> Hello % ld\n", long1);
 //	printf("---> Hello %#x xxxx %#0x xxxx 1 %0#x xxxx %#010x xxxx %#10x xxxx %#-x xxxx %#-10x xxxx %-#x xxxx 1 %-#10x xxxx %-10x xxxx %10x xxxx %010x \n", intx, intx, intx, intx, intx, intx, intx, intx, intx, intx, intx, intx);
 //	printf("---> Hello %015x xxxx %-7x xxxx 1 %-#7x xxxx %#-7x xxxx %#07x xxxx %#09x xxxx %020x xxxx %-20x xxxx 1 %#020x xxxx %-#20x xxxx %#-20x xxxx %x xxxx %x\n", intx, intx, intx, intx, intx, intx, intx, intx, intx, intx, intx, intx, intx);
 // //                 099999999999
@@ -2483,27 +2576,50 @@ int main()
 	// ft_printf("---> Hello % 05hd % 02hd\n", short1, short1);
 
 	// ft_printf("---> Hello % hd\n", short1);
-	ft_printf("---> Hello %+6hhd %+10hhd%+16hhd\n", character, character, character);
+	// ft_printf("---> Hello %+6hhd %+10hhd%+16hhd\n", character, character, character);
 
-	// printf("FLAGS: plus +6 +10\n");
-	ft_printf("---> Hello %+hhd %+hhd%+hhd\n", character, character, character);
+	// // printf("FLAGS: plus +6 +10\n");
+	// ft_printf("---> Hello %+hhd %+hhd%+hhd\n", character, character, character);
 
-	// printf("FLAGS: minus -6 -10\n");
-	ft_printf("---> Hello %-hhd %-hhd\n", character, character);
-	ft_printf("---> Hello --- %-7hhd --- %-14hhd ---\n", character, character);
+	// // printf("FLAGS: minus -6 -10\n");
+	// ft_printf("---> Hello %-hhd %-hhd\n", character, character);
+	// ft_printf("---> Hello --- %-7hhd --- %-14hhd ---\n", character, character);
 
-	// // printf("FLAGS: 0\n");
-	ft_printf("---> Hello %0hhd %0hhd\n", character, character);
+	// // // printf("FLAGS: 0\n");
+	// ft_printf("---> Hello %0hhd %0hhd\n", character, character);
 
-	ft_printf("---> Hello %010hhd %03hhd\n", character, character);
-	// // printf("FLAGS: blank\n");
-	ft_printf("---> Hello % hhd % hhd\n", character, character);
+	// ft_printf("---> Hello %010hhd %03hhd\n", character, character);
+	// // // printf("FLAGS: blank\n");
+	// ft_printf("---> Hello % hhd % hhd\n", character, character);
 
-	ft_printf("---> Hello % 0hhd % 0hhd\n", character, character);
+	// ft_printf("---> Hello % 0hhd % 0hhd\n", character, character);
 
-	ft_printf("---> Hello % 015hhd % 025hhd\n", character, character);
+	// ft_printf("---> Hello % 015hhd % 025hhd\n", character, character);
 
-	ft_printf("---> Hello % hhd", character);
+	// ft_printf("---> Hello % hhd\n", character);
+
+	ft_printf("---> Hello %ld %ld %ld\n", long1, long2, long1);
+	ft_printf("---> Hello %+6ld %+10ld%+16ld\n", long1, long2, long1);
+
+	// // printf("FLAGS: plus +6 +10\n");
+	// ft_printf("---> Hello %+ld %+ld%+ld\n", long1, long2, long1);
+
+	// // printf("FLAGS: minus -6 -10\n");
+	// ft_printf("---> Hello %-ld %-ld\n", long1, long2);
+	// ft_printf("---> Hello --- %-7ld --- %-14ld ---\n", long1, long2);
+
+	// // // printf("FLAGS: 0\n");
+	// ft_printf("---> Hello %0ld %0ld\n", long1, long2);
+
+	// ft_printf("---> Hello %010ld %03ld\n", long1, long2);
+	// // // printf("FLAGS: blank\n");
+	// ft_printf("---> Hello % ld % ld\n", long1, long2);
+
+	// ft_printf("---> Hello % 0ld % 0ld\n", long1, long2);
+
+	// ft_printf("---> Hello % 05ld % 02ld\n", long1, long2);
+
+	// ft_printf("---> Hello % ld\n", long1);
 
 
 //	ft_printf("FLAGS: #\n");
