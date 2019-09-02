@@ -1459,7 +1459,7 @@ void    handle_d_without_flags(const char *format, va_list list, int i, struct p
 {
 	int number;
 
-	if (parsed.l == 1)
+	if (parsed.l == 1 || parsed.ll == 1)
 	{
 		handle_long_flag(format, list, i, parsed);
 		return ;
@@ -1571,9 +1571,10 @@ int		parse_flag_plus_and_digit(const char *format, va_list list, int i, struct p
 	res = 0;
 	count = 2;
 	k = 1;
-	if (parsed.l == 1)
+	if (parsed.l == 1 || parsed.ll == 1)
 	{
 		parsed.l = 0;
+		parsed.ll = 1;
 		count = count_long(format, list, i, parsed);
 		res = count_long_res(format, list, i, parsed);
 		flag_plus_and_digit_long(format, list, res, parsed);
@@ -1799,9 +1800,10 @@ int		flag_minus_and_digit_d(const char *format, va_list list, int i, struct pars
 	res = 0;
 	count = 2;
 	k = 1;
-	if (parsed.l == 1)
+	if (parsed.l == 1 || parsed.ll == 1)
 	{
 		parsed.l = 0;
+		parsed.ll = 0;
 		count = count_long(format, list, i, parsed);
 		res = count_long_res(format, list, i, parsed);
 		res = res - flag_minus_and_digit_cont_d_long(format, list, res);
@@ -1896,9 +1898,10 @@ int		parse_flag_zero_d(const char *format, va_list list, int i, struct parser pa
 	res = 0;
 	count = 2;
 	k = 1;
-	if (parsed.l == 1)
+	if (parsed.l == 1 || parsed.ll == 1)
 	{
 		parsed.l = 0;
+		parsed.ll = 0;
 		count = count_long(format, list, i, parsed);
 		res = count_long_res(format, list, i, parsed);
 		print_flags_zero_d_long(format, list, res);
@@ -1992,9 +1995,10 @@ int		parse_flag_zero_and_digit_d(const char *format, va_list list, int i, struct
 	res = 0;
 	count = 2;
 	k = 1;
-	if (parsed.l == 1)
+	if (parsed.l == 1 || parsed.ll == 1)
 	{
 		parsed.l = 0;
+		parsed.ll = 0;
 		count = count_long(format, list, i, parsed);
 		res = count_long_res(format, list, i, parsed);
 		print_flags_zero_and_digit_d_long(format, list, res);
@@ -2044,9 +2048,10 @@ int		flag_blank_d(const char *format, va_list list, int i, struct parser parsed)
 	res = 0;
 	count = 2;
 	k = 1;
-	if (parsed.l == 1)
+	if (parsed.l == 1 || parsed.ll == 1)
 	{
 		parsed.l = 0;
+		parsed.ll = 0;
 		count = count_long(format, list, i, parsed);
 		res = count_long_res(format, list, i, parsed);
 		print_flags_blank_wo_digits_long(format, list, res);
@@ -2139,7 +2144,10 @@ void	printf_flags_blank_and_zero_and_digit(const char *format, va_list list, int
 	int size;
 	size = 1;
 	if (parsed.exception == 1)
+	{	
 		size = 0;
+		parsed.exception = 0;
+	}
 	number = va_arg(list, int);
 	number2 = number;
 	if (number < 0)
@@ -2179,7 +2187,10 @@ void	printf_flags_blank_and_zero_and_digit_long(const char *format, va_list list
 	int size;
 	size = 1;
 	if (parsed.exception == 1)
+	{
 		size = 0;
+		parsed.exception = 0;
+	}
 	number = va_arg(list, long);
 	number2 = number;
 	if (number < 0)
@@ -2285,9 +2296,10 @@ int		flag_blank_and_digit_d(const char *format, va_list list, int i, struct pars
 	zero = 0;
 	if (format[i + count] == '0')
 		zero = 1;
-	if (parsed.l == 1)
+	if (parsed.l == 1 || parsed.ll == 1)
 	{
 		parsed.l = 0;
+		parsed.ll = 0;
 		count = count_long(format, list, i, parsed);
 		res = count_long_res(format, list, i, parsed);
 		if (zero == 0)
@@ -2627,6 +2639,7 @@ struct	parser flags_short_and_long(const char *format, va_list list, int i, stru
 			{
 				parsed_x.ll = 1;
 				parsed_x.size = 2;
+				parsed_x.exception = 1;
 				return (parsed_x);
 			}
 			if (format[i] == 'L')
@@ -2754,7 +2767,9 @@ int main()
 	float float3 = 1.546235;
 	short short1 = -21000;
 	short short2 = 22000;
-	long long1 = 0;
+	long long1 = 9223372036854775807;
+	long long llong1 = 9223372036854775807;
+	long long llong2 = -9223372036854775806;
 	//long long1 = 9223372036854775806;
 	long long2 = -922337203685477580;
     printf("=====================\n");
@@ -2847,17 +2862,30 @@ int main()
 	// printf("---> Hello % 015hhd % 025hhd\n", character, character);
 
 	// printf("---> Hello % hhd", character);
-	printf("---> Hello %ld %ld %ld\n", long1, long2, long1);
-	printf("---> Hello %+6ld %+20ld%+15ld\n", long1, long2, long1);
-	printf("---> Hello %+ld %+ld%+ld\n", long1, long2, long1);
-	printf("---> Hello %-ld %-ld\n", long1, long2);
-	printf("---> Hello --- %-7ld --- %-14ld ---\n", long1, long2);
-	printf("---> Hello %0ld %0ld\n", long1, long2);
-	printf("---> Hello %010ld %03ld\n", long1, long2);
-	printf("---> Hello % ld % ld\n", long1, long2);
-	printf("---> Hello % 0ld % 0ld\n", long1, long2);
-	printf("---> Hello % 05ld % 020ld\n", long1, long2);
-	printf("---> Hello % ld\n", long1);
+	// printf("---> Hello %ld %ld %ld\n", long1, long2, long1);
+	// printf("---> Hello %+6ld %+20ld%+15ld\n", long1, long2, long1);
+	// printf("---> Hello %+ld %+ld%+ld\n", long1, long2, long1);
+	// printf("---> Hello %-ld %-ld\n", long1, long2);
+	// printf("---> Hello --- %-7ld --- %-14ld ---\n", long1, long2);
+	// printf("---> Hello %0ld %0ld\n", long1, long2);
+	// printf("---> Hello %010ld %03ld\n", long1, long2);
+	// printf("---> Hello % ld % ld\n", long1, long2);
+	// printf("---> Hello % 0ld % 0ld\n", long1, long2);
+	// printf("---> Hello % 05ld % 020ld\n", long1, long2);
+	// printf("---> Hello % ld\n", long1);
+	
+	//printf("---> Hello %ld %ld %ld\n", long1, long1, long1);
+	printf("---> Hello %lld %lld %lld\n", llong1, llong2, llong1);
+	printf("---> Hello %+25lld %+28lld%+15lld\n", llong1, llong2, llong1);
+	printf("---> Hello %+lld %+lld%+lld\n", llong1, llong2, llong1);
+	printf("---> Hello %-lld %-lld\n", llong1, llong2);
+	printf("---> Hello --- %-20lld --- %-25lld ---\n", llong1, llong2);
+	printf("---> Hello %0lld %0lld\n", llong1, llong2);
+	printf("---> Hello %020lld %025lld\n", llong1, llong2);
+	printf("---> Hello % lld % lld\n", llong1, llong2);
+	printf("---> Hello % 0lld % 0lld\n", llong1, llong2);
+	printf("---> Hello % 025lld % 020lld\n", llong1, llong2);
+	printf("---> Hello % lld\n", llong1);
 //	printf("---> Hello %#x xxxx %#0x xxxx 1 %0#x xxxx %#010x xxxx %#10x xxxx %#-x xxxx %#-10x xxxx %-#x xxxx 1 %-#10x xxxx %-10x xxxx %10x xxxx %010x \n", intx, intx, intx, intx, intx, intx, intx, intx, intx, intx, intx, intx);
 //	printf("---> Hello %015x xxxx %-7x xxxx 1 %-#7x xxxx %#-7x xxxx %#07x xxxx %#09x xxxx %020x xxxx %-20x xxxx 1 %#020x xxxx %-#20x xxxx %#-20x xxxx %x xxxx %x\n", intx, intx, intx, intx, intx, intx, intx, intx, intx, intx, intx, intx, intx);
 // //                 099999999999
@@ -2947,18 +2975,29 @@ int main()
 
 	// ft_printf("---> Hello % hhd\n", character);
 
-	ft_printf("---> Hello %ld %ld %ld\n", long1, long2, long1);
-	ft_printf("---> Hello %+6ld %+20ld%+15ld\n", long1, long2, long1);
-	ft_printf("---> Hello %+ld %+ld%+ld\n", long1, long2, long1);
-	ft_printf("---> Hello %-ld %-ld\n", long1, long2);
-	ft_printf("---> Hello --- %-7ld --- %-14ld ---\n", long1, long2);
-	ft_printf("---> Hello %0ld %0ld\n", long1, long2);
-	ft_printf("---> Hello %010ld %03ld\n", long1, long2);
-	ft_printf("---> Hello % ld % ld\n", long1, long2);
-	ft_printf("---> Hello % 0ld % 0ld\n", long1, long2);
-	ft_printf("---> Hello % 05ld % 020ld\n", long1, long2);
-	ft_printf("---> Hello % ld\n", long1);
+	// ft_printf("---> Hello %ld %ld %ld\n", long1, long2, long1);
+	// ft_printf("---> Hello %+6ld %+20ld%+15ld\n", long1, long2, long1);
+	// ft_printf("---> Hello %+ld %+ld%+ld\n", long1, long2, long1);
+	// ft_printf("---> Hello %-ld %-ld\n", long1, long2);
+	// ft_printf("---> Hello --- %-7ld --- %-14ld ---\n", long1, long2);
+	// ft_printf("---> Hello %0ld %0ld\n", long1, long2);
+	// ft_printf("---> Hello %010ld %03ld\n", long1, long2);
+	// ft_printf("---> Hello % ld % ld\n", long1, long2);
+	// ft_printf("---> Hello % 0ld % 0ld\n", long1, long2);
+	// ft_printf("---> Hello % 05ld % 020ld\n", long1, long2);
+	// ft_printf("---> Hello % ld\n", long1);
 
+	ft_printf("---> Hello %lld %lld %lld\n", llong1, llong2, llong1);
+	ft_printf("---> Hello %+25lld %+28lld%+15lld\n", llong1, llong2, llong1);
+	ft_printf("---> Hello %+lld %+lld%+lld\n", llong1, llong2, llong1);
+	ft_printf("---> Hello %-lld %-lld\n", llong1, llong2);
+	ft_printf("---> Hello --- %-20lld --- %-25lld ---\n", llong1, llong2);
+	ft_printf("---> Hello %0lld %0lld\n", llong1, llong2);
+	ft_printf("---> Hello %020lld %025lld\n", llong1, llong2);
+	ft_printf("---> Hello % lld % lld\n", llong1, llong2);
+	ft_printf("---> Hello % 0lld % 0lld\n", llong1, llong2);
+	ft_printf("---> Hello % 025lld % 020lld\n", llong1, llong2);
+	ft_printf("---> Hello % lld\n", llong1);
 
 //	ft_printf("FLAGS: #\n");
 //	ft_printf("---> Hello --- %#x --- %#2147111111x --- %0#x --- %0#12x --- %#1x --- %#01x --- %#-x --- %#-1x --- %-#x --- %-1x --- %01x --- %-#1x ---", intx, intx, intx, intx, intx, intx, intx, intx, intx ,intx, intx, intx);
