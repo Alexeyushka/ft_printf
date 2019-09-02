@@ -47,7 +47,7 @@ typedef struct parser
 	int largel;
 	int exception;
 	int precision;
-
+	int precision_count;
 } structparser_x;
 
 
@@ -548,6 +548,7 @@ void handle_f(const char *format, va_list list, struct parser parsed)
 
 	position = length;
 	length = length + 1 + length2;
+	
 	number = number2;
 	if (sign == '-')
 	{
@@ -573,7 +574,9 @@ void handle_f(const char *format, va_list list, struct parser parsed)
 	len = ft_strlen_double(r);
 	i = 0;
 	int k;
-	k = 7 - len;
+	k = 7 - len - (6 - parsed.precision);
+	// if (parsed.precision != 0) ========================++++++++++++ debug this precision shit
+	
 	while (r[i] != '\0')
 	{
 		write(1, &r[i], 1);
@@ -591,6 +594,7 @@ void handle_f(const char *format, va_list list, struct parser parsed)
 		}
 		i++;
 	}
+	
 	while (k > 0)
 	{
 		write(1, "0", 1);
@@ -2769,6 +2773,17 @@ struct	parser flags_short_and_long(const char *format, va_list list, int i, stru
 				parsed_x.largel = 1;
 				parsed_x.size++;
 			}
+			if (format[i] == '.' && (format[i + 1] >= 48 && format[i + 1] <= 57))
+			{
+				parsed_x.precision = format[i + 1] - '0';
+				parsed_x.precision_count = 2;
+				printf("%d", parsed_x.precision);
+				if (format[i + 2] >= 48 && format[i + 2] <= 57)
+				{
+					parsed_x.precision = parsed_x.precision + (format[i + 2] - '0');
+					parsed_x.precision_count = 3;
+				}
+			}
 		i++;
 		}
 	return (parsed_x);
@@ -2840,7 +2855,7 @@ void    ft_printf(const char *format, ...)
 			if (ch == 'f')
 			{
 				handle_f(format, list, parsed_x);
-				i = i + 1 + parsed_x.l + parsed_x.largel;
+				i = i + 1 + parsed_x.l + parsed_x.largel + parsed_x.precision_count;
 				parsed_x.l = 0;
 				parsed_x.largel = 0;
 			}
@@ -2887,7 +2902,7 @@ int main()
 	int oct1 = 10;
 	int oct2 = -1;
 	float float1 = -1432423320.14357543;
-	float float2 = 43.0230;
+	float float2 = 43.02109;
 	float float3 = 1.546235;
 	short short1 = -21000;
 	short short2 = 22000;
@@ -2895,7 +2910,7 @@ int main()
 	long long llong1 = 9223372036854775807;
 	long long llong2 = -9223372036854775806;
 	long double ld1 = -1432423320.1435748649;
-	long double ld2 = 43.0235554;
+	long double ld2 = 43.0230;
 	long double ld3 = 1.5462358;
 	//long long1 = 9223372036854775806;
 	long long2 = -922337203685477580;
@@ -3013,8 +3028,13 @@ int main()
 	// printf("---> Hello % 0lld % 0lld\n", llong1, llong2);
 	// printf("---> Hello % 025lld % 020lld\n", llong1, llong2);
 	// printf("---> Hello % lld\n", llong1);
-	ft_printf("---> Hello %lf %lf %lf\n", float1, float2, float3);
-	printf("---> Hello %Lf %Lf %Lf\n", ld1, ld2, ld3);
+
+
+	// printf("---> Hello %lf %lf %lf\n", float1, float2, float3);
+	// printf("---> Hello %Lf %Lf %Lf\n", ld1, ld2, ld3);
+
+	printf("---> Hello %.4f %.0f %.100f\n", float1, float2, float3);
+
 
 //	printf("---> Hello %#x xxxx %#0x xxxx 1 %0#x xxxx %#010x xxxx %#10x xxxx %#-x xxxx %#-10x xxxx %-#x xxxx 1 %-#10x xxxx %-10x xxxx %10x xxxx %010x \n", intx, intx, intx, intx, intx, intx, intx, intx, intx, intx, intx, intx);
 //	printf("---> Hello %015x xxxx %-7x xxxx 1 %-#7x xxxx %#-7x xxxx %#07x xxxx %#09x xxxx %020x xxxx %-20x xxxx 1 %#020x xxxx %-#20x xxxx %#-20x xxxx %x xxxx %x\n", intx, intx, intx, intx, intx, intx, intx, intx, intx, intx, intx, intx, intx);
@@ -3129,8 +3149,10 @@ int main()
 	// ft_printf("---> Hello % 025lld % 020lld\n", llong1, llong2);
 	// ft_printf("---> Hello % lld\n", llong1);
 
-	ft_printf("---> Hello %lf %lf %lf\n", float1, float2, float3);
-	ft_printf("---> Hello %Lf %Lf %Lf\n", ld1, ld2, ld3);
+	ft_printf("---> Hello %.4f %.0f %.1f\n", float1, float2, float3);
+
+	// ft_printf("---> Hello %lf %lf %lf\n", float1, float2, float3);
+	// ft_printf("---> Hello %Lf %Lf %Lf\n", ld1, ld2, ld3);
 //	ft_printf("FLAGS: #\n");
 //	ft_printf("---> Hello --- %#x --- %#2147111111x --- %0#x --- %0#12x --- %#1x --- %#01x --- %#-x --- %#-1x --- %-#x --- %-1x --- %01x --- %-#1x ---", intx, intx, intx, intx, intx, intx, intx, intx, intx ,intx, intx, intx);
 // 	printf("\n");
