@@ -2732,7 +2732,7 @@ int		flag_field_width(const char *format, va_list list, int i, struct parser par
 //	end
 
 // field width and plus
-void    flag_width_and_plus_print(const char *format, va_list list, int i, int k) // ++++++++++++++++++++++++++++++++++++add here blanks from 10, number, 10
+void    flag_width_and_plus_print(const char *format, va_list list, int i, struct parser parsed) // ++++++++++++++++++++++++++++++++++++add here blanks from 10, number, 10
 {
 	int number;
 
@@ -2747,7 +2747,7 @@ void    flag_width_and_plus_print(const char *format, va_list list, int i, int k
 	ft_putnbr(number);
 }
 
-void    flag_width_and_plus_print_long(const char *format, va_list list, int i, int k)
+void    flag_width_and_plus_long_print(const char *format, va_list list, int i, int k)
 {
 	long number;
 
@@ -2762,31 +2762,194 @@ void    flag_width_and_plus_print_long(const char *format, va_list list, int i, 
 	ft_putnbr_long(number);
 }
 
+void	flag__width_and_plus_blanks(const char *format, va_list list, int res, struct parser parsed)
+{
+	int number;
+	int size;
+	va_list cpy;
+	va_copy(cpy, list);
+	size = 0;
+	number = va_arg(cpy, int);
+	if (number < 0)
+	{
+		number = number * (-1);
+	}
+	if (number == 0)
+		size++;
+	while (number > 0)
+	{
+		size++;
+		number = number / 10;
+	}
+
+	res = res - size - 1;
+	while (res > 0)
+	{
+		write(1, " ", 1);
+		res--;
+	}
+	va_end(cpy);
+}
+
+void	flag_width_and_plus_long_blanks(const char *format, va_list list, int res, struct parser parsed)
+{
+	long number;
+	int size;
+	va_list cpy;
+	va_copy(cpy, list);
+	size = 0;
+	number = va_arg(cpy, long);
+	if (number < 0)
+	{
+		number = number * (-1);
+	}
+	if (number == 0)
+		size++;
+	while (number > 0)
+	{
+		size++;
+		number = number / 10;
+	}
+	res = res - size - 1;
+	
+	while (res > 0)
+	{
+		write(1, " ", 1);
+		res--;
+	}
+	va_end(cpy);
+}
+
 int		flag_field_width_and_plus(const char *format, va_list list, int i, struct parser parsed)
 {
+	int res;
 	int k;
-	k = 0;
-	if (format[i - 1] == '+')	
+	int count;
+	res = 0;
+	count = 0;
+	k = 1;
+	int d;
+	if (parsed.l == 1 || parsed.ll == 1)
 	{
-		if (format[i] == '*')
-		{
-			k++;
-			flag_width_and_plus_print(format, list, i, k);
-		}
-		if (format[i + 2] == 'l')
-		{
-			k++;
-			flag_width_and_plus_print_long(format, list, i, k);
-		}
-		// else
-		// 	k = parse_flag_plus_and_digit(format, list, i);
+		parsed.l = 0;
+		parsed.ll = 1;
+		count = count_long(format, list, i, parsed);
+		res = count_long_res(format, list, i, parsed);
+		flag_width_and_plus_long_blanks(format, list, res, parsed);
+		flag_width_and_plus_long_print(format, list, i, count);
+		return (count);
 	}
-	printf("%c", format[i - 1]);
-	return (k);
+	res = parsed.width_number;
+	d = res;
+	while (d / 10 != 0)
+	{
+		d = d/10;
+		count++;
+	}
+	//printf("+_+ %d +_+", count);
+	flag__width_and_plus_blanks(format, list, parsed.width_number, parsed);
+	flag_width_and_plus_print(format, list, i, parsed);
+	parsed.width_number = 0;
+	return (count);
 }
 // end width and plus
 
+//	width minus and digit begin
 
+// void    flag_minus_and_digit_print_d(const char *format, va_list list, int i, int number)
+// {
+// 	if (number == -2147483648)
+// 	{
+// 		write(1, "-2147483648", 11);
+// 		return ;
+// 	}
+// 	if (number < 0)
+// 	{	
+// 		write(1, "-", 1);
+// 		number = number * (-1);
+// 	}
+// 	ft_putnbr(number);
+// }
+
+int		flag_width_minus_and_digit_cont_d(const char *format, va_list list, int res)
+{
+	int number;
+	int size;
+	size = 0;
+	number = va_arg(list, int);
+	if (number < 0)
+	{
+		size++;
+	}
+	if (number == 0)
+		size++;
+	flag_minus_and_digit_print_d(format, list, size, number);
+	if (number < 0)
+		number = number * (-1);
+	while (number > 0)
+	{
+		size++;
+		number = number / 10;
+	}
+	return (size);
+}
+
+// void    flag_minus_and_digit_print_d_long(const char *format, va_list list, int i, long number)
+// {
+// 	if (number == -2147483648)
+// 	{
+// 		write(1, "-2147483648", 11);
+// 		return ;
+// 	}
+// 	if (number < 0)
+// 	{	
+// 		write(1, "-", 1);
+// 		number = number * (-1);
+// 	}
+// 	ft_putnbr_long(number);
+// }
+
+// int		flag_minus_and_digit_cont_d_long(const char *format, va_list list, int res)
+// {
+// 	long number;
+// 	int size;
+// 	size = 0;
+// 	number = va_arg(list, long);
+// 	if (number < 0)
+// 	{
+// 		size++;
+// 	}
+// 	if (number == 0)
+// 		size++;
+// 	flag_minus_and_digit_print_d_long(format, list, size, number);
+// 	if (number < 0)
+// 		number = number * (-1);
+// 	while (number > 0)
+// 	{
+// 		size++;
+// 		number = number / 10;
+// 	}
+// 	return (size);
+// }
+
+int		flag_field_width_and_minus(const char *format, va_list list, int i, struct parser parsed)
+{
+	int res;
+	int k;
+	int count;
+	res = 0;
+	count = 2;
+	k = 1;
+
+	res = parsed.width_number - flag_width_minus_and_digit_cont_d(format, list, parsed.width_number);
+	while (res > 0)
+	{
+		write(1, " ", 1);
+		res--;
+	}
+	return (count);
+}
+// width minus and digit end
 
 int		print_flags(const char *format, va_list list, int i, struct parser parsed)
 {
@@ -2887,15 +3050,18 @@ int		print_flags_more(const char *format, va_list list, int i, struct parser par
 		count = flag_field_width(format, list, i, parsed) - 2;
 		parsed.width = 0;
 	}
-	printf("%d", parsed.width_and_plus);
 //	field_width_and plus
 	if (parsed.width_and_plus == 1)
 	{
 		count = flag_field_width_and_plus(format, list, i, parsed);
-		printf("%d", count);
 		parsed.width_and_plus = 0;
 	}
 //	field_width_and minus
+	if (parsed.width_and_minus == 1)
+	{
+		count = flag_field_width_and_minus(format, list, i, parsed);
+		parsed.width_and_minus = 0;
+	}
 
 //	field_width_and zero
 
@@ -3057,7 +3223,7 @@ int		handle_d(const char *format, va_list list, int i, struct parser parsed)
 		parsed.width = 1;
 	else if (format[i - 1] == '+' && format[i] == '*')
 		parsed.width_and_plus = 1;
-	else if (format[i + 1] == '-' && format[i + 2] == '*')
+	else if (format[i - 1] == '-' && format[i] == '*')
 		parsed.width_and_minus = 1;
 	else if (format[i + 1] == '0' && format[i + 2] == '*')
 		parsed.width_and_zero = 1;
@@ -3165,7 +3331,12 @@ struct	parser flags_short_and_long(const char *format, va_list list, int i, stru
 			if (format[i] == '+' && format[i + 1] == '*')
 			{	
 				parsed_x.width_and_plus = 1;
-				parsed_x.size++;
+				parsed_x.size = 1;
+			}
+			if (format[i] == '-' && format[i + 1] == '*')
+			{	
+				parsed_x.width_and_minus = 1;
+				parsed_x.size = 1;
 			}
 		i++;
 		}
@@ -3204,12 +3375,13 @@ void    ft_printf(const char *format, ...)
 			// {
 			// 	parsed_x.printed = 1;
 			// }
-			
 			if (ch == '*')
 			{
 				parsed_x.width_number = handle_field_width(format, list, i, parsed_x);
+				printf("%d ", parsed_x.width_number);
 				i = i + 1 + parsed_x.size;
 				ch = parse_format(format, list, (i + 1));
+				parsed_x.size = 0;
 			}
 			if (ch == 's')
 			{
@@ -3284,7 +3456,7 @@ int main()
 {
     const char *string;
 	int number;
-	number = -12121;
+	number = -1212;
 	int number2;
 	number2 = 1;
     string = "John";
@@ -3573,13 +3745,13 @@ int main()
 
 	//ft_printf("---> Hello --- %*d --- %10d --- %*d ---\n", 10, number, number, 20, number);
 	 //  printf("---> Hello --- %010d --- %02d --- %0d ---\n", number, number, number);
-	   printf("---> Hello --- %+10d --- %+2d --- %+20d ---\n", number, number, number);
-	//   printf("---> Hello --- %-10d --- %-2d --- %-20d ---\n", number, number, number);
+	 //  printf("---> Hello --- %+10d --- %+2d --- %+20d ---\n", number, number, number);
+	   printf("---> Hello --- %-10d --- %-2d --- %-20d ---\n", number, number, number);
 	//   printf("---> Hello --- %0*d --- %0*d --- %0*d ---\n", 10, number, 2, number, 0, number);
-	   printf("---> Hello --- %+*d --- %+*d --- %+*d ---\n", 10, number, 2, number, 20, number);
-	 //  printf("---> Hello --- %-*d --- %-*d --- %-*d ---\n", 10, number, 2, number, 20, number);
+	 //  printf("---> Hello --- %+*d --- %+*d --- %+*d ---\n", 10, number, 2, number, 20, number);
+	   printf("---> Hello --- %-*d --- %-*d --- %-*d ---\n", 10, number, 2, number, 20, number);
 	 //  ft_printf("---> Hello --- %0*d --- %0*d --- %0*d ---\n", 10, number, 2, number, 20, number);
-	   ft_printf("---> Hello --- %+*d --- %+*d --- %+*d ---\n", 10, number, 2, number, 20, number);
-	 //  ft_printf("---> Hello --- %-*d --- %-*d --- %-*d ---\n", 10, number, 2, number, 20, number);
+	 //  ft_printf("---> Hello --- %+*d --- %+*d --- %+*d ---\n", 10, number, 2, number, 20, number);
+	   ft_printf("---> Hello --- %-*d --- %-*d --- %-*d ---\n", 10, number, 2, number, 20, number);
     return (0);
 }
