@@ -3164,7 +3164,6 @@ int		parse_arg_x_init(const char *format, va_list list, int i)
 int		handle_d(const char *format, va_list list, int i, struct parser parsed)
 {
 	int result;
-	
 	parsed.plus = 0;
 	parsed.plus_and_digit = 0;
 	parsed.minus = 0;
@@ -3173,10 +3172,10 @@ int		handle_d(const char *format, va_list list, int i, struct parser parsed)
 	parsed.zero_and_digit = 0;
 	parsed.blank = 0;
 	parsed.blank_and_digit = 0;
-	parsed.width_and_minus = 0;
-	parsed.width_and_zero = 0;
-	parsed.width_and_plus = 0;
-	parsed.width = 0;
+	// parsed.width_and_minus = 0;
+	// parsed.width_and_zero = 0;
+	// parsed.width_and_plus = 0;
+	// parsed.width = 0;
 	if (format[i + 1] == '+' && (format[i + 2] == 'd' || format[i + 2] == 'h' || format[i + 2] == 'l' || format[i + 2] == 'i'))
 		parsed.plus = 1;
 	else if (format[i + 1] == '+' && (format[i + 2] >= 48 && format[i + 2] <= 57))
@@ -3525,8 +3524,8 @@ int main()
 	// printf("---> Hello % 0lli % 0lli\n", llong1, llong2);
 	// printf("---> Hello % 025lli % 020lli\n", llong1, llong2);
 	// printf("---> Hello % lli\n", llong1);
-	printf("---> Hello --- %+*d --- %-*d --- %0*d ---\n ======================= \n", 10, number, 30, number, 20, number);
-	printf ("=====");
+	// printf("---> Hello --- %*d --- %+*d --- %-*d --- %0*d ---\n ======================= \n", 10, number, 10, number, 30, number, 20, number);
+	// printf ("=====");
 
 
 	// ft_printf("---> Hello --- %i --- %i ---\n", number, number2);
@@ -3579,8 +3578,8 @@ int main()
 	// ft_printf("---> Hello % 0lli % 0lli\n", llong1, llong2);
 	// ft_printf("---> Hello % 025lli % 020lli\n", llong1, llong2);
 	// ft_printf("---> Hello % lli\n", llong1);
-	ft_printf("---> Hello --- %+*d --- %-*d --- %0*d ---\n", 10, number, 30, number, 20, number);
-	ft_printf ("=====");
+	// ft_printf("---> Hello --- %*d --- %+*d --- %-*d --- %0*d ---\n", 10, number, 10, number, 30, number, 20, number);
+	// ft_printf ("=====");
 
 /*
 	printf("Char\n");
@@ -3827,13 +3826,13 @@ int main()
 
 	//ft_printf("---> Hello --- %*d --- %10d --- %*d ---\n", 10, number, number, 20, number);
 	   printf("\n---> Hello --- %010d --- %02d --- %020d ---\n", number, number, number);
-	   printf("---> Hello --- %+10d --- %+2d --- %+20d ---\n", number, number, number);
-	  printf("---> Hello --- %-10d --- %-2d --- %-20d ---\n", number, number, number);
+	//   printf("---> Hello --- %+10d --- %+2d --- %+20d ---\n", number, number, number);
+	//  printf("---> Hello --- %-10d --- %-2d --- %-20d ---\n", number, number, number);
 		 printf("\n---> Hello --- %0*d --- %0*d --- %0*d ---\n", 10, number, 2, number, 20, number);
-	   printf("---> Hello --- %+*d --- %+*d --- %+*d ---\n", 10, number, 2, number, 20, number);
-	   printf("---> Hello --- %-*d --- %-*d --- %-*d ---\n", 10, number, 2, number, 20, number);
+	 //  printf("---> Hello --- %+*d --- %+*d --- %+*d ---\n", 10, number, 2, number, 20, number);
+	 //  printf("---> Hello --- %-*d --- %-*d --- %-*d ---\n", 10, number, 2, number, 20, number);
 	   ft_printf("---> Hello --- %0*d --- %0*d --- %0*d ---\n", 10, number, 2, number, 20, number);
-	   ft_printf("---> Hello --- %+*d --- %+*d --- %+*d ---\n", 10, number, 2, number, 20, number);
-	   ft_printf("---> Hello --- %-*d --- %-*d --- %-*d ---\n", 10, number, 2, number, 20, number);
+	  //	ft_printf("---> Hello --- %+*d --- %+*d --- %+*d ---\n", 10, number, 2, number, 20, number);
+	  // ft_printf("---> Hello --- %-*d --- %-*d --- %-*d ---\n", 10, number, 2, number, 20, number);
     return (0);
 }
