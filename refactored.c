@@ -173,8 +173,7 @@ void	handle_x_continue(int j, int i, char *hexadecimal)
 			j--;
 		}
 		if (is_digit(hexadecimal[j] == 1))
-		{
-			
+		{	
 			write(1, &hexadecimal[j], 1);
 			j--;
 		}
@@ -193,15 +192,11 @@ void	handle_x(const char *format, va_list list)
 	i = 0;
 	j = 0;
 
-	// if (parsed_x.printed == 1)
-	// 	parsed_x.printed = 0;
-	// else
-	// {
 	decimal = va_arg(list, int);
 	quotient = decimal;
 	if (decimal < 0)
 		quotient = handle_negative_x(decimal);
-	if (quotient == 0) //&& parsed_x.printed == 0)
+	if (quotient == 0)
 		write(1, "0", 1);
 	while (quotient != 0)
 	{
@@ -214,9 +209,14 @@ void	handle_x(const char *format, va_list list)
 		quotient = quotient / 16;
 	}
 	handle_x_continue(j, i, hexadecimal);
-//	}
 }
-// handle x end
+
+
+void	handle_hui(const char *format, va_list list, struct parser parsed)
+{
+	write(1, "LOVI HUICA\n", 12);
+	write(1, "8===D\n", 6);
+}
 
 // handle X begin
 void	handle_X_continue(int j, int i, char *hexadecimal)
@@ -2248,16 +2248,18 @@ void		print_flags_blank(const char *format, va_list list, int res)
 {
 	int number;
 	int number2;
+	int number3;
 	int size;
 	// va_list cpy;
 	// va_copy(cpy, list);
 	size = 0;
 	number = va_arg(list, int);
 	number2 = number;
-	if (number2 < 0)
-	{	
-		write(1, " -", 2);
-		number2 = number2 * (-1);
+	number3 = number2;
+	if (number < 0)
+	{
+		size = size + 2;
+		number = number * (-1);
 	}
 	if (number == '0')
 		size++;
@@ -2267,11 +2269,16 @@ void		print_flags_blank(const char *format, va_list list, int res)
 		number = number / 10;
 	}
 	res = res - size;
-	write(1, " ", 1);
+	if (res == 0)
+		write(1, " ", 1);
 	while (res > 0)
 	{
 		write(1, " ", 1);
 		res--;
+	}
+	if (number3 < 0)
+	{	
+		write(1, " -", 2);
 	}
 	ft_putnbr(number2);
 	// va_end(cpy);
@@ -2287,10 +2294,9 @@ void		print_flags_blank_long(const char *format, va_list list, int res)
 	size = 0;
 	number = va_arg(list, long);
 	number2 = number;
-	if (number2 < 0)
+	if (number < 0)
 	{	
-		write(1, " -", 2);
-		number2 = number2 * (-1);
+		number = number * (-1);
 	}
 	if (number == '0')
 		size++;
@@ -2305,6 +2311,10 @@ void		print_flags_blank_long(const char *format, va_list list, int res)
 	{
 		write(1, " ", 1);
 		res--;
+	}
+	if (number2 < 0)
+	{	
+		number2 = number2 * (-1);
 	}
 	ft_putnbr_long(number2);
 	// va_end(cpy);
@@ -2458,6 +2468,7 @@ void	print_flags_blanks_zero_long(const char *format, va_list list, int res)
 	ft_putnbr_long(number2);
 }
 
+
 int		flag_blank_and_digit_d(const char *format, va_list list, int i, struct parser parsed)
 {
 	int res;
@@ -2490,14 +2501,13 @@ int		flag_blank_and_digit_d(const char *format, va_list list, int i, struct pars
 			res = res + ((int)format[i + count] - '0');
 			count++;
 		}
-	if (zero == 0)
-		print_flags_blank(format, list, res);
-	else if (zero == 1 && (format[i + 3] == 'd' || format[i + 3] == 'h' || format[i + 3] == 'i'))
-		print_flags_blanks_zero(format, list, res);
-	else
-		printf_flags_blank_and_zero_and_digit(format, list, res, parsed);
+		if (zero == 0)
+			print_flags_blank(format, list, res);
+		else if (zero == 1 && (format[i + 3] == 'd' || format[i + 3] == 'h' || format[i + 3] == 'i'))
+			print_flags_blanks_zero(format, list, res);
+		else
+			printf_flags_blank_and_zero_and_digit(format, list, res, parsed);
 	}
-	
 	return (count);
 }
 //	-------------------------       flag blank_and_digit end       -----------------------------
@@ -3250,8 +3260,11 @@ char    parse_format(const char *format, va_list list, int i)
     {
        i++;
     }
+	printf("%c", c);
 	if ((format[i] == 'd' || format[i] == 'i') && format[i - 1] == '*')
 		c = 42;
+	else if (format[i - 1] == '.' && format[i] == 'i' && format[i + 1] == '.')
+		c = 88;
     else if (format[i] == 's')
         c = 115;
     else if (format[i] == 'd')
@@ -3287,12 +3300,11 @@ char    parse_format_without_prec(const char *format, va_list list, int i)
     {
        i++;
     }
-	
     if (format[i] == 's')
         c = 115;
     else if (format[i] == 'd')
 		c = 100;
-    else if (format[i] == 'i')
+    else if (format[i] == 'i' && format[i + 1] != '.')
         c = 105;
     else if (format[i] == 'c')
         c = 99;
@@ -3420,12 +3432,10 @@ void    ft_printf(const char *format, ...)
 			parsed_x = flags_short_and_long(format, list, (i + 1), parsed_x);
 			if (ch == '*')
 			{
-				printf("%c", ch);
 				parsed_x.width_number = handle_field_width(format, list, i, parsed_x);
 				i = i + 1 + parsed_x.size;
 				ch = parse_format_without_prec(format, list, (i + 1));
 				parsed_x.size = 0;
-				printf("%c", ch);
 			}
 			if (ch == 's')
 			{
@@ -3485,6 +3495,11 @@ void    ft_printf(const char *format, ...)
 				parsed_x.precision_count = 0;
 				parsed_x.res = 0;
 			}
+			if (ch == 88)
+			{
+				handle_hui(format, list, parsed_x);
+				i = i + 3;
+			}
 			if (ch == '%')
 			{
 				write(1, "%", 1);
@@ -3527,14 +3542,16 @@ int main()
 	//unsigned long long int intX = 18446744073709551615;
 	int intx = 1;
 	int intX = 14;
-	int oct1 = 10;
-	int oct2 = -1;
+	int oct1 = 534;
+	int oct2 = -134;
 	float float1 = -1432423320.14357543;
 	float float2 = -43.02109;
 	float float3 = -1.54623;
 	// float float1 = 0;
 	// float float2 = 0;
 	// float float3 = 0;
+	int size;
+	size = 10;
 	short short1 = -21000;
 	short short2 = 22000;
 	long long1 = 9223372036854775807;
@@ -3607,7 +3624,6 @@ int main()
 	// printf("%.*s %.*s", 3, string, 2, string);
 	// printf("\n");
 	// ft_printf("%.*s %.*s\n", 3, string, 2, string);
-	printf ("=====");
 
 
 	//ft_printf("---> Hello --- %i --- %i ---\n", number, number2);
@@ -3662,17 +3678,17 @@ int main()
 	// ft_printf("---> Hello % lli\n", llong1);
 	// ft_printf("---> Hello --- %*d --- %+*i --- %-*i --- %0*i ---\n", 10, number, 10, number, 30, number, 20, number);
 	// ft_printf ("=====");
+	//ft_printf("%.i. %s", size, string);
 
-
-	printf("---> Hello --- %i --- %i ---\n", oct1, oct2);
-	printf("---> Hello --- %+i --- %+i --- %+i ---\n", oct1, oct2, oct1);
-	printf("---> Hello --- %+6i --- %+10i --- %+16i ---\n", oct1, oct2, oct1);
-	printf("---> Hello --- %-i --- %-i ---\n", oct1, oct2);
-	printf("---> Hello --- %-7i --- %-14i ---\n", oct1, oct2);
-	printf("---> Hello %0i %0i\n", oct1, oct2);	
-	printf("---> Hello %010i %03i\n", oct1, oct2);
-	printf("---> Hello % i % i\n", oct1, oct2);
-	printf("---> Hello % 0i % 0i\n", oct1, oct2);
+	//printf("---> Hello --- % i --- % 8i ---\n", oct1, oct2);
+	// printf("---> Hello --- %i --- %+i --- %+i ---\n", oct1, oct2, oct1);
+	// printf("---> Hello --- %+6i --- %+10i --- %+16i ---\n", oct1, oct2, oct1);
+	// printf("---> Hello --- %-i --- %-i ---\n", oct1, oct2);
+	// printf("---> Hello --- %-7i --- %-14i ---\n", oct1, oct2);
+	// printf("---> Hello %0i %0i\n", oct1, oct2);	
+	// printf("---> Hello %010i %03i\n", oct1, oct2);
+	// printf("---> Hello % i % i\n", oct1, oct2);
+	// printf("---> Hello % 0i % 0i\n", oct1, oct2);
 	// printf("---> Hello % 05i % 02i\n", number, number2);
 	// printf("---> Hello %+6hi %+10hi%+16hi\n", short1, short1, short2);
 	// printf("---> Hello %+hi %+hi%+hi\n", short1, short1, short1);
@@ -3715,16 +3731,15 @@ int main()
 	// printf("---> Hello % 025lli % 020lli\n", llong1, llong2);
 	// printf("---> Hello % lli\n", llong1);
 
-
-	ft_printf("---> Hello --- %i --- %i ---\n", oct1, oct2);
-	ft_printf("---> Hello --- %+i --- %+i --- %+i ---\n", oct1, oct2, oct1);
-	ft_printf("---> Hello --- %+6i --- %+10i --- %+16i ---\n", oct1, oct2, oct1);
-	ft_printf("---> Hello --- %-i --- %-i ---\n", oct1, oct2);
-	ft_printf("---> Hello --- %-7i --- %-14i ---\n", oct1, oct2);
-	ft_printf("---> Hello %0i %0i\n", oct1, oct2);	
-	ft_printf("---> Hello %010i %03i\n", oct1, oct2);
-	ft_printf("---> Hello % i % i\n", oct1, oct2);
-	ft_printf("---> Hello % 0i % 0i\n", oct1, oct2);
+	//ft_printf("---> Hello --- % i --- % 8i ---\n", oct1, oct2);
+	// ft_printf("---> Hello --- %+i --- %+i --- %+i ---\n", oct1, oct2, oct1);
+	// ft_printf("---> Hello --- %+6i --- %+10i --- %+16i ---\n", oct1, oct2, oct1);
+	// ft_printf("---> Hello --- %-i --- %-i ---\n", oct1, oct2);
+	// ft_printf("---> Hello --- %-7i --- %-14i ---\n", oct1, oct2);
+	// ft_printf("---> Hello %0i %0i\n", oct1, oct2);	
+	// ft_printf("---> Hello %010i %03i\n", oct1, oct2);
+	// ft_printf("---> Hello % i % i\n", oct1, oct2);
+	// ft_printf("---> Hello % 0i % 0i\n", oct1, oct2);
 	// ft_printf("---> Hello % 05i % 02i\n", number, number2);
 	// ft_printf("---> Hello %+6hi %+10hi%+16hi\n", short1, short1, short2);
 	// ft_printf("---> Hello %+hi %+hi%+hi\n", short1, short1, short1);
