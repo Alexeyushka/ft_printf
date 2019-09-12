@@ -57,6 +57,24 @@ typedef struct p
 	int string_precision;
 } structp_x;
 
+typedef struct f
+{
+	long long int length;
+	long long int length2;
+	long long int number;
+	long long int i;
+	long long int position;
+	long long int sign;
+	long double number2;
+	long double number3;
+	long double f;
+	char *r;
+	char *str;
+	char *test;
+	int len;
+	int p;
+	int k;
+} structf_x;
 
 //begin of lib
 
@@ -155,7 +173,6 @@ long	handle_negative_x(long decimal)
 
 void	handle_x_continue(int j, int i, char *hexadecimal)
 {
-	j = i - 1;
 	char tmp;
 	while (j >= 0)
 	{
@@ -187,11 +204,8 @@ void	handle_x(const char *format, va_list list)
 	long quotient;
 	long remainder;
 	int i;
-	int j;
 	
 	i = 0;
-	j = 0;
-
 	decimal = va_arg(list, int);
 	quotient = decimal;
 	if (decimal < 0)
@@ -208,7 +222,7 @@ void	handle_x(const char *format, va_list list)
 		i++;
 		quotient = quotient / 16;
 	}
-	handle_x_continue(j, i, hexadecimal);
+	handle_x_continue((i - 1), i, hexadecimal);
 }
 
 
@@ -219,9 +233,8 @@ void	handle_hui(const char *format, va_list list, struct p parsed)
 }
 
 // handle X begin
-void	handle_X_continue(int j, int i, char *hexadecimal)
+void	handle_bigx_continue(int j, int i, char *hexadecimal)
 {
-	j = i - 1;
 	char tmp;
 	while (j >= 0)
 	{
@@ -236,17 +249,15 @@ void	handle_X_continue(int j, int i, char *hexadecimal)
 	}
 }
 
-void	handle_X(const char *format, va_list list)
+void	handle_bigx(const char *format, va_list list)
 {
 	char hexadecimal[100];
 	long decimal;
 	long quotient;
 	long remainder;
 	int i;
-	int j;
 	
 	i = 0;
-	j = 0;
 	decimal = va_arg(list, int);
 	quotient = decimal;
 	if (decimal < 0)
@@ -263,7 +274,7 @@ void	handle_X(const char *format, va_list list)
 		i++;
 		quotient = quotient / 16;
 	}
-	handle_X_continue(j, i, hexadecimal);
+	handle_bigx_continue((i - 1), i, hexadecimal);
 }
 
 // handle X end
@@ -286,10 +297,8 @@ void	handle_o(const char *format, va_list list)
 	int tmp;
 	long octal[100];
 	int i;
-	int j;
 
 	i = 0;
-	j = 0;
 	decimal = va_arg(list, int);
 	if (decimal == 0)
 	{
@@ -304,12 +313,12 @@ void	handle_o(const char *format, va_list list)
 		decimal = decimal / 8;
 		i++;
 	}
-	j = i - 1;
-	while (j >= 0)
+	i = i - 1;
+	while (i >= 0)
 	{
-		tmp = octal[j];
+		tmp = octal[i];
 		ft_putnbr(tmp);
-		j--;
+		i--;
 	}
 }
 
@@ -391,117 +400,179 @@ int n_tu(int number, int count)
 
 /*** Convert float to string ***/
 
+struct	f innitiaize_struct_float(struct f f_nums)
+{
+	f_nums.length = 0;
+	f_nums.length2 = 0;
+	f_nums.number = 0;
+	f_nums.i = 0;
+	f_nums.position = 0;
+	f_nums.sign = 0;
+	f_nums.number2 = 0;
+	f_nums.number3 = 0;
+	f_nums.f = 0;
+	f_nums.p = 0;
+	f_nums.len = 0;
+	f_nums.k = 0;
+	return(f_nums);
+}
+
+struct f float_tenth_len(struct f f_nums)
+{
+	f_nums.sign = -1;   // -1 == positive number
+	if (f_nums.f < 0)
+	{
+		f_nums.sign = '-';
+		f_nums.f *= -1;
+	}
+	f_nums.number2 = f_nums.f;
+	f_nums.number = f_nums.f;
+	f_nums.length = 0;  // Size of decimal part
+	f_nums.length2 = 0; // Size of tenth
+	/* Calculate length2 tenth part */
+	while((f_nums.number2 - (long double)f_nums.number) != 0.0 &&
+		!((f_nums.number2 - (long double)f_nums.number) < 0.0)
+		&& f_nums.length2 <= 5)
+	{
+		f_nums.number2 = f_nums.f * (n_tu(10.0, f_nums.length2 + 1));
+		f_nums.number = f_nums.number2;
+		f_nums.length2++;
+	}
+	f_nums.number3 = f_nums.f*(n_tu(10.0, f_nums.length2 + 1));
+	return (f_nums);
+}
+
+struct f float_decimal_len(struct f f_nums)
+{
+
+	/* Calculate length decimal part */
+	while (f_nums.f > 1)
+	{
+		if (f_nums.length > -1)
+			f_nums.f /= 10;
+		f_nums.length++;
+	}
+	// for (f_nums.length = (f_nums.f > 1) ? 0 : 1; f_nums.f > 1; f_nums.length++)
+	// 	f_nums.f /= 10;
+	f_nums.position = f_nums.length;
+	f_nums.length = f_nums.length + 1 + f_nums.length2;
+	f_nums.number = f_nums.number2;
+	if (f_nums.sign == '-')
+	{
+		f_nums.length++;
+		f_nums.position++;
+	}
+	return (f_nums);
+}
+
+
 
 void handle_f_ld(const char *format, va_list list, struct p parsed)
 {
-	long long int length, length2, number, i, position, sign;
-	long double number2;
-	long double number3;
-	long double f;
-	char *r;
-	char *str;
-	int len;
-	int p;
+	struct f f_nums;
+	f_nums = innitiaize_struct_float(f_nums);
+	f_nums.f = va_arg(list, long double);
+	f_nums = float_tenth_len(f_nums);
+	f_nums = float_decimal_len(f_nums);
 
-	p = 0;
-	f = va_arg(list, long double);
-	sign = -1;   // -1 == positive number
-	if (f < 0)
+
+	f_nums.test = malloc(sizeof(char *) * f_nums.length + 1);
+	f_nums.r = malloc(sizeof(char *) * f_nums.length);
+	for (f_nums.i = f_nums.length; f_nums.i >= 0 ; f_nums.i--)
 	{
-		sign = '-';
-		f *= -1;
-	}
-	number2 = f;
-	number = f;
-	length = 0;  // Size of decimal part
-	length2 = 0; // Size of tenth
-
-	/* Calculate length2 tenth part */
-	while((number2 - (long double)number) != 0.0 && !((number2 - (long double)number) < 0.0) && length2 <= 5)
-	{
-		number2 = f * (n_tu(10.0, length2 + 1));
-		number = number2;
-		length2++;
-	}
-	number3 = f*(n_tu(10.0, length2 + 1));
-	char *test;
-	
-
-
-	/* Calculate length decimal part */
-	for (length = (f > 1) ? 0 : 1; f > 1; length++)
-		f /= 10;
-
-	position = length;
-	length = length + 1 + length2;
-	number = number2;
-	if (sign == '-')
-	{
-		length++;
-		position++;
-	}
-	test = malloc(sizeof(char *) * length + 1);
-	r = malloc(sizeof(char *) * length);
-	for (i = length; i >= 0 ; i--)
-	{
-	if (i == (length))
-			r[i] = '\0';
-		else if(i == (position))
-			r[i] = '.';
-		else if(sign == '-' && i == 0)
-			r[i] = '-';
+	if (f_nums.i == (f_nums.length))
+			f_nums.r[f_nums.i] = '\0';
+		else if(f_nums.i == (f_nums.position))
+			f_nums.r[f_nums.i] = '.';
+		else if(f_nums.sign == '-' && f_nums.i == 0)
+			f_nums.r[f_nums.i] = '-';
 		else
 		{
-			r[i] = (number % 10) + '0';
-			number /=10;
+			f_nums.r[f_nums.i] = (f_nums.number % 10) + '0';
+			f_nums.number /=10;
 		}
 	}
-	number = number3;
+	f_nums.number = f_nums.number3;
 	//
-	for (i = length + 1; i >= 0 ; i--)
+	for (f_nums.i = f_nums.length + 1; f_nums.i >= 0 ; f_nums.i--)
 	{
-	if (i == (length + 1))
-			test[i] = '\0';
-		else if(i == (position))
-			test[i] = '.';
-		else if(sign == '-' && i == 0)
-			test[i] = '-';
+	if (f_nums.i == (f_nums.length + 1))
+			f_nums.test[f_nums.i] = '\0';
+		else if(f_nums.i == (f_nums.position))
+			f_nums.test[f_nums.i] = '.';
+		else if(f_nums.sign == '-' && f_nums.i == 0)
+			f_nums.test[f_nums.i] = '-';
 		else
 		{
-			test[i] = (number % 10) + '0';
-			number /=10;
+			f_nums.test[f_nums.i] = (f_nums.number % 10) + '0';
+			f_nums.number /=10;
 		}
 	}
 	//
-	if (test[length] >= 53 && test[length] <= 57)
-		r[length - 1] = r[length - 1] + 1;
-	len = ft_strlen_double(r);
-	i = 0;
+	if (f_nums.test[f_nums.length] >= 53 && f_nums.test[f_nums.length] <= 57)
+		f_nums.r[f_nums.length - 1] = f_nums.r[f_nums.length - 1] + 1;
+	// len = ft_strlen_double(r);
+	// i = 0;
+	// int k;
+	// k = 7 - len;
+	// while (r[i] != '\0')
+	// {
+	// 	write(1, &r[i], 1);
+	// 	if (r[i] == '.')
+	// 	{
+	// 		while (len > 1 && r[i] != '\0')
+	// 		{
+	// 			i++;
+	// 			if (r[i] >= 48 && r[i] <= 57) 
+	// 			{	
+	// 				write(1, &r[i], 1);
+	// 			}
+	// 		len--;
+	// 		}
+	// 	}
+	// 	i++;
+	// }
+	f_nums.len = ft_strlen_double(f_nums.r);
+	f_nums.i = 0;
 	int k;
-	k = 7 - len;
-	while (r[i] != '\0')
+	f_nums.k = 7 - f_nums.len - (6 - parsed.precision);
+	if (parsed.precision > 6)
+		f_nums.k = 7 - f_nums.len - (6 - parsed.precision);
+	if (parsed.precision_zero == 1)
+		f_nums.k = f_nums.k - 1;
+	while (f_nums.r[f_nums.i] != '\0')
 	{
-		write(1, &r[i], 1);
-		if (r[i] == '.')
+		write(1, &f_nums.r[f_nums.i], 1);
+		if (f_nums.r[f_nums.i] == '.')
 		{
-			while (len > 1 && r[i] != '\0')
+			if (parsed.precision != 0)
+			{	
+				f_nums.len = parsed.precision + 1;
+				parsed.res = 1;
+			}
+			while (f_nums.len > 1 && f_nums.r[f_nums.i] != '\0')
 			{
-				i++;
-				if (r[i] >= 48 && r[i] <= 57) 
-				{	
-					write(1, &r[i], 1);
-				}
-			len--;
+				f_nums.i++;
+				write(1, &f_nums.r[f_nums.i], 1);
+			f_nums.len--;
+			}
+			if (parsed.res == 1)
+			{	
+				parsed.res = 0;
+				break ;
 			}
 		}
-		i++;
+		f_nums.i++;
+		if (f_nums.r[f_nums.i] == '.' && parsed.precision_zero == 1)
+			break;
 	}
-	while (k > 0)
+
+	while (f_nums.k > 0)
 	{
 		write(1, "0", 1);
-		k--;
+		f_nums.k--;
 	}
-	free(r);
+	free(f_nums.r);
 }
 
 
@@ -512,6 +583,7 @@ void handle_f(const char *format, va_list list, struct p parsed)
 {
 	long long int length, length2, number, i, position, sign;
 	float number2;
+	long double number3;
 	float f;
 	char *r;
 	char *str;
@@ -539,13 +611,14 @@ void handle_f(const char *format, va_list list, struct p parsed)
 	length = 0;  // Size of decimal part
 	length2 = 0; // Size of tenth
 	/* Calculate length2 tenth part */
-	while((number2 - (float)number) != 0.0 && !((number2 - (float)number) < 0.0) )
+	while((number2 - (float)number) != 0.0 && !((number2 - (float)number) < 0.0) && length2 <= 5)
 	{
 		number2 = f * (n_tu(10.0, length2 + 1));
 		number = number2;
 		length2++;
 	}
 	/* Calculate length decimal part */
+
 	for (length = (f > 1) ? 0 : 1; f > 1; length++)
 		f /= 10;
 
@@ -557,6 +630,8 @@ void handle_f(const char *format, va_list list, struct p parsed)
 		length++;
 		position++;
 	}
+
+	//test = malloc(sizeof(char *) * length + 1); //
 	r = malloc(sizeof(char *) * length);
 	for (i = length; i >= 0 ; i--)
 	{
@@ -572,10 +647,13 @@ void handle_f(const char *format, va_list list, struct p parsed)
 			number /=10;
 		}
 	}
+
+	// if (test[length] >= 53 && test[length] <= 57)
+	// 	r[length - 1] = r[length - 1] + 1;
 	len = ft_strlen_double(r);
 	i = 0;
 	int k;
-	k = 7 - len;
+	k = 7 - len - (6 - parsed.precision);
 	if (parsed.precision > 6)
 		k = 7 - len - (6 - parsed.precision);
 	if (parsed.precision_zero == 1)
@@ -593,10 +671,7 @@ void handle_f(const char *format, va_list list, struct p parsed)
 			while (len > 1 && r[i] != '\0')
 			{
 				i++;
-				if (r[i] >= 48 && r[i] <= 57) 
-				{	
-					write(1, &r[i], 1);
-				}
+				write(1, &r[i], 1);
 			len--;
 			}
 			if (parsed.res == 1)
@@ -609,6 +684,7 @@ void handle_f(const char *format, va_list list, struct p parsed)
 		if (r[i] == '.' && parsed.precision_zero == 1)
 			break;
 	}
+
 	while (k > 0)
 	{
 		write(1, "0", 1);
@@ -3359,7 +3435,7 @@ void    ft_printf(const char *format, ...)
 			}
 			if (ch == 'X')
 			{
-				handle_X(format, list);
+				handle_bigx(format, list);
 				i = i + 1;
 			}
 			if (ch == 'o')
@@ -3427,7 +3503,7 @@ int main()
 	int intX = 14;
 	int oct1 = 534;
 	int oct2 = -134;
-	float float1 = -1432420.14543;
+	float float1 = -1422.849;
 	float float2 = -43.02109;
 	float float3 = -1.54623;
 	// float float1 = 0;
@@ -3680,6 +3756,9 @@ int main()
 	// printf("Octal\n");
 	// printf("---> Hello %o %o\n", oct1, oct2);
 
+	// 	printf("Octal\n");
+	// ft_printf("---> Hello %o %o\n", oct1, oct2);
+
 	// printf("Float\n");
 //	printf("---> Hello %f %f %f\n", float1, float2, float3);
 /*	
@@ -3775,11 +3854,11 @@ int main()
 	// printf("---> Hello % lld\n", llong1);
 
 //	printf("---> Hello --- %*d --- %*d --- %*d ---\n", 10, number, 30, number, 20, number);
-// 	printf("---> Hello %lf %lf %lf\n", float1, float2, float3);
-// 	printf("---> Hello %Lf %Lf %Lf\n", ld1, ld2, ld3);
-// //
-// 	printf("---> Hello %.9f %.0f %.8f\n", float1, float2, float3);
-	printf("---> Hello %f %f %f\n", float1, float2, float3);
+	printf("1 ---> Hello %lf %lf %lf\n", float1, float2, float3);
+	printf("2 ---> Hello %Lf %Lf %Lf\n", ld1, ld2, ld3);
+
+	printf("3 ---> Hello %.9f %.0f %.3f\n", float1, float2, float3);
+	printf("4 ---> Hello %.2f %.3f %.1f\n", float1, float2, float3);
 
 printf("===");
 //	printf("---> Hello %#x xxxx %#0x xxxx 1 %0#x xxxx %#010x xxxx %#10x xxxx %#-x xxxx %#-10x xxxx %-#x xxxx 1 %-#10x xxxx %-10x xxxx %10x xxxx %010x \n", intx, intx, intx, intx, intx, intx, intx, intx, intx, intx, intx, intx);
@@ -3895,11 +3974,11 @@ printf("===");
 	// ft_printf("---> Hello % 025lld % 020lld\n", llong1, llong2);
 	// ft_printf("---> Hello % lld\n", llong1);
 
-	// ft_printf("---> Hello %lf %lf %lf\n", float1, float2, float3);
-	// ft_printf("---> Hello %Lf %Lf %Lf\n", ld1, ld2, ld3);
+	ft_printf("\n\n1 ---> Hello %lf %lf %lf\n", float1, float2, float3);
+	ft_printf("2 ---> Hello %Lf %Lf %Lf\n", ld1, ld2, ld3);
 
-	// ft_printf("---> Hello %.9f %.0f %.8f\n", float1, float2, float3);
-	ft_printf("---> Hello %f %f %f\n", float1, float2, float3);
+	ft_printf("3 ---> Hello %.9f %.0f %.3f\n", float1, float2, float3);
+	ft_printf("4 ---> Hello %.2f %.3f %.1f\n", float1, float2, float3);
 
 
 	// ft_printf("---> Hello %lf %lf %lf\n", float1, float2, float3);
