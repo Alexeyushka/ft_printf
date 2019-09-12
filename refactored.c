@@ -465,18 +465,177 @@ struct f float_decimal_len(struct f f_nums)
 	return (f_nums);
 }
 
-
-
-void handle_f_ld(const char *format, va_list list, struct p parsed)
+struct f float_dot(struct f f_nums)
 {
-	struct f f_nums;
-	f_nums = innitiaize_struct_float(f_nums);
+	f_nums.i = f_nums.length;
+	while (f_nums.i >= 0)
+	// for (f_nums.i = f_nums.length; f_nums.i >= 0 ; f_nums.i--)
+	{
+		if (f_nums.i == (f_nums.length))
+			f_nums.r[f_nums.i] = '\0';
+		else if(f_nums.i == (f_nums.position))
+			f_nums.r[f_nums.i] = '.';
+		else if(f_nums.sign == '-' && f_nums.i == 0)
+			f_nums.r[f_nums.i] = '-';
+		else
+		{
+			f_nums.r[f_nums.i] = (f_nums.number % 10) + '0';
+			f_nums.number /=10;
+		}
+		// f_nums.i = f_nums.length;
+		f_nums.i--;
+	}
+	return (f_nums);
+}
+
+struct f float_count_last(struct f f_nums)
+{
+	f_nums.number = f_nums.number3;
+	f_nums.i = f_nums.length + 1;
+	while (f_nums.i >= 0)
+	// for (f_nums.i = f_nums.length + 1; f_nums.i >= 0 ; f_nums.i--)
+	{
+		if (f_nums.i == (f_nums.length + 1))
+			f_nums.test[f_nums.i] = '\0';
+		else if(f_nums.i == (f_nums.position))
+			f_nums.test[f_nums.i] = '.';
+		else if(f_nums.sign == '-' && f_nums.i == 0)
+			f_nums.test[f_nums.i] = '-';
+		else
+		{
+			f_nums.test[f_nums.i] = (f_nums.number % 10) + '0';
+			f_nums.number /=10;
+		}
+		f_nums.i--;	
+	}
+	if (f_nums.test[f_nums.length] >= 53 && f_nums.test[f_nums.length] <= 57)
+		f_nums.r[f_nums.length - 1] = f_nums.r[f_nums.length - 1] + 1;
+	return (f_nums);
+}
+
+struct f float_count_precision(struct f f_nums, struct p parsed)
+{
+	f_nums.i = 0;
+	f_nums.k = 7 - f_nums.len - (6 - parsed.precision);
+	if (parsed.precision > 6)
+		f_nums.k = 7 - f_nums.len - (6 - parsed.precision);
+	if (parsed.precision_zero == 1)
+		f_nums.k = f_nums.k - 1;
+	return (f_nums);
+}
+
+struct f float_print(struct f f_nums, struct p parsed)
+{
+	while (f_nums.r[f_nums.i] != '\0')
+	{
+		write(1, &f_nums.r[f_nums.i], 1);
+		if (f_nums.r[f_nums.i] == '.')
+		{
+			if (parsed.precision != 0)
+			{	
+				f_nums.len = parsed.precision + 1;
+				parsed.res = 1;
+			}
+			while (f_nums.len > 1 && f_nums.r[f_nums.i] != '\0')
+			{
+				f_nums.i++;
+				write(1, &f_nums.r[f_nums.i], 1);
+			f_nums.len--;
+			}
+			if (parsed.res == 1)
+			{	
+				parsed.res = 0;
+				break ;
+			}
+		}
+		f_nums.i++;
+		if (f_nums.r[f_nums.i] == '.' && parsed.precision_zero == 1)
+			break;
+	}
+	return (f_nums);
+}
+
+struct f float_print_zeros(struct f f_nums)
+{
+	while (f_nums.k > 0)
+	{
+		write(1, "0", 1);
+		f_nums.k--;
+	}
+	return (f_nums);
+}
+
+void handle_f_ld(const char *format, va_list list, struct p parsed, struct f f_nums)
+{
+
 	f_nums.f = va_arg(list, long double);
 	f_nums = float_tenth_len(f_nums);
 	f_nums = float_decimal_len(f_nums);
-
-
 	f_nums.test = malloc(sizeof(char *) * f_nums.length + 1);
+	f_nums.r = malloc(sizeof(char *) * f_nums.length);
+	f_nums = float_dot(f_nums);
+	f_nums = float_count_last(f_nums);
+	f_nums.len = ft_strlen_double(f_nums.r);
+	f_nums = float_count_precision(f_nums, parsed);
+	f_nums = float_print(f_nums, parsed);
+	f_nums = float_print_zeros(f_nums);
+	free(f_nums.r);
+}
+
+
+
+// handle float
+
+void handle_f(const char *format, va_list list, struct p parsed)
+{
+	struct f f_nums;
+	f_nums = innitiaize_struct_float(f_nums);
+	if (parsed.largel == 1)
+	{	
+		handle_f_ld(format, list, parsed, f_nums);
+		parsed.largel = 0;
+		return ;
+	}
+	f_nums.f = va_arg(list, double);
+	f_nums = float_tenth_len(f_nums);
+
+	// f_nums.sign = -1;   // -1 == positive number
+	// if (f_nums.f < 0)
+	// {
+	// 	f_nums.sign = '-';
+	// 	f_nums.f *= -1;
+	// }
+	// if (f_nums.f == 0 && parsed.precision_zero == 1)
+	// {	
+	// 	write(1, "0", 1);
+	// 	return ;
+	// }
+	// f_nums.number2 = f_nums.f;
+	// f_nums.number = f_nums.f;
+	// f_nums.length = 0;  // Size of decimal part
+	// f_nums.length2 = 0; // Size of tenth
+	// /* Calculate length2 tenth part */
+	// while((f_nums.number2 - (float)f_nums.number) != 0.0 && !((f_nums.number2 - (float)f_nums.number) < 0.0) && f_nums.length2 <= 5)
+	// {
+	// 	f_nums.number2 = f_nums.f * (n_tu(10.0, f_nums.length2 + 1));
+	// 	f_nums.number = f_nums.number2;
+	// 	f_nums.length2++;
+	// }
+	/* Calculate length decimal part */
+
+	for (f_nums.length = (f_nums.f > 1) ? 0 : 1; f_nums.f > 1; f_nums.length++)
+		f_nums.f /= 10;
+
+	f_nums.position = f_nums.length;
+	f_nums.length = f_nums.length + 1 + f_nums.length2;
+	f_nums.number = f_nums.number2;
+	if (f_nums.sign == '-')
+	{
+		f_nums.length++;
+		f_nums.position++;
+	}
+
+	// f_nums.test = malloc(sizeof(char *) * f_nums.length + 1); //
 	f_nums.r = malloc(sizeof(char *) * f_nums.length);
 	for (f_nums.i = f_nums.length; f_nums.i >= 0 ; f_nums.i--)
 	{
@@ -492,46 +651,9 @@ void handle_f_ld(const char *format, va_list list, struct p parsed)
 			f_nums.number /=10;
 		}
 	}
-	f_nums.number = f_nums.number3;
-	//
-	for (f_nums.i = f_nums.length + 1; f_nums.i >= 0 ; f_nums.i--)
-	{
-	if (f_nums.i == (f_nums.length + 1))
-			f_nums.test[f_nums.i] = '\0';
-		else if(f_nums.i == (f_nums.position))
-			f_nums.test[f_nums.i] = '.';
-		else if(f_nums.sign == '-' && f_nums.i == 0)
-			f_nums.test[f_nums.i] = '-';
-		else
-		{
-			f_nums.test[f_nums.i] = (f_nums.number % 10) + '0';
-			f_nums.number /=10;
-		}
-	}
-	//
-	if (f_nums.test[f_nums.length] >= 53 && f_nums.test[f_nums.length] <= 57)
-		f_nums.r[f_nums.length - 1] = f_nums.r[f_nums.length - 1] + 1;
-	// len = ft_strlen_double(r);
-	// i = 0;
-	// int k;
-	// k = 7 - len;
-	// while (r[i] != '\0')
-	// {
-	// 	write(1, &r[i], 1);
-	// 	if (r[i] == '.')
-	// 	{
-	// 		while (len > 1 && r[i] != '\0')
-	// 		{
-	// 			i++;
-	// 			if (r[i] >= 48 && r[i] <= 57) 
-	// 			{	
-	// 				write(1, &r[i], 1);
-	// 			}
-	// 		len--;
-	// 		}
-	// 	}
-	// 	i++;
-	// }
+
+	// if (f_nums.test[f_nums.length] >= 53 && f_nums.test[f_nums.length] <= 57)
+	// 	f_nums.r[f_nums.length - 1] = f_nums.r[f_nums.length - 1] + 1;
 	f_nums.len = ft_strlen_double(f_nums.r);
 	f_nums.i = 0;
 	int k;
@@ -539,7 +661,7 @@ void handle_f_ld(const char *format, va_list list, struct p parsed)
 	if (parsed.precision > 6)
 		f_nums.k = 7 - f_nums.len - (6 - parsed.precision);
 	if (parsed.precision_zero == 1)
-		f_nums.k = f_nums.k - 1;
+		f_nums.k =f_nums. k - 1;
 	while (f_nums.r[f_nums.i] != '\0')
 	{
 		write(1, &f_nums.r[f_nums.i], 1);
@@ -573,124 +695,6 @@ void handle_f_ld(const char *format, va_list list, struct p parsed)
 		f_nums.k--;
 	}
 	free(f_nums.r);
-}
-
-
-
-// handle float
-
-void handle_f(const char *format, va_list list, struct p parsed)
-{
-	long long int length, length2, number, i, position, sign;
-	float number2;
-	long double number3;
-	float f;
-	char *r;
-	char *str;
-	int len;
-	if (parsed.largel == 1)
-	{	
-		handle_f_ld(format, list, parsed);
-		parsed.largel = 0;
-		return ;
-	}
-	f = va_arg(list, double);
-	sign = -1;   // -1 == positive number
-	if (f < 0)
-	{
-		sign = '-';
-		f *= -1;
-	}
-	if (f == 0 && parsed.precision_zero == 1)
-	{	
-		write(1, "0", 1);
-		return ;
-	}
-	number2 = f;
-	number = f;
-	length = 0;  // Size of decimal part
-	length2 = 0; // Size of tenth
-	/* Calculate length2 tenth part */
-	while((number2 - (float)number) != 0.0 && !((number2 - (float)number) < 0.0) && length2 <= 5)
-	{
-		number2 = f * (n_tu(10.0, length2 + 1));
-		number = number2;
-		length2++;
-	}
-	/* Calculate length decimal part */
-
-	for (length = (f > 1) ? 0 : 1; f > 1; length++)
-		f /= 10;
-
-	position = length;
-	length = length + 1 + length2;
-	number = number2;
-	if (sign == '-')
-	{
-		length++;
-		position++;
-	}
-
-	//test = malloc(sizeof(char *) * length + 1); //
-	r = malloc(sizeof(char *) * length);
-	for (i = length; i >= 0 ; i--)
-	{
-	if (i == (length))
-			r[i] = '\0';
-		else if(i == (position))
-			r[i] = '.';
-		else if(sign == '-' && i == 0)
-			r[i] = '-';
-		else
-		{
-			r[i] = (number % 10) + '0';
-			number /=10;
-		}
-	}
-
-	// if (test[length] >= 53 && test[length] <= 57)
-	// 	r[length - 1] = r[length - 1] + 1;
-	len = ft_strlen_double(r);
-	i = 0;
-	int k;
-	k = 7 - len - (6 - parsed.precision);
-	if (parsed.precision > 6)
-		k = 7 - len - (6 - parsed.precision);
-	if (parsed.precision_zero == 1)
-		k = k - 1;
-	while (r[i] != '\0')
-	{
-		write(1, &r[i], 1);
-		if (r[i] == '.')
-		{
-			if (parsed.precision != 0)
-			{	
-				len = parsed.precision + 1;
-				parsed.res = 1;
-			}
-			while (len > 1 && r[i] != '\0')
-			{
-				i++;
-				write(1, &r[i], 1);
-			len--;
-			}
-			if (parsed.res == 1)
-			{	
-				parsed.res = 0;
-				break ;
-			}
-		}
-		i++;
-		if (r[i] == '.' && parsed.precision_zero == 1)
-			break;
-	}
-
-	while (k > 0)
-	{
-		write(1, "0", 1);
-		k--;
-	}
-	free(r);
 }
 
 
