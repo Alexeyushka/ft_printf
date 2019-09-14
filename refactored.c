@@ -582,8 +582,6 @@ void handle_f_ld(const char *format, va_list list, struct p parsed, struct f f_n
 	free(f_nums.r);
 }
 
-
-
 // handle float
 
 void handle_f(const char *format, va_list list, struct p parsed)
@@ -598,102 +596,14 @@ void handle_f(const char *format, va_list list, struct p parsed)
 	}
 	f_nums.f = va_arg(list, double);
 	f_nums = float_tenth_len(f_nums);
-
-	// f_nums.sign = -1;   // -1 == positive number
-	// if (f_nums.f < 0)
-	// {
-	// 	f_nums.sign = '-';
-	// 	f_nums.f *= -1;
-	// }
-	// if (f_nums.f == 0 && parsed.precision_zero == 1)
-	// {	
-	// 	write(1, "0", 1);
-	// 	return ;
-	// }
-	// f_nums.number2 = f_nums.f;
-	// f_nums.number = f_nums.f;
-	// f_nums.length = 0;  // Size of decimal part
-	// f_nums.length2 = 0; // Size of tenth
-	// /* Calculate length2 tenth part */
-	// while((f_nums.number2 - (float)f_nums.number) != 0.0 && !((f_nums.number2 - (float)f_nums.number) < 0.0) && f_nums.length2 <= 5)
-	// {
-	// 	f_nums.number2 = f_nums.f * (n_tu(10.0, f_nums.length2 + 1));
-	// 	f_nums.number = f_nums.number2;
-	// 	f_nums.length2++;
-	// }
-	/* Calculate length decimal part */
-
-	for (f_nums.length = (f_nums.f > 1) ? 0 : 1; f_nums.f > 1; f_nums.length++)
-		f_nums.f /= 10;
-
-	f_nums.position = f_nums.length;
-	f_nums.length = f_nums.length + 1 + f_nums.length2;
-	f_nums.number = f_nums.number2;
-	if (f_nums.sign == '-')
-	{
-		f_nums.length++;
-		f_nums.position++;
-	}
-
-	// f_nums.test = malloc(sizeof(char *) * f_nums.length + 1); //
+	f_nums = float_decimal_len(f_nums);
 	f_nums.r = malloc(sizeof(char *) * f_nums.length);
-	for (f_nums.i = f_nums.length; f_nums.i >= 0 ; f_nums.i--)
-	{
-	if (f_nums.i == (f_nums.length))
-			f_nums.r[f_nums.i] = '\0';
-		else if(f_nums.i == (f_nums.position))
-			f_nums.r[f_nums.i] = '.';
-		else if(f_nums.sign == '-' && f_nums.i == 0)
-			f_nums.r[f_nums.i] = '-';
-		else
-		{
-			f_nums.r[f_nums.i] = (f_nums.number % 10) + '0';
-			f_nums.number /=10;
-		}
-	}
-
-	// if (f_nums.test[f_nums.length] >= 53 && f_nums.test[f_nums.length] <= 57)
-	// 	f_nums.r[f_nums.length - 1] = f_nums.r[f_nums.length - 1] + 1;
+	f_nums = float_dot(f_nums);
+	//f_nums = float_count_last(f_nums);
 	f_nums.len = ft_strlen_double(f_nums.r);
-	f_nums.i = 0;
-	int k;
-	f_nums.k = 7 - f_nums.len - (6 - parsed.precision);
-	if (parsed.precision > 6)
-		f_nums.k = 7 - f_nums.len - (6 - parsed.precision);
-	if (parsed.precision_zero == 1)
-		f_nums.k =f_nums. k - 1;
-	while (f_nums.r[f_nums.i] != '\0')
-	{
-		write(1, &f_nums.r[f_nums.i], 1);
-		if (f_nums.r[f_nums.i] == '.')
-		{
-			if (parsed.precision != 0)
-			{	
-				f_nums.len = parsed.precision + 1;
-				parsed.res = 1;
-			}
-			while (f_nums.len > 1 && f_nums.r[f_nums.i] != '\0')
-			{
-				f_nums.i++;
-				write(1, &f_nums.r[f_nums.i], 1);
-			f_nums.len--;
-			}
-			if (parsed.res == 1)
-			{	
-				parsed.res = 0;
-				break ;
-			}
-		}
-		f_nums.i++;
-		if (f_nums.r[f_nums.i] == '.' && parsed.precision_zero == 1)
-			break;
-	}
-
-	while (f_nums.k > 0)
-	{
-		write(1, "0", 1);
-		f_nums.k--;
-	}
+	f_nums = float_count_precision(f_nums, parsed);
+	f_nums = float_print(f_nums, parsed);
+	f_nums = float_print_zeros(f_nums);
 	free(f_nums.r);
 }
 
@@ -774,10 +684,8 @@ int		flag_count_size(const char *format, va_list list, struct p parsed)
 	long quotient;
 	long remainder;
 	int i;
-	int j;
 
 	i = 0;
-	j = 0;
 	va_list cpy;
 	va_copy(cpy, list);
 	decimal = va_arg(cpy, int);
@@ -802,8 +710,8 @@ int		flag_count_size(const char *format, va_list list, struct p parsed)
 
 void	handle_x_continue_blanks(int j, int i, char *hexadecimal)
 {
-	j = i - 1;
 	char tmp;
+
 	while (j >= 0)
 	{
 		if (is_upper(hexadecimal[j]) == 1)
@@ -836,8 +744,8 @@ void	handle_x_continue_blanks(int j, int i, char *hexadecimal)
 
 void	flag_hash_only_print_blanks_continue_more(int j, int i, char *hexadecimal)
 {
-	j = i - 1;
 	char tmp;
+
 	while (j >= 0)
 	{
 		if (is_upper(hexadecimal[j]) == 1)
@@ -869,11 +777,8 @@ void	flag_hash_only_print_blanks_continue(const char *format, va_list list, stru
 	long quotient;
 	long remainder;
 	int i;
-	int j;
 	
 	i = 0;
-	j = 0;
-
 	decimal = va_arg(list, int);
 	quotient = decimal;
 	if (decimal < 0)
@@ -888,7 +793,7 @@ void	flag_hash_only_print_blanks_continue(const char *format, va_list list, stru
 		i++;
 		quotient = quotient / 16;
 	}
-	flag_hash_only_print_blanks_continue_more(j, i, hexadecimal);
+	flag_hash_only_print_blanks_continue_more((i - 1), i, hexadecimal);
 }
 
 int	flag_hash_only_print_blanks(const char *format, va_list list)
@@ -898,10 +803,8 @@ int	flag_hash_only_print_blanks(const char *format, va_list list)
 	long quotient;
 	long remainder;
 	int i;
-	int j;
 
 	i = 0;
-	j = 0;
 	va_list cpy;
 	va_copy(cpy, list);
 	struct p parsed;
@@ -953,8 +856,8 @@ int		flag_hash_only(const char *format, va_list list, int i, struct p parsed)
 
 void	flag_hash_and_zero_print_continue(int j, int i, char *hexadecimal)
 {
-	j = i - 1;
 	char tmp;
+
 	while (j >= 0)
 	{
 		if (is_upper(hexadecimal[j]) == 1)
@@ -986,11 +889,8 @@ void	flag_hash_and_zero_print(const char *format, va_list list, struct p parsed_
 	long quotient;
 	long remainder;
 	int i;
-	int j;
 	
 	i = 0;
-	j = 0;
-
 	decimal = va_arg(list, int);
 	quotient = decimal;
 	if (decimal < 0)
@@ -1009,7 +909,7 @@ void	flag_hash_and_zero_print(const char *format, va_list list, struct p parsed_
 	}
 		if (decimal != 0)
 		write(1, "0x", 2);
-	flag_hash_and_zero_print_continue(j, i, hexadecimal);
+	flag_hash_and_zero_print_continue((i - 1), i, hexadecimal);
 }
 
 int		flag_hash_and_zero(const char *format, va_list list, int res, struct p parsed)
@@ -1030,11 +930,8 @@ void	flag_zero_and_hash_print(const char *format, va_list list, struct p parsed_
 	long quotient;
 	long remainder;
 	int i;
-	int j;
 	
 	i = 0;
-	j = 0;
-
 	decimal = va_arg(list, int);
 	quotient = decimal;
 	if (decimal != 0)
@@ -1052,7 +949,7 @@ void	flag_zero_and_hash_print(const char *format, va_list list, struct p parsed_
 		i++;
 		quotient = quotient / 16;
 	}
-	handle_x_continue(j, i, hexadecimal);
+	handle_x_continue((i - 1), i, hexadecimal);
 	}
 	else
 		write(1, "0", 1);
@@ -1066,8 +963,8 @@ void	flag_zero_and_hash_print(const char *format, va_list list, struct p parsed_
 
 void	flag_zero_and_hash_and_digit_print_continue(int j, int i, char *hexadecimal)
 {
-	j = i - 1;
 	char tmp;
+
 	while (j >= 0)
 	{
 		if (is_upper(hexadecimal[j]) == 1)
@@ -1099,11 +996,8 @@ void	flag_zero_and_hash_and_digit_print(const char *format, va_list list, int re
 	long quotient;
 	long remainder;
 	int i;
-	int j;
 	
 	i = 0;
-	j = 0;
-
 	decimal = va_arg(list, int);
 	quotient = decimal;
 	if (decimal < 0)
@@ -1130,7 +1024,7 @@ void	flag_zero_and_hash_and_digit_print(const char *format, va_list list, int re
 		write(1, "0", 1);
 		res--;
 	}
-	flag_zero_and_hash_and_digit_print_continue(j, i, hexadecimal);
+	flag_zero_and_hash_and_digit_print_continue((i - 1), i, hexadecimal);
 }
 
 
@@ -1163,11 +1057,8 @@ void	flag_hash_and_digit_print(const char *format, va_list list, struct p parsed
 	long quotient;
 	long remainder;
 	int i;
-	int j;
 	
 	i = 0;
-	j = 0;
-
 	decimal = va_arg(list, int);
 	quotient = decimal;
 	if (decimal < 0)
@@ -1186,7 +1077,7 @@ void	flag_hash_and_digit_print(const char *format, va_list list, struct p parsed
 	}
 	if (decimal != 0)
 		write(1, "0x", 2);
-	handle_x_continue_blanks(j, i, hexadecimal);
+	handle_x_continue_blanks((i - 1), i, hexadecimal);
 }
 
 int	flag_hash_and_digit_blanks(const char *format, va_list list)
@@ -1196,10 +1087,8 @@ int	flag_hash_and_digit_blanks(const char *format, va_list list)
 	long quotient;
 	long remainder;
 	int i;
-	int j;
 
 	i = 0;
-	j = 0;
 	va_list cpy;
 	va_copy(cpy, list);
 	struct p parsed;
@@ -1272,13 +1161,11 @@ void	flag_hash_and_minus_continue(const char *format, va_list list)
 	long quotient;
 	long remainder;
 	int i;
-	int j;
+	struct p parsed;
 
 	i = 0;
-	j = 0;
 	va_list cpy;
 	va_copy(cpy, list);
-	struct p parsed;
 	decimal = va_arg(cpy, int);
 	quotient = decimal;
 	if (decimal < 0)
@@ -1326,11 +1213,8 @@ void	flag_hash_and_minus_and_digit_print(const char *format, va_list list, struc
 	long quotient;
 	long remainder;
 	int i;
-	int j;
 	
 	i = 0;
-	j = 0;
-
 	decimal = va_arg(list, int);
 	quotient = decimal;
 	if (decimal < 0)
@@ -1349,7 +1233,7 @@ void	flag_hash_and_minus_and_digit_print(const char *format, va_list list, struc
 	}
 	if (decimal != 0)
 		write(1, "0x", 2);
-	handle_x_continue_blanks(j, i, hexadecimal);
+	handle_x_continue_blanks((i - 1), i, hexadecimal);
 }
 
 int	flag_hash_and_minus_and_digit_blanks(const char *format, va_list list)
@@ -1359,10 +1243,8 @@ int	flag_hash_and_minus_and_digit_blanks(const char *format, va_list list)
 	long quotient;
 	long remainder;
 	int i;
-	int j;
 
 	i = 0;
-	j = 0;
 	va_list cpy;
 	va_copy(cpy, list);
 	struct p parsed;
@@ -1419,11 +1301,8 @@ void	flag_minus_and_digit_print(const char *format, va_list list, struct p parse
 	long quotient;
 	long remainder;
 	int i;
-	int j;
 	
 	i = 0;
-	j = 0;
-
 	decimal = va_arg(list, int);
 	quotient = decimal;
 	if (decimal < 0)
@@ -1440,7 +1319,7 @@ void	flag_minus_and_digit_print(const char *format, va_list list, struct p parse
 		i++;
 		quotient = quotient / 16;
 	}
-	handle_x_continue_blanks(j, i, hexadecimal);
+	handle_x_continue_blanks((i - 1), i, hexadecimal);
 }
 
 int	flag_minus_and_digit_blanks(const char *format, va_list list)
@@ -1450,10 +1329,8 @@ int	flag_minus_and_digit_blanks(const char *format, va_list list)
 	long quotient;
 	long remainder;
 	int i;
-	int j;
 
 	i = 0;
-	j = 0;
 	va_list cpy;
 	va_copy(cpy, list);
 	struct p parsed;
@@ -1509,11 +1386,8 @@ void	flag_zero_and_digit_printit(const char *format, va_list list, struct p pars
 	long quotient;
 	long remainder;
 	int i;
-	int j;
 	
 	i = 0;
-	j = 0;
-
 	decimal = va_arg(list, int);
 	quotient = decimal;
 	if (decimal < 0)
@@ -1530,7 +1404,7 @@ void	flag_zero_and_digit_printit(const char *format, va_list list, struct p pars
 		i++;
 		quotient = quotient / 16;
 	}
-	handle_x_continue(j, i, hexadecimal);
+	handle_x_continue((i - 1), i, hexadecimal);
 }
 
 void	flag_zero_and_digit_print(const char *format, va_list list, int res, struct p parsed)
@@ -1685,6 +1559,7 @@ void	flag_plus_and_digit(const char *format, va_list list, int res, struct p par
 {
 	int number;
 	int size;
+
 	va_list cpy;
 	va_copy(cpy, list);
 	size = 0;
@@ -1700,7 +1575,6 @@ void	flag_plus_and_digit(const char *format, va_list list, int res, struct p par
 		size++;
 		number = number / 10;
 	}
-
 	res = res - size - 1;
 	while (res > 0)
 	{
@@ -1714,6 +1588,7 @@ void	flag_plus_and_digit_long(const char *format, va_list list, int res, struct 
 {
 	long number;
 	int size;
+
 	va_list cpy;
 	va_copy(cpy, list);
 	size = 0;
@@ -1730,7 +1605,6 @@ void	flag_plus_and_digit_long(const char *format, va_list list, int res, struct 
 		number = number / 10;
 	}
 	res = res - size - 1;
-	
 	while (res > 0)
 	{
 		write(1, " ", 1);
@@ -1805,6 +1679,7 @@ void    flag_plus_print_long(const char *format, va_list list, int i, int k)
 int		flag_plus(const char *format, va_list list, int i, struct p parsed)
 {
 	int k;
+
 	k = 0;
 	if (format[i + 1] == '+')	
 	{
@@ -1830,6 +1705,7 @@ int		print_flag_minus_corr(const char *format, va_list list, int res)
 {
 	int number;
 	int size;
+
 	number = 0;
 	va_list cpy;
 	va_copy(cpy, list);
@@ -1947,6 +1823,7 @@ int		flag_minus_and_digit_cont_d_long(const char *format, va_list list, int res)
 {
 	long number;
 	int size;
+
 	size = 0;
 	number = va_arg(list, long);
 	if (number < 0)
@@ -2092,8 +1969,8 @@ void		print_flags_zero_and_digit_d(const char *format, va_list list, int res)
 {
 	int number;
 	int number2;
-
 	int size;
+
 	size = 0;
 	number = va_arg(list, int);
 	number2 = number;
@@ -2122,7 +1999,6 @@ void		print_flags_zero_and_digit_d_long(const char *format, va_list list, int re
 {
 	long number;
 	long number2;
-
 	int size;
 
 	size = 0;
@@ -2155,6 +2031,7 @@ int		parse_flag_zero_and_digit_d(const char *format, va_list list, int i, struct
 	int res;
 	int k;
 	int count;
+
 	res = 0;
 	count = 2;
 	k = 1;
@@ -2184,6 +2061,7 @@ int		parse_flag_zero_and_digit_d(const char *format, va_list list, int i, struct
 void		print_flags_blank_wo_digits(const char *format, va_list list, int res)
 {
 	int number;
+
 	number = va_arg(list, int);
 	if (number < 0)
 		write(1, "-", 1);
@@ -2195,6 +2073,7 @@ void		print_flags_blank_wo_digits(const char *format, va_list list, int res)
 void		print_flags_blank_wo_digits_long(const char *format, va_list list, int res)
 {
 	long number;
+
 	number = va_arg(list, long);
 	if (number < 0)
 		write(1, "-", 1);
@@ -2208,6 +2087,7 @@ int		flag_blank_d(const char *format, va_list list, int i, struct p parsed)
 	int res;
 	int k;
 	int count;
+
 	res = 0;
 	count = 2;
 	k = 1;
@@ -2240,6 +2120,7 @@ void		print_flags_blank(const char *format, va_list list, int res)
 	int number2;
 	int number3;
 	int size;
+
 	size = 0;
 	number = va_arg(list, int);
 	number2 = number;
@@ -2276,6 +2157,7 @@ void		print_flags_blank_long(const char *format, va_list list, int res)
 	long number;
 	long number2;
 	int size;
+
 	size = 0;
 	number = va_arg(list, long);
 	number2 = number;
@@ -2309,6 +2191,7 @@ void	printf_flags_blank_and_zero_and_digit(const char *format, va_list list, int
 	int number;
 	int number2;
 	int size;
+
 	size = 1;
 	if (parsed.exception == 1)
 	{	
@@ -2421,6 +2304,7 @@ void	print_flags_blanks_zero_long(const char *format, va_list list, int res)
 	long number;
 	long number2;
 	int size;
+	
 	size = 1;
 	number = va_arg(list, long);
 	number2 = number;
