@@ -291,6 +291,18 @@ void	handle_c(const char *format, va_list list)
 
 
 // handle o begin
+
+int     handle_o_decimal_zero(decimal)
+{
+	if (decimal == 0)
+	{
+		write(1, "0", 1);
+		return (1);
+	}
+    else
+        return (0);
+}
+
 void	handle_o(const char *format, va_list list)
 {
 	long decimal;
@@ -299,12 +311,9 @@ void	handle_o(const char *format, va_list list)
 	int i;
 
 	i = 0;
-	decimal = va_arg(list, int);
-	if (decimal == 0)
-	{
-		write(1, "0", 1);
-		return ;
-	}
+	decimal = va_arg(list, long);
+	if (handle_o_decimal_zero(decimal) == 1)
+        return ;
 	if (decimal < 0)
 		decimal = 4294967296 + decimal;
 	while (decimal != 0)
@@ -378,7 +387,7 @@ void     handle_s_precision(const char *format, va_list list, int len)
 	}
 }
 
-void	handle_s_with_precision(const char *format, va_list list, struct p parsed)
+void	handle_s_w_prec(const char *format, va_list list, struct p parsed)
 {
 	int len;
 	len = va_arg(list, int);
@@ -536,11 +545,11 @@ struct f float_print(struct f f_nums, struct p parsed)
 				f_nums.len = parsed.precision + 1;
 				parsed.res = 1;
 			}
-			while (f_nums.len > 1 && f_nums.r[f_nums.i] != '\0')
+			while (f_nums.len-- > 1 && f_nums.r[f_nums.i++] != '\0')
 			{
-				f_nums.i++;
+				//f_nums.i++;
 				write(1, &f_nums.r[f_nums.i], 1);
-			f_nums.len--;
+				//f_nums.len--;
 			}
 			if (parsed.res == 1)
 			{	
@@ -565,33 +574,73 @@ struct f float_print_zeros(struct f f_nums)
 	return (f_nums);
 }
 
-void handle_f_ld(const char *format, va_list list, struct p parsed, struct f f_nums)
-{
+// void handle_f_ld(const char *format, va_list list, struct p parsed, struct f f_nums)
+// {
 
-	f_nums.f = va_arg(list, long double);
-	f_nums = float_tenth_len(f_nums);
-	f_nums = float_decimal_len(f_nums);
-	f_nums.test = malloc(sizeof(char *) * f_nums.length + 1);
-	f_nums.r = malloc(sizeof(char *) * f_nums.length);
-	f_nums = float_dot(f_nums);
-	f_nums = float_count_last(f_nums);
-	f_nums.len = ft_strlen_double(f_nums.r);
-	f_nums = float_count_precision(f_nums, parsed);
-	f_nums = float_print(f_nums, parsed);
-	f_nums = float_print_zeros(f_nums);
-	free(f_nums.r);
+// 	f_nums.f = va_arg(list, long double);
+// 	f_nums = float_tenth_len(f_nums);
+// 	f_nums = float_decimal_len(f_nums);
+// 	f_nums.test = malloc(sizeof(char *) * f_nums.length + 1);
+// 	f_nums.r = malloc(sizeof(char *) * f_nums.length);
+// 	f_nums = float_dot(f_nums);
+// 	f_nums = float_count_last(f_nums);
+// 	f_nums.len = ft_strlen_double(f_nums.r);
+// 	f_nums = float_count_precision(f_nums, parsed);
+// 	f_nums = float_print(f_nums, parsed);
+// 	f_nums = float_print_zeros(f_nums);
+// 	free(f_nums.r);
+// }
+
+// // handle float
+
+// void handle_f(const char *format, va_list list, struct p parsed)
+// {
+// 	struct f f_nums;
+// 	f_nums = innitiaize_struct_float(f_nums);
+// 	if (parsed.largel == 1)
+// 	{	
+// 		handle_f_ld(format, list, parsed, f_nums);
+// 		parsed.largel = 0;
+// 		return ;
+// 	}
+// 	f_nums.f = va_arg(list, double);
+// 	f_nums = float_tenth_len(f_nums);
+// 	f_nums = float_decimal_len(f_nums);
+// 	f_nums.r = malloc(sizeof(char *) * f_nums.length);
+// 	f_nums = float_dot(f_nums);
+// 	//f_nums = float_count_last(f_nums);
+// 	f_nums.len = ft_strlen_double(f_nums.r);
+// 	f_nums = float_count_precision(f_nums, parsed);
+// 	f_nums = float_print(f_nums, parsed);
+// 	f_nums = float_print_zeros(f_nums);
+// 	free(f_nums.r);
+// }
+
+void	handle_fl(const char *format, va_list list, struct p pa, struct f fn)
+{
+	fn.f = va_arg(list, long double);
+	fn = float_tenth_len(fn);
+	fn = float_decimal_len(fn);
+	fn.test = malloc(sizeof(char *) * fn.length + 1);
+	fn.r = malloc(sizeof(char *) * fn.length);
+	fn = float_dot(fn);
+	fn = float_count_last(fn);
+	fn.len = ft_strlen_double(fn.r);
+	fn = float_count_precision(fn, pa);
+	fn = float_print(fn, pa);
+	fn = float_print_zeros(fn);
+	free(fn.r);
 }
 
-// handle float
-
-void handle_f(const char *format, va_list list, struct p parsed)
+void	handle_f(const char *format, va_list list, struct p par)
 {
 	struct f f_nums;
+
 	f_nums = innitiaize_struct_float(f_nums);
-	if (parsed.largel == 1)
-	{	
-		handle_f_ld(format, list, parsed, f_nums);
-		parsed.largel = 0;
+	if (par.largel == 1)
+	{
+		handle_fl(format, list, par, f_nums);
+		par.largel = 0;
 		return ;
 	}
 	f_nums.f = va_arg(list, double);
@@ -599,14 +648,12 @@ void handle_f(const char *format, va_list list, struct p parsed)
 	f_nums = float_decimal_len(f_nums);
 	f_nums.r = malloc(sizeof(char *) * f_nums.length);
 	f_nums = float_dot(f_nums);
-	//f_nums = float_count_last(f_nums);
 	f_nums.len = ft_strlen_double(f_nums.r);
-	f_nums = float_count_precision(f_nums, parsed);
-	f_nums = float_print(f_nums, parsed);
+	f_nums = float_count_precision(f_nums, par);
+	f_nums = float_print(f_nums, par);
 	f_nums = float_print_zeros(f_nums);
 	free(f_nums.r);
 }
-
 
 // handle float end
 
@@ -2304,7 +2351,7 @@ void	print_flags_blanks_zero_long(const char *format, va_list list, int res)
 	long number;
 	long number2;
 	int size;
-	
+
 	size = 1;
 	number = va_arg(list, long);
 	number2 = number;
@@ -3028,6 +3075,7 @@ int		parse_arg_x_init(const char *format, va_list list, int i)
 		return (0);
 	}
 	result = print_flags(format, list, i, parsed);
+	printf("zzz");
 	return (result);
 }
 
@@ -3048,6 +3096,7 @@ int		handle_d(const char *format, va_list list, int i, struct p parsed)
 	parsed.zero = 0;
 	parsed.zero_and_digit = 0;
 	parsed.blank = 0;
+	parsed.digit = 0;
 	parsed.blank_and_digit = 0;
 	parsed.width_and_minus = 0;
 	parsed.width_and_zero = 0;
@@ -3289,7 +3338,7 @@ void    ft_printf(const char *format, ...)
 			{
 				if (parsed_x.string_precision == 1)
 				{
-					handle_s_with_precision(format, list, parsed_x);
+					handle_s_w_prec(format, list, parsed_x);
 					i = i + 3;
 					parsed_x.string_precision = 0;
 				}
@@ -3389,7 +3438,7 @@ int main()
 	//unsigned long long int intX = 18446744073709551615;
 	int intx = 1;
 	int intX = 14;
-	int oct1 = 534;
+	int oct1 = 0;
 	int oct2 = -134;
 	float float1 = -1422.849;
 	float float2 = -43.02109;
@@ -3644,6 +3693,8 @@ int main()
 	// printf("Octal\n");
 	// printf("---> Hello %o %o\n", oct1, oct2);
 
+	// ft_printf("---> Hello %o %o\n", oct1, oct2);
+
 	// 	printf("Octal\n");
 	// ft_printf("---> Hello %o %o\n", oct1, oct2);
 
@@ -3742,14 +3793,19 @@ int main()
 	// printf("---> Hello % lld\n", llong1);
 
 //	printf("---> Hello --- %*d --- %*d --- %*d ---\n", 10, number, 30, number, 20, number);
-	printf("1 ---> Hello %lf %lf %lf\n", float1, float2, float3);
-	printf("2 ---> Hello %Lf %Lf %Lf\n", ld1, ld2, ld3);
+	// printf("1 ---> Hello %lf %lf %lf\n", float1, float2, float3);
+	// printf("2 ---> Hello %Lf %Lf %Lf\n", ld1, ld2, ld3);
 
-	printf("3 ---> Hello %.9f %.0f %.3f\n", float1, float2, float3);
-	printf("4 ---> Hello %.2f %.3f %.1f\n", float1, float2, float3);
+	// printf("3 ---> Hello %.9f %.0f %.3f\n", float1, float2, float3);
+	// printf("4 ---> Hello %.2f %.3f %.1f\n", float1, float2, float3);
 
-printf("===");
-//	printf("---> Hello %#x xxxx %#0x xxxx 1 %0#x xxxx %#010x xxxx %#10x xxxx %#-x xxxx %#-10x xxxx %-#x xxxx 1 %-#10x xxxx %-10x xxxx %10x xxxx %010x \n", intx, intx, intx, intx, intx, intx, intx, intx, intx, intx, intx, intx);
+// printf("===\n");
+// 	printf("---> Hello %#x xxxx %#0x xxxx 1 %0#x xxxx %#010x xxxx %#10x xxxx %#-x xxxx %#-10x xxxx %-#x xxxx 1 %-#10x xxxx %-10x xxxx %10x xxxx %010x \n", intx, intx, intx, intx, intx, intx, intx, intx, intx, intx, intx, intx);
+// 	ft_printf("\n---> Hello %#x xxxx %#0x xxxx 1 %0#x xxxx %#010x xxxx %#10x xxxx %#-x xxxx %#-10x xxxx %-#x xxxx 1 %-#10x xxxx %-10x xxxx %10x xxxx %010x \n", intx, intx, intx, intx, intx, intx, intx, intx, intx, intx, intx, intx);
+
+	printf("%8x xxxx %010x \n", intx, intx);
+	ft_printf("%8x xxxx %010x \n", intx, intx);
+
 //	printf("---> Hello %015x xxxx %-7x xxxx 1 %-#7x xxxx %#-7x xxxx %#07x xxxx %#09x xxxx %020x xxxx %-20x xxxx 1 %#020x xxxx %-#20x xxxx %#-20x xxxx %x xxxx %x\n", intx, intx, intx, intx, intx, intx, intx, intx, intx, intx, intx, intx, intx);
 // //                 099999999999
 //	printf("Percent \n");
@@ -3862,11 +3918,11 @@ printf("===");
 	// ft_printf("---> Hello % 025lld % 020lld\n", llong1, llong2);
 	// ft_printf("---> Hello % lld\n", llong1);
 
-	ft_printf("\n\n1 ---> Hello %lf %lf %lf\n", float1, float2, float3);
-	ft_printf("2 ---> Hello %Lf %Lf %Lf\n", ld1, ld2, ld3);
+	// ft_printf("\n\n1 ---> Hello %lf %lf %lf\n", float1, float2, float3);
+	// ft_printf("2 ---> Hello %Lf %Lf %Lf\n", ld1, ld2, ld3);
 
-	ft_printf("3 ---> Hello %.9f %.0f %.3f\n", float1, float2, float3);
-	ft_printf("4 ---> Hello %.2f %.3f %.1f\n", float1, float2, float3);
+	// ft_printf("3 ---> Hello %.9f %.0f %.3f\n", float1, float2, float3);
+	// ft_printf("4 ---> Hello %.2f %.3f %.1f\n", float1, float2, float3);
 
 
 	// ft_printf("---> Hello %lf %lf %lf\n", float1, float2, float3);
