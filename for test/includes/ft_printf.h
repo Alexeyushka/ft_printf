@@ -18,7 +18,7 @@
 # include <string.h>
 # include <stdlib.h>
 
-# include "libft.h"
+# include "../libft/libft.h"
 
 typedef struct p
 {
@@ -58,6 +58,7 @@ typedef struct p
 	int width_and_minus;
 	int width_and_zero;
 	int string_precision;
+	int ret;
 } structp_x;
 
 typedef struct f
@@ -86,12 +87,12 @@ void	handle_hui(const char *format, va_list list, struct p parsed);
 void	handle_bigx_continue(int j, int i, char *hexadecimal);
 void	handle_bigx(const char *format, va_list list);
 void	handle_c(const char *format, va_list list);
-int     handle_o_decimal_zero(decimal);
+int     handle_o_decimal_zero(long decimal);
 void	handle_o(const char *format, va_list list);
 void	handle_u(const char *format, va_list list, int i);
-void    handle_s(const char *format, va_list list);
-void    handle_s_precision(const char *format, va_list list, int len);
-void	handle_s_w_prec(const char *format, va_list list, struct p parsed);
+int 	handle_s(const char *format, va_list list, struct p parsed);
+int	    handle_s_precision(const char *format, va_list list, int len, struct p parsed);
+int		handle_s_w_prec(const char *format, va_list list, struct p parsed);
 int     n_tu(int number, int count);
 struct	f innitiaize_struct_float(struct f f_nums);
 struct  f float_tenth_len(struct f f_nums);
@@ -198,5 +199,7 @@ char    parse_format(const char *format, va_list list, int i);
 char    parse_format_without_prec(const char *format, va_list list, int i);
 struct	p flags_short_and_long(const char *format, va_list list, int i, struct p parsed_x);
 int		handle_field_width(const char *format, va_list list, int i, struct p parsed_x);
+int    ft_printf(const char *format, ...);
+
 
 #endif

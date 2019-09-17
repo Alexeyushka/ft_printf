@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "printf.h"
+#include "ft_printf.h"
 
 
 char    parse_format(const char *format, va_list list, int i)
@@ -25,7 +25,6 @@ char    parse_format(const char *format, va_list list, int i)
     {
        i++;
     }
-	printf("%c", c);
 	if ((format[i] == 'd' || format[i] == 'i') && format[i - 1] == '*')
 		c = 42;
 	else if (format[i - 1] == '.' && format[i] == 'i' && format[i + 1] == '.')

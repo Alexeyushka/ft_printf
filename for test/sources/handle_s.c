@@ -10,9 +10,9 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "printf.h"
+#include "ft_printf.h"
 
-void	handle_s(const char *format, va_list list)
+int		handle_s(const char *format, va_list list, struct p parsed)
 {
 	int		i;
 	int		j;
@@ -28,15 +28,17 @@ void	handle_s(const char *format, va_list list)
 			while (arg[j] != '\0')
 			{
 				write(1, &arg[j], 1);
+				parsed.ret++;
 				j++;
 			}
 			i = i + 2;
 		}
 		i++;
 	}
+	return (parsed.ret);
 }
 
-void	handle_s_precision(const char *format, va_list list, int len)
+int		handle_s_precision(const char *format, va_list list, int len, struct p parsed)
 {
 	int		j;
 	char	*arg;
@@ -46,14 +48,16 @@ void	handle_s_precision(const char *format, va_list list, int len)
 	while (arg[j] != '\0' && j < len)
 	{
 		write(1, &arg[j], 1);
+		parsed.ret++;
 		j++;
 	}
+	return (parsed.ret);
 }
 
-void	handle_s_w_prec(const char *format, va_list list, struct p parsed)
+int		handle_s_w_prec(const char *format, va_list list, struct p parsed)
 {
 	int len;
 
 	len = va_arg(list, int);
-	handle_s_precision(format, list, len);
+	return (handle_s_precision(format, list, len, parsed));
 }

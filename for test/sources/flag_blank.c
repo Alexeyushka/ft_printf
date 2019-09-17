@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "printf.h"
+#include "ft_printf.h"
 
 void		print_flags_blank_wo_digits(const char *format, va_list list, int res)
 {

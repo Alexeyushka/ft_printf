@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "printf.h"
+#include "ft_printf.h"
 
 void	handle_fl(const char *format, va_list list, struct p pa, struct f fn)
 {

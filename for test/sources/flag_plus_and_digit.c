@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "printf.h"
+#include "ft_printf.h"
 
 void    flag_plus_and_digit_print(const char *format, va_list list, int i, int k)
 {

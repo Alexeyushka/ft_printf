@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "printf.h"
+#include "ft_printf.h"
 
 void    flag_width_and_plus_print(const char *format, va_list list, int i, struct p parsed)
 {

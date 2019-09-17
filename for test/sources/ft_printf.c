@@ -10,10 +10,10 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "printf.h"
+#include "ft_printf.h"
 
 
-void    ft_printf(const char *format, ...)
+int    ft_printf(const char *format, ...)
 {
     int i;
 	va_list list;
@@ -28,6 +28,7 @@ void    ft_printf(const char *format, ...)
     o = 0;
 	va_start(list, format);
 	struct p parsed_x;
+	parsed_x.ret = 0;
 	while (format[i] != '\0')
 	{
         if (format[i] == '%')
@@ -45,13 +46,13 @@ void    ft_printf(const char *format, ...)
 			{
 				if (parsed_x.string_precision == 1)
 				{
-					handle_s_w_prec(format, list, parsed_x);
+					parsed_x.ret = parsed_x.ret + handle_s_w_prec(format, list, parsed_x);
 					i = i + 3;
 					parsed_x.string_precision = 0;
 				}
 				else
 				{	
-					handle_s(format, list);
+					parsed_x.ret = parsed_x.ret + handle_s(format, list, parsed_x);
 					i = i + 1;
 				}
 			}
@@ -115,10 +116,14 @@ void    ft_printf(const char *format, ...)
 			}
 		}
 		else
+		{
 			write(1, &format[i], 1);
+			parsed_x.ret++;
+		}
 		parsed_x.width_number = 0;
 		parsed_x.width = 0;
 		i++;
 	}
 	va_end(list);
+	return (parsed_x.ret);
 }

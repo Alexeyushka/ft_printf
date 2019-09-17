@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "printf.h"
+#include "ft_printf.h"
 
 
 struct	p flags_short_and_long(const char *format, va_list list, int i, struct p parsed_x)

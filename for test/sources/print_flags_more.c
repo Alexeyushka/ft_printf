@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "printf.h"
+#include "ft_printf.h"
 
 int		print_flags_more(const char *format, va_list list, int i, struct p parsed)
 {

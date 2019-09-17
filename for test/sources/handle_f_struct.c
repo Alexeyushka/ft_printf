@@ -10,7 +10,16 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "printf.h"
+#include "ft_printf.h"
+
+int n_tu(int number, int count)
+{
+	int result = 1;
+	while (count-- > 0)
+		result *= number;
+
+	return result;
+}
 
 struct	f	innitiaize_struct_float(struct f f_nums)
 {

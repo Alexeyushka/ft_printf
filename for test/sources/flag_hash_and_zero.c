@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "printf.h"
+#include "ft_printf.h"
 
 
 void	flag_hash_and_zero_print_continue(int j, int i, char *hexadecimal)

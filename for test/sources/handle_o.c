@@ -10,9 +10,9 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "printf.h"
+#include "ft_printf.h"
 
-int		handle_o_decimal_zero(decimal)
+int		handle_o_decimal_zero(long decimal)
 {
 	if (decimal == 0)
 	{

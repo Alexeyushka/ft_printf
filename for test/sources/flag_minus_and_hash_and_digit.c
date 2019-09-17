@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "printf.h"
+#include "ft_printf.h"
 
 
 int		flag_minus_and_hash_and_digit(const char *format, va_list list, int i, struct p parsed)

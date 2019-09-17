@@ -15,13 +15,12 @@ NAME	= libftprintf.a
 SRC		= ./sources/*.c ./libft/*.c
 
 OBJ		= $(SRC:.c=.o)
-CFLAG	= -Wall -Wextra -Werror
 HEADER	= includes/
 
 all: $(NAME)
 
 $(NAME):
-	gcc $(CFLAG) -c -I$(HEADER) -I ./libft $(SRC)
+	gcc -c -I$(HEADER) -I ./libft $(SRC)
 	ar rc $(NAME) *.o
 	ranlib $(NAME)
 

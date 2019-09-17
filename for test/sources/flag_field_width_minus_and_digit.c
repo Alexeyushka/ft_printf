@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "printf.h"
+#include "ft_printf.h"
 
 
 int		flag_width_minus_and_digit_cont_d(const char *format, va_list list, int res)

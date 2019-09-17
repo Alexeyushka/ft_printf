@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "printf.h"
+#include "ft_printf.h"
 
 int		parse_arg_x_init(const char *format, va_list list, int i)
 {
@@ -56,6 +56,5 @@ int		parse_arg_x_init(const char *format, va_list list, int i)
 		return (0);
 	}
 	result = print_flags(format, list, i, parsed);
-	printf("zzz");
 	return (result);
 }

@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "printf.h"
+#include "ft_printf.h"
 
 void	flag_hash_only_print_blanks_continue_more(int j, int i, char *hexadecimal)
 {
