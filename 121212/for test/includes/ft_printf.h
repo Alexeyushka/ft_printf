@@ -164,9 +164,9 @@ int		parse_flag_zero_d(const char *format, va_list list, int i, struct p parsed)
 void	print_flags_zero_and_digit_d(const char *format, va_list list, int res);
 void	print_flags_zero_and_digit_d_long(const char *format, va_list list, int res);
 int		parse_flag_zero_and_digit_d(const char *format, va_list list, int i, struct p parsed);
-void	print_flags_blank_wo_digits(const char *format, va_list list, int res);
+struct	p print_flags_blank_wo_digits(const char *format, va_list list, int res, struct p parsed);
 void	print_flags_blank_wo_digits_long(const char *format, va_list list, int res);
-int		flag_blank_d(const char *format, va_list list, int i, struct p parsed);
+struct	p flag_blank_d(const char *format, va_list list, int i, struct p parsed);
 void	print_flags_blank(const char *format, va_list list, int res);
 void	print_flags_blank_long(const char *format, va_list list, int res);
 void	printf_flags_blank_and_zero_and_digit(const char *format, va_list list, int res, struct p parsed);
@@ -193,7 +193,7 @@ int		flag_width_minus_and_digit_cont_d(const char *format, va_list list, int res
 int		flag_field_width_and_minus(const char *format, va_list list, int i, struct p parsed);
 int		flag_field_width_and_zero(const char *format, va_list list, int i, struct p parsed);
 int		print_flags(const char *format, va_list list, int i, struct p parsed);
-int		print_flags_more(const char *format, va_list list, int i, struct p parsed);
+struct	p print_flags_more(const char *format, va_list list, int i, struct p parsed);
 struct	p parse_arg_x_init(const char *format, va_list list, int i, struct p parsed);
 struct 	p handle_d(const char *format, va_list list, int i, struct p parsed);
 char    parse_format(const char *format, va_list list, int i);
@@ -209,6 +209,5 @@ int		ft_strlen_double(char *str);
 int		is_upper(char c);
 int		is_digit(char c);
 struct	p ft_s_putnbr(int nb, struct p parsed);
-
 
 #endif

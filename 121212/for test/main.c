@@ -4,8 +4,8 @@ int	main()
 {
 	char *str = "Hello";
 	int d;	
-	d = 42;
-	ft_printf("%x", d);	
+	d = 565;
+	ft_printf("% d", d);	
 //	ft_printf("%%");
 	return (0);
 }

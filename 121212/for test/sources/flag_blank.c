@@ -12,16 +12,21 @@
 
 #include "ft_printf.h"
 
-void		print_flags_blank_wo_digits(const char *format, va_list list, int res)
+struct		p print_flags_blank_wo_digits(const char *format, va_list list, int res, struct p parsed)
 {
 	int number;
 
 	number = va_arg(list, int);
 	if (number < 0)
+	{
 		write(1, "-", 1);
+	}
 	else
+	{
 		write(1, " ", 1);
-	ft_putnbr(number);
+	}
+	parsed = ft_s_putnbr(number, parsed);
+	return (parsed);
 }
 
 void		print_flags_blank_wo_digits_long(const char *format, va_list list, int res)
@@ -36,32 +41,32 @@ void		print_flags_blank_wo_digits_long(const char *format, va_list list, int res
 	ft_putnbr_long(number);
 }
 
-int		flag_blank_d(const char *format, va_list list, int i, struct p parsed)
+struct		p flag_blank_d(const char *format, va_list list, int i, struct p parsed)
 {
 	int res;
 	int k;
-	int count;
+	//int count;
 
 	res = 0;
-	count = 2;
+	parsed.count = 2;
 	k = 1;
 	if (parsed.l == 1 || parsed.ll == 1)
 	{
 		parsed.l = 0;
 		parsed.ll = 0;
-		count = count_long(format, list, i, parsed);
+		parsed.count = count_long(format, list, i, parsed);
 		res = count_long_res(format, list, i, parsed);
 		print_flags_blank_wo_digits_long(format, list, res);
 	}
 	else
 	{
-		while (format[i + count] >= 48 && format[i + count] <= 57)
+		while (format[i + parsed.count] >= 48 && format[i + parsed.count] <= 57)
 		{
 			res = res * 10;
-			res = res + ((int)format[i + count] - '0');
-			count++;
+			res = res + ((int)format[i + parsed.count] - '0');
+			parsed.count++;
 		}
-		print_flags_blank_wo_digits(format, list, res);
+		parsed = print_flags_blank_wo_digits(format, list, res, parsed);
 	}
-	return (count);
+	return (parsed);
 }

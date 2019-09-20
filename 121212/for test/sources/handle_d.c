@@ -60,6 +60,6 @@ struct		p handle_d(const char *format, va_list list, int i, struct p parsed)
 		parsed = handle_d_without_flags(format, list, i, parsed);
 		return (parsed);
 	}
-	parsed.result = print_flags_more(format, list, i, parsed);
+	parsed = print_flags_more(format, list, i, parsed);
 	return (parsed);
 }

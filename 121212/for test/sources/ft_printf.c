@@ -61,7 +61,7 @@ int    ft_printf(const char *format, ...)
 				parsed_x = handle_d(format, list, i, parsed_x);
 				if (parsed_x.result == 0)
 					parsed_x.result = 1;
-				i = i + parsed_x.result + parsed_x.size;	
+				i = i + parsed_x.count + parsed_x.size;
 			}
 			if (ch == 'c')
 			{

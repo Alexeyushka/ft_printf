@@ -58,6 +58,7 @@ typedef struct p
 	int string_precision;
 	int ret;
 	int	result;
+	int	count;
 } structp_x;
 
 

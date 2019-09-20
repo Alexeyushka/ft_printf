@@ -12,7 +12,7 @@
 
 #include "ft_printf.h"
 
-int		print_flags_more(const char *format, va_list list, int i, struct p parsed)
+struct	p print_flags_more(const char *format, va_list list, int i, struct p parsed)
 {
 	int res;
 	int count;
@@ -88,8 +88,8 @@ int		print_flags_more(const char *format, va_list list, int i, struct p parsed)
 //	blank
 	if (parsed.blank == 1)
 	{
-		count = flag_blank_d(format, list, i, parsed);
-		parsed.blank = 0;
+		parsed = flag_blank_d(format, list, i, parsed);
+		parsed.blank = 0;	
 	}
 
 //	blank_and_digit
@@ -105,6 +105,5 @@ int		print_flags_more(const char *format, va_list list, int i, struct p parsed)
 		count = flag_digit(format, list, i, parsed);
 		parsed.digit = 0;
 	}
-
-	return (count);
+	return (parsed);
 }
