@@ -76,7 +76,7 @@ int    ft_printf(const char *format, ...)
 			if (ch == 'x')
 			{
 				parsed_x = parse_arg_x_init(format, list, i, parsed_x);
-				i = i + 1 + parsed_x.result;
+				i = i + 1 + parsed_x.count + parsed_x.result;
 			}
 			if (ch == 'X')
 			{

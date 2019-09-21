@@ -86,7 +86,24 @@ struct	p handle_d_without_flags(const char *format, va_list list, int i, struct 
 	{
 		write(1, "-2147483648", 11);
 		parsed.ret = 11;
-
+		return (parsed);
+	}
+	if (parsed.hh == 1 && number == 128)
+	{
+		write(1, "-128", 4);
+		parsed.ret = 4;
+		return (parsed);
+	}
+	if (parsed.hh == 1 && number == -129)
+	{
+		write(1, "127", 3);
+		parsed.ret = 3;
+		return (parsed);
+	}
+	if (parsed.h == 1 && number == 32768)
+	{
+		write(1, "-32768", 6);
+		parsed.ret = 6;
 		return (parsed);
 	}
 	checksign(number);

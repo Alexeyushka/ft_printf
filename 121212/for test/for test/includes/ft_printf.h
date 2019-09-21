@@ -210,5 +210,6 @@ int		ft_strlen_double(char *str);
 int		is_upper(char c);
 int		is_digit(char c);
 struct	p ft_s_putnbr(int nb, struct p parsed);
+struct	p	handle_x_long(const char *format, va_list list, struct p parsed);
 
 #endif

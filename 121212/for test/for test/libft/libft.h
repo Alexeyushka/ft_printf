@@ -61,6 +61,7 @@ typedef struct p
 	int	count;
 	int res2;
 	int digitsize;
+	int u;
 } structp_x;
 
 

@@ -1,4 +1,4 @@
-#include "includes/ft_printf.h"
+//#include "includes/ft_printf.h"
 #include <stdio.h>
 
 // typedef struct fa
@@ -20,7 +20,7 @@ int	main()
 	// fast.b = 10;
 	// fast = test(fast);
 	
-	ft_printf("%d", 100);
+	printf("%hx", 4294967296);
 	//ft_printf("%hhd", k); 
 //  	// printf("--%0d--\n", -42);                   
 //  	// // printf("--%00d--\n", -42);                  
