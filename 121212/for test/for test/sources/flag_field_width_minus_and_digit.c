@@ -13,27 +13,27 @@
 #include "ft_printf.h"
 
 
-int		flag_width_minus_and_digit_cont_d(const char *format, va_list list, int res)
+int		flag_width_minus_and_digit_cont_d(const char *format, va_list list, int res, struct p parsed)
 {
 	int number;
 	int size;
-	size = 0;
+	parsed.digitsize = 0;
 	number = va_arg(list, int);
 	if (number < 0)
 	{
-		size++;
+		parsed.digitsize++;
 	}
 	if (number == 0)
-		size++;
-	flag_minus_and_digit_print_d(format, list, size, number);
+		parsed.digitsize++;
+	parsed = flag_minus_and_digit_print_d(format, list, parsed, number);
 	if (number < 0)
 		number = number * (-1);
 	while (number > 0)
 	{
-		size++;
+		parsed.digitsize++;
 		number = number / 10;
 	}
-	return (size);
+	return (parsed.digitsize);
 }
 
 
@@ -46,7 +46,7 @@ int		flag_field_width_and_minus(const char *format, va_list list, int i, struct 
 	count = 0;
 	k = 1;
 
-	res = parsed.width_number - flag_width_minus_and_digit_cont_d(format, list, res);
+	res = parsed.width_number - flag_width_minus_and_digit_cont_d(format, list, res, parsed);
 	while (res > 0)
 	{
 		write(1, " ", 1);

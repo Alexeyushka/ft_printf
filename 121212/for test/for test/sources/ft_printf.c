@@ -70,8 +70,8 @@ int    ft_printf(const char *format, ...)
 			}
 			if (ch == 'u')
 			{
-				handle_u(format, list, i);
-				i = i + 1;
+				parsed_x = handle_u(format, list, i, parsed_x);
+				i = i + parsed_x.count;
 			}
 			if (ch == 'x')
 			{

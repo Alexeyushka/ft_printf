@@ -59,11 +59,15 @@ typedef struct p
 	int ret;
 	int	result;
 	int	count;
+	int res2;
+	int digitsize;
 } structp_x;
 
 
 void    ft_putchar(char c);
 struct  p ft_s_putnbr(int nb, struct p parsed);
+struct	p ft_s_putnbr_long(int nb, struct p parsed);
+struct	p ft_putnbr_s_uint(unsigned int nb, struct p parsed);
 void    ft_putnbr(int nb);
 void	ft_putnbr_long(long nb);
 void	ft_putnbr_uint(unsigned int nb);

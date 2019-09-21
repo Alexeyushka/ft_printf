@@ -22,3 +22,18 @@ void	ft_putnbr_uint(unsigned int nb)
 	else
 		ft_putchar(nb + '0');
 }
+
+struct	p ft_putnbr_s_uint(unsigned int nb, struct p parsed)
+{
+	if (nb >= 10)
+	{
+		ft_putnbr(nb / 10);
+		ft_putnbr(nb % 10);
+	}
+	else
+	{
+		ft_putchar(nb + '0');
+		parsed.ret++;
+	}
+	return (parsed);
+}

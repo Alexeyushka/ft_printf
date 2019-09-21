@@ -26,3 +26,23 @@ void	ft_putnbr_long(long nb)
 	else
 		ft_putchar(nb + '0');
 }
+
+struct	p ft_s_putnbr_long(int nb, struct p parsed)
+{
+	if (nb < 0)
+	{
+		nb = -nb;
+		parsed.ret++;
+	}
+	if (nb >= 10)
+	{
+		parsed = ft_s_putnbr_long((nb / 10), parsed);
+		parsed = ft_s_putnbr_long((nb % 10), parsed);
+	}
+	else
+	{
+		ft_putchar(nb + '0');
+		parsed.ret++;
+	}
+	return (parsed);
+}

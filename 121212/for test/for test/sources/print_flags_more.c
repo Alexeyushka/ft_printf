@@ -62,14 +62,14 @@ struct	p print_flags_more(const char *format, va_list list, int i, struct p pars
 // minus
 	if (parsed.minus == 1)
 	{
-		count = flag_minus(format, list, i, parsed);
+		parsed = flag_minus(format, list, i, parsed);
 		parsed.minus = 0;
 	}
 
 // minus_and_digit
 	if (parsed.minus_and_digit == 1)
 	{
-		count = flag_minus_and_digit_d(format, list, i, parsed);
+		parsed = flag_minus_and_digit_d(format, list, i, parsed);
 		parsed.minus_and_digit = 0;
 	}
 

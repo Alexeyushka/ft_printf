@@ -38,38 +38,41 @@ int		print_flag_minus_corr(const char *format, va_list list, int res)
 }
 
 
-int		print_flag_minus(const char *format, va_list list, int i)
+struct	p print_flag_minus(const char *format, va_list list, int i, struct p parsed)
 {
-	int res;
+	//int res;
 	int k;
 	int count;
-	res = 0;
-	count = 2;
+	parsed.res2 = 0;
+	parsed.count = 2;
 	k = 1;
 
-	while (format[i + count] >= 48 && format[i + count] <= 57)
+	while (format[i + parsed.count] >= 48 && format[i + parsed.count] <= 57)
 	{
-		res = res * 10;
-		res = res + ((int)format[i + count] - '0');
-		count++;
+		parsed.res2 = parsed.res2 * 10;
+		parsed.res2 = parsed.res2 + ((int)format[i + parsed.count] - '0');
+		parsed.count++;
 	}
-	res = res - print_flag_minus_corr(format, list, res);
-	return (res);
+	parsed.res2 = parsed.res2 - print_flag_minus_corr(format, list, parsed.res);
+	return (parsed);
 }
 
-int		flag_minus(const char *format, va_list list, int i, struct p parsed)
+struct	p flag_minus(const char *format, va_list list, int i, struct p parsed)
 {
-	int res;
+	//int res;
+	parsed.count = 2;
+	parsed.res2 = 0;
 	if (format[i + 1] == '-' && (format[i + 2] == 'd' || format[i + 2] == 'h' || format[i + 2] == 'l' || format[i + 2] == 'i'))
 	{
 		
-		handle_d_without_flags(format, list, i, parsed);
-		res = print_flag_minus(format, list, i);
-		while (res > 0)
+		parsed = handle_d_without_flags(format, list, i, parsed);
+		parsed = print_flag_minus(format, list, i, parsed);
+		while (parsed.res2 > 0)
 		{
 			write(1, " ", 1);
-			res--;
+			parsed.ret++;
+			parsed.res2--;
 		}
 	}
-	return (2);
+	return (parsed);
 }
