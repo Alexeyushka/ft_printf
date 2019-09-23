@@ -65,12 +65,12 @@ struct	p	handle_x_long(const char *format, va_list list, struct p parsed)
 {
 	char	hexadecimal[100];
 	//char 	*hexadecimal;
-	long	decimal;
+	long long	decimal;
 	long	quotient;
 	long	remainder;
 	int		i;
 	i = 0;
-	decimal = va_arg(list, long);
+	decimal = va_arg(list, long long);
 	quotient = decimal;
 	if (decimal == 4294967296 && parsed.l == 1)
 	{
@@ -104,7 +104,7 @@ struct	p	handle_x_long(const char *format, va_list list, struct p parsed)
 
 struct	p	handle_x(const char *format, va_list list, struct p parsed)
 {
-	char	hexadecimal[8];
+	char	hexadecimal[100];
 	//char 	*hexadecimal;
 	long	decimal;
 	long	quotient;

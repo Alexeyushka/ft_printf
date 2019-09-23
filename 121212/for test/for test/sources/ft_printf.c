@@ -106,9 +106,10 @@ int    ft_printf(const char *format, ...)
 			}
 			if (ch == '%')
 			{
-				write(1, "%", 1);
-				parsed_x.ret++;
-				i = i + 1;
+				parsed_x = handle_percent(format, list, i, parsed_x);
+				// write(1, "%", 1);
+				// parsed_x.ret++;
+				i = i + parsed_x.count;
 			}
 			if (format[i] == '\\' && format[i + 1] == 'n')
 			{

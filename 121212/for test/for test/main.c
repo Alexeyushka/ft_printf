@@ -20,7 +20,7 @@ int	main()
 	// fast.b = 10;
 	// fast = test(fast);
 	
-	printf("%hx", 4294967296);
+	printf("%%", "test");
 	//ft_printf("%hhd", k); 
 //  	// printf("--%0d--\n", -42);                   
 //  	// // printf("--%00d--\n", -42);                  

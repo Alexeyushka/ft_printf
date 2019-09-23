@@ -211,5 +211,9 @@ int		is_upper(char c);
 int		is_digit(char c);
 struct	p ft_s_putnbr(int nb, struct p parsed);
 struct	p	handle_x_long(const char *format, va_list list, struct p parsed);
+struct  p handle_percent(const char *format, va_list list, int i, struct p parsed);
+struct  p print_percent_minusdigit(const char *format, va_list list, int i, struct p parsed);
+struct  p print_percent_digit(const char *format, va_list list, int i, struct p parsed);
+struct  p count_digit_percent(const char *format, int i, int position, struct p parsed);
 
 #endif
