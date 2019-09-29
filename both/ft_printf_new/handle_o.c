@@ -1,13 +1,12 @@
-
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_printf.c                                            :+:      :+:    :+:   */
+/*   ft_printf.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: jmartyn- <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2019/09/14 15:39:19 by jmartyn-          #+#    #+#             */
-/*   Updated: 2019/09/14 15:39:54 by jmartyn-         ###   ########.fr       */
+/*   Created: 2019/09/29 20:27:50 by jmartyn-          #+#    #+#             */
+/*   Updated: 2019/09/29 20:57:19 by jmartyn-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,7 +52,7 @@ static char			ft_strlen_o_digit(t_struct *list, intmax_t digit)
 	return (res);
 }
 
-static char			ft_print_o_digit(uintmax_t digit, t_struct *list, char *base)
+static char			print_o_dig(uintmax_t digit, t_struct *list, char *base)
 {
 	char			len;
 
@@ -62,7 +61,7 @@ static char			ft_print_o_digit(uintmax_t digit, t_struct *list, char *base)
 		return (0);
 	if (digit >= 8)
 	{
-		len += ft_print_o_digit(digit / 8, list, base);
+		len += print_o_dig(digit / 8, list, base);
 		len += ft_print_char(base[digit % 8]);
 	}
 	else
@@ -80,13 +79,13 @@ static short		ft_hend_o_digit(t_struct *list, uintmax_t digit)
 	list->size = ft_strlen_o_digit(list, digit);
 	if (list->morezero == '0' && list->hash == '#' && digit != 0)
 		len += ft_print_char('0');
-	while (list->minus!= '-' && list->width > (list->size))
+	while (list->minus != '-' && list->width > (list->size))
 		len += ft_print_char(list->morezero) && list->width--;
 	if (list->morezero == ' ' && list->hash == '#' && digit != 0)
 		len += ft_print_char('0');
 	while (list->prec != -1 && list->prec > 0)
 		(len += ft_print_char('0')) && list->prec--;
-	len += ft_print_o_digit(digit, list, "01234567");
+	len += print_o_dig(digit, list, "01234567");
 	while (list->width > list->size && list->minus == '-')
 		(len += ft_print_char(' ')) && list->width--;
 	return (len);
@@ -94,7 +93,7 @@ static short		ft_hend_o_digit(t_struct *list, uintmax_t digit)
 
 int					ft_handling_o(t_struct *list, void *digit)
 {
-    if (list->ll)
+	if (list->ll)
 		return (ft_hend_o_digit(list, (unsigned long long)digit));
 	else if (list->l)
 		return (ft_hend_o_digit(list, (unsigned long)digit));

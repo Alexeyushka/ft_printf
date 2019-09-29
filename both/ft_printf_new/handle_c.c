@@ -1,20 +1,20 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_printf.c                                            :+:      :+:    :+:   */
+/*   ft_printf.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: jmartyn- <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2019/09/14 15:39:19 by jmartyn-          #+#    #+#             */
-/*   Updated: 2019/09/14 15:39:54 by jmartyn-         ###   ########.fr       */
+/*   Created: 2019/09/29 20:27:50 by jmartyn-          #+#    #+#             */
+/*   Updated: 2019/09/29 20:59:29 by jmartyn-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_printf.h"
 
-int    print_char(const char *format, int i)
+int		print_char(const char *format, int i)
 {
-    write(1, &format[i], 1);
+	write(1, &format[i], 1);
 	return (1);
 }
 
@@ -24,9 +24,9 @@ int		ft_print_char(char c)
 	return (1);
 }
 
-int					ft_handling_char(t_struct *list, void *c)
+int		ft_handling_char(t_struct *list, void *c)
 {
-	int				len;
+	int	len;
 
 	len = 0;
 	if (list->zero == '0')

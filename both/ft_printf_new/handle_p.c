@@ -1,15 +1,14 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_handling_ptr.c                                  :+:      :+:    :+:   */
+/*   ft_printf.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ochayche <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: jmartyn- <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2017/02/24 21:32:52 by ochayche          #+#    #+#             */
-/*   Updated: 2017/02/24 21:32:52 by ochayche         ###   ########.fr       */
+/*   Created: 2019/09/29 20:27:50 by jmartyn-          #+#    #+#             */
+/*   Updated: 2019/09/29 21:01:38 by jmartyn-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-
 
 #include "ft_printf.h"
 
@@ -53,7 +52,7 @@ static char				ft_strlen_ptr(t_struct *list, intmax_t digit)
 	return (res);
 }
 
-static char				ft_print_ptr(uintmax_t digit, t_struct *list, char *base)
+static char				print_p(uintmax_t digit, t_struct *list, char *base)
 {
 	char				len;
 
@@ -62,7 +61,7 @@ static char				ft_print_ptr(uintmax_t digit, t_struct *list, char *base)
 		return (0);
 	if (digit >= 16)
 	{
-		len += ft_print_ptr(digit / 16, list, base);
+		len += print_p(digit / 16, list, base);
 		len += ft_print_char(base[digit % 16]);
 	}
 	else
@@ -86,7 +85,7 @@ static short			ft_hend_ptr(t_struct *list, uintmax_t digit)
 		len += ft_print_str("0x", -1);
 	while (list->prec != -1 && list->prec > 0)
 		(len += ft_print_char('0')) && list->prec--;
-	len += ft_print_ptr(digit, list, "0123456789abcdef");
+	len += print_p(digit, list, "0123456789abcdef");
 	while (list->width > list->size && list->minus == '-')
 		(len += ft_print_char(' ')) && list->width--;
 	return (len);

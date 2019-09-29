@@ -17,6 +17,8 @@ F = -Wall -Wextra -Werror
 NAME = libftprintf.a
 
 OBJECT = ./ft_printf.o \
+	./parse_continue.o \
+	./parse.o \
 	./parse_format.o \
 	./handle_s.o \
 	./handle_c.o \
@@ -26,7 +28,7 @@ OBJECT = ./ft_printf.o \
 	./handle_x.o \
 	./handle_o.o \
 	./handle_p.o \
-	./handle_f.o
+	./handle_f.o \
 
 .PHONY: all clean fclean re
 
@@ -46,6 +48,9 @@ re: fclean all
 
 ft_printf.o: ft_printf.c
 	$(GCC) $(F) -c ft_printf.c
+
+parse_continue.o: parse_continue.c
+	$(GCC) $(F) -c parse_continue.c
 
 parse_format.o: parse_format.c
 	$(GCC) $(F) -c parse_format.c
@@ -73,6 +78,9 @@ handle_o.o: handle_o.c
 
 handle_p.o: handle_p.c
 	$(GCC) $(F) -c handle_p.c
+
+parse.o: parse.c
+	$(GCC) $(F) -c parse.c
 
 handle_f.o: handle_f.c
 	$(GCC) $(F) -c handle_f.c

@@ -1,20 +1,20 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_printf.c                                            :+:      :+:    :+:   */
+/*   ft_printf.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: jmartyn- <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2019/09/14 15:39:19 by jmartyn-          #+#    #+#             */
-/*   Updated: 2019/09/14 15:39:54 by jmartyn-         ###   ########.fr       */
+/*   Created: 2019/09/29 20:27:50 by jmartyn-          #+#    #+#             */
+/*   Updated: 2019/09/29 20:39:09 by jmartyn-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_printf.h"
 
-int					ft_strlen(const char *s)
+int		ft_strlen(const char *s)
 {
-	int				i;
+	int	i;
 
 	i = 0;
 	if (s != NULL)
@@ -23,9 +23,9 @@ int					ft_strlen(const char *s)
 	return (i);
 }
 
-int						ft_print_str(char *str, int precision)
+int		ft_print_str(char *str, int precision)
 {
-	int					len;
+	int	len;
 
 	len = 0;
 	if (str == NULL)
@@ -38,9 +38,7 @@ int						ft_print_str(char *str, int precision)
 	return (len);
 }
 
-
-
-int					ft_handling_str(t_struct *list, void *str)
+int		ft_handling_str(t_struct *list, void *str)
 {
 	int len;
 
@@ -56,11 +54,9 @@ int					ft_handling_str(t_struct *list, void *str)
 		len += ft_print_char(list->morezero) && list->width--;
 	if (list->spec == 's' && !list->l)
 		len += ft_print_str((char *)str, list->prec);
-	// else if (list->spec == 'S' || (list->spec == 's' && list->l))
-	// 	len += ft_print_wstr((wchar_t *)str, list->prec);
 	while (list->minus == '-' && list->width > list->size)
 		len += ft_print_char(' ') && list->width--;
-	while (list->minus== '-' && list->width > list->prec &&
+	while (list->minus == '-' && list->width > list->prec &&
 	list->prec != -1 && (list->size-- - list->prec))
 		len += ft_print_char(' ');
 	return (len);

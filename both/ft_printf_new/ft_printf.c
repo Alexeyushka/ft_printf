@@ -1,23 +1,23 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_printf.c                                            :+:      :+:    :+:   */
+/*   ft_printf.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: jmartyn- <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2019/09/14 15:39:19 by jmartyn-          #+#    #+#             */
-/*   Updated: 2019/09/14 15:39:54 by jmartyn-         ###   ########.fr       */
+/*   Created: 2019/09/29 20:27:50 by jmartyn-          #+#    #+#             */
+/*   Updated: 2019/09/29 20:30:33 by jmartyn-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_printf.h"
 
-int    ft_printf(const char *format, ...)
+int		ft_printf(const char *format, ...)
 {
-    int i;
-	int len;
-	va_list va;
-	t_struct list;
+	int			i;
+	int			len;
+	va_list		va;
+	t_struct	list;
 
 	i = 0;
 	len = 0;
@@ -28,8 +28,10 @@ int    ft_printf(const char *format, ...)
 			len = len + print_char(format, i);
 		else
 		{
+			if (format[i] == '%' && format[i + 1] == '\0')
+				return (0);
 			i++;
-			len = len + parse_format(format, i, va, &list);
+			len = len + pa(format, i, va, &list);
 			i = i + list.len;
 			list.len = 0;
 		}
