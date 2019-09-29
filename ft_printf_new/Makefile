@@ -17,27 +17,16 @@ F = -Wall -Wextra -Werror
 NAME = libftprintf.a
 
 OBJECT = ./ft_printf.o \
-	./ft_look_conversion.o \
-	./ft_print_char.o \
-	./ft_strchr_f.o \
-	./ft_strsub.o \
-	./ft_strdup.o \
-	./ft_atoi_f.o \
-	./ft_print_str.o \
-	./ft_print_wchar.o \
-	./ft_print_wstr.o \
-	./ft_out.o \
-	./ft_strlen.o \
-	./ft_memcpy.o \
-	./ft_print_percent.o \
-	./ft_handling_char.o \
-	./ft_handling_str.o \
-	./ft_handling_digit.o \
-	./ft_handling_unsigned_digit.o \
-	./ft_handling_x.o \
-	./ft_handling_o.o \
-	./ft_handling_ptr.o \
-	./ft_strdel.o
+	./parse_format.o \
+	./handle_s.o \
+	./handle_c.o \
+	./handle_percent.o \
+	./handle_d.o \
+	./handle_u.o \
+	./handle_x.o \
+	./handle_o.o \
+	./handle_p.o \
+	./handle_f.o
 
 .PHONY: all clean fclean re
 
@@ -58,68 +47,32 @@ re: fclean all
 ft_printf.o: ft_printf.c
 	$(GCC) $(F) -c ft_printf.c
 
-ft_print_char.o: ft_print_char.c
-	$(GCC) $(F) -c ft_print_char.c
+parse_format.o: parse_format.c
+	$(GCC) $(F) -c parse_format.c
 
-ft_strchr_f.o: ft_strchr_f.c
-	$(GCC) $(F) -c ft_strchr_f.c
+handle_s.o: handle_s.c
+	$(GCC) $(F) -c handle_s.c
 
-ft_strsub.o: ft_strsub.c
-	$(GCC) $(F) -c ft_strsub.c
+handle_c.o: handle_c.c
+	$(GCC) $(F) -c handle_c.c
 
-ft_atoi.o: ft_atoi.c
-	$(GCC) $(F) -c ft_atoi.c
+handle_percent.o: handle_percent.c
+	$(GCC) $(F) -c handle_percent.c
 
-ft_print_str.o: ft_print_str.c
-	$(GCC) $(F) -c ft_print_str.c
+handle_d.o: handle_d.c
+	$(GCC) $(F) -c handle_d.c
 
-ft_handling_ptr.o: ft_handling_ptr.c
-	$(GCC) $(F) -c ft_handling_ptr.c
+handle_u.o: handle_u.c
+	$(GCC) $(F) -c handle_u.c
 
-ft_print_wchar.o: ft_print_wchar.c
-	$(GCC) $(F) -c ft_print_wchar.c
+handle_x.o: handle_x.c
+	$(GCC) $(F) -c handle_x.c
 
-ft_print_wstr.o: ft_print_wstr.c
-	$(GCC) $(F) -c ft_print_wstr.c
+handle_o.o: handle_o.c
+	$(GCC) $(F) -c handle_o.c
 
-ft_out.o: ft_out.c
-	$(GCC) $(F) -c ft_out.c
+handle_p.o: handle_p.c
+	$(GCC) $(F) -c handle_p.c
 
-ft_look_conversion.o: ft_look_conversion.c
-	$(GCC) $(F) -c ft_look_conversion.c
-
-ft_strdup.o: ft_strdup.c
-	$(GCC) $(F) -c ft_strdup.c
-
-ft_memcpy.o: ft_memcpy.c
-	$(GCC) $(F) -c ft_memcpy.c
-
-ft_strlen.o: ft_strlen.c
-	$(GCC) $(F) -c ft_strlen.c
-
-ft_atoi_f.o: ft_atoi_f.c
-	$(GCC) $(F) -c ft_atoi_f.c
-
-ft_print_percent.o: ft_print_percent.c
-	$(GCC) $(F) -c ft_print_percent.c
-
-ft_handling_char.o: ft_handling_char.c
-	$(GCC) $(F) -c ft_handling_char.c
-
-ft_handling_str.o: ft_handling_str.c
-	$(GCC) $(F) -c ft_handling_str.c
-
-ft_handling_digit.o: ft_handling_digit.c
-	$(GCC) $(F) -c ft_handling_digit.c
-
-ft_handling_unsigned_digit.o: ft_handling_unsigned_digit.c
-	$(GCC) $(F) -c ft_handling_unsigned_digit.c
-
-ft_handling_x.o: ft_handling_x.c
-	$(GCC) $(F) -c ft_handling_x.c
-
-ft_handling_o.o: ft_handling_o.c
-	$(GCC) $(F) -c ft_handling_o.c
-
-ft_strdel.o: ft_strdel.c
-	$(GCC) $(F) -c ft_strdel.c
+handle_f.o: handle_f.c
+	$(GCC) $(F) -c handle_f.c

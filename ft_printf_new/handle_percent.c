@@ -12,29 +12,19 @@
 
 #include "ft_printf.h"
 
-int    ft_printf(const char *format, ...)
+int					ft_print_percent(t_struct *list, char c)
 {
-    int i;
-	int len;
-	va_list va;
-	t_struct list;
+	int				len;
 
-	i = 0;
 	len = 0;
-	va_start(va, format);
-	while (format[i] != '\0')
-	{
-		if (format[i] != '%')
-			len = len + print_char(format, i);
-		else
-		{
-			i++;
-			len = len + parse_format(format, i, va, &list);
-			i = i + list.len;
-			list.len = 0;
-		}
-		i++;
-	}
-	va_end(va);
+	if (list->zero == '0')
+		list->morezero = '0';
+	if (list->minus != '-' && list->width > 1)
+		while (((list->width)-- - 1))
+			len += ft_print_char(list->morezero);
+	len += ft_print_char(c);
+	if (list->width > 1 && list->minus == '-')
+		while ((list->width)-- - 1)
+			len += ft_print_char(' ');
 	return (len);
 }
