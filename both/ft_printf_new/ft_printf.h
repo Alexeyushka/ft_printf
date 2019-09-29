@@ -22,9 +22,14 @@
 
 typedef	struct	s_struct
 {
-	char		*parsedflags;
-	short		width;
-	short		prec;
+	char		plus;
+	char 		minus;
+	char		hash;
+	char		zero;
+	char		morezero;
+	char		blank;
+	int			width;
+	int			prec;
 	char		hh;
 	char		h;
 	char		l;
@@ -33,6 +38,7 @@ typedef	struct	s_struct
 	char		j;
 	char		spec;
 	short		size;
+	int			len;
 }				t_struct;
 
 #endif

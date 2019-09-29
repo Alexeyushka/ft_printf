@@ -80,7 +80,138 @@ int					ft_print_percent(t_struct *list, char c)
 
 //
 
-//digit
+// char begin
+int					ft_handling_char(t_struct *list, void *c)
+{
+	int				len;
+
+	len = 0;
+	if (list->zero == '0')
+		list->morezero = '0';
+	if (list->minus != '-' && list->width > 1)
+		while ((list->width)-- - 1)
+			len += ft_print_char(list->morezero);
+	if (list->spec == 'c' && !list->l)
+		len += ft_print_char((int)c);
+	else if (list->spec == 'C' || (list->spec == 'c' && list->l))
+		len += ft_print_char((int)c);
+	else
+		len += ft_print_char(list->spec);
+	if (list->width > 1 && list->minus == '-')
+		while ((list->width)-- - 1)
+			len += ft_print_char(' ');
+	return (len);
+}
+
+// char end
+
+//str begin
+
+static char					size_wchar(unsigned int wc)
+{
+	if (wc <= 127)
+		return (1);
+	else if (wc >= 128 && wc <= 2047)
+		return (2);
+	else if (wc >= 2048 && wc <= 65535)
+		return (3);
+	else if (wc >= 65536 && wc <= 2097151)
+		return (4);
+	else
+		return (0);
+}
+
+char						ft_print_wchar(wchar_t wc)
+{
+	char					res;
+	char					size;
+	unsigned char			curr_byte;
+
+	res = 0;
+	size = size_wchar(wc);
+	if (size == 1)
+		return (ft_print_char(wc));
+	curr_byte = (240 << (4 - size)) | (wc >> ((size - 1) * 6));
+	res += ft_print_char(curr_byte);
+	size--;
+	while (size--)
+	{
+		curr_byte = ((wc >> ((size) * 6)) & 63) | 128;
+		res += ft_print_char(curr_byte);
+	}
+	return (res);
+}
+
+int					ft_strlen(const char *s)
+{
+	int				i;
+
+	i = 0;
+	if (s != NULL)
+		while (s[i])
+			i++;
+	return (i);
+}
+
+int						ft_print_str(char *str, int precision)
+{
+	int					len;
+
+	len = 0;
+	if (str == NULL)
+		return (ft_print_str("(null)", precision));
+	while (*str != '\0' && precision--)
+	{
+		len += ft_print_char(*str);
+		str++;
+	}
+	return (len);
+}
+
+int							ft_print_wstr(wchar_t *wstr, int precision)
+{
+	int						res;
+
+	res = 0;
+	if (wstr == NULL)
+		return (ft_print_str("(null)", precision));
+	while (*wstr != '\0')
+	{
+		res += ft_print_wchar(*wstr);
+		wstr++;
+	}
+	return (res);
+}
+
+
+int					ft_handling_str(t_struct *list, void *str)
+{
+	int len;
+
+	list->size = (str != NULL) ? ft_strlen((char *)str) : 6;
+	len = 0;
+	list->size = !list->prec ? list->width : list->size;
+	if (list->zero == '0')
+		list->morezero = '0';
+	while (list->minus != '-' && list->width > list->size)
+		len += ft_print_char(list->morezero) && (list->width)--;
+	while (list->minus != '-' && list->width > list->prec &&
+	list->prec != -1 && (list->size > list->prec))
+		len += ft_print_char(list->morezero) && list->width--;
+	if (list->spec == 's' && !list->l)
+		len += ft_print_str((char *)str, list->prec);
+	else if (list->spec == 'S' || (list->spec == 's' && list->l))
+		len += ft_print_wstr((wchar_t *)str, list->prec);
+	while (list->minus == '-' && list->width > list->size)
+		len += ft_print_char(' ') && list->width--;
+	while (list->minus== '-' && list->width > list->prec &&
+	list->prec != -1 && (list->size-- - list->prec))
+		len += ft_print_char(' ');
+	return (len);
+}
+
+//str end
+//digit begin
 static char				ft_size_digit(intmax_t digit)
 {
 	char				res;
@@ -141,29 +272,28 @@ static char				ft_print_digit(intmax_t digit, t_struct *list)
 
 static short			ft_hend_digit(t_struct *list, intmax_t digit, int *len)
 {
-	// if ((list->flags)[2] == '0' && list->prec == -1)
-	// 	(list->flags)[0] = '0';
+	if (list->zero == '0' && list->prec == -1)
+		list->morezero = '0';
 	list->size = ft_strlen_digit(list, digit);
-	printf("-- %d -- %d --", list->size, list->width);
-	// if (digit < 0 && list->flags[0] == '0')
-	// 	*len += ft_print_char('-');
-	// else if (digit >= 0 && list->flags[0] == '0' && list->flags[4] == '+')
-	// 	*len += ft_print_char('+');
-	// else if (list->flags[0] == '0' && list->flags[5] == ' ')
-	// 	*len += ft_print_char(' ');
+	if (digit < 0 && list->morezero == '0')
+		*len += ft_print_char('-');
+	else if (digit >= 0 && list->morezero == '0' && list->plus == '+')
+		*len += ft_print_char('+');
+	else if (list->morezero == '0' && list->blank == ' ')
+		*len += ft_print_char(' ');
 	while (list->minus != '-' && list->width > list->size)
 		(*len += ft_print_char(list->morezero)) && list->width--;
-	// if ((list->flags)[4] == '+' && digit >= 0 && list->flags[0] != '0')
-	// 	*len += ft_print_char('+');
-	// else if (digit < 0 && list->flags[0] == ' ' && list->flags[0] != '0')
-	// 	*len += ft_print_char('-');
-	// else if ((list->flags)[5] == ' ' && digit >= 0 && list->flags[0] != '0')
-	// 	*len += ft_print_char(' ');
-	// while (list->prec != -1 && list->prec > 0)
-	// 	(*len += ft_print_char('0')) && list->prec--;
+	if (list->plus == '+' && digit >= 0 && list->morezero != '0')
+		*len += ft_print_char('+');
+	else if (digit < 0 && list->morezero == ' ' && list->morezero != '0')
+		*len += ft_print_char('-');
+	else if (list->blank == ' ' && digit >= 0 && list->morezero != '0')
+		*len += ft_print_char(' ');
+	while (list->prec != -1 && list->prec > 0)
+		(*len += ft_print_char('0')) && list->prec--;
 	*len += ft_print_digit(digit, list);
-	// while (list->width > list->size && (list->flags)[3] == '-')
-	// 	(*len += ft_print_char(' ')) && list->width--;
+	while (list->width > list->size && list->minus == '-')
+		(*len += ft_print_char(' ')) && list->width--;
 	return (*len);
 }
 
@@ -201,10 +331,10 @@ int		ft_out(t_struct *list, va_list va)
 	res = 0;
 	if (list->spec == '%')
 		res = (ft_print_percent(list, '%'));
-	// // else if (list->spec == 'c' || list->spec == 'C')
-	// // 	res = (ft_handling_char(list, va_arg(va, void *)));
-	// // else if (list->spec == 's' || list->spec == 'S')
-	// // 	res = (ft_handling_str(list, va_arg(va, void *)));
+	else if (list->spec == 'c' || list->spec == 'C')
+		res = (ft_handling_char(list, va_arg(va, void *)));
+	else if (list->spec == 's' || list->spec == 'S')
+		res = (ft_handling_str(list, va_arg(va, void *)));
 	else if (list->spec == 'd' || list->spec == 'i' || list->spec == 'D')
 		res = (ft_handling_digit(list, va_arg(va, void *))); //+ list->len;
 	// else if (list->spec == 'u' || list->spec == 'U')
@@ -293,6 +423,7 @@ static void				found_h_hh_l_ll(const char *format, int i, t_struct *list)
 static void		define_list(t_struct *list)
 {
 	list->plus = 0;
+	list->morezero = ' ';
 	list->minus = 0;
 	list->hash = 0;
 	list->zero = 0;
@@ -350,11 +481,11 @@ static void		parse_format_continue(const char *format, int i, t_struct *list)
 	}
 }
 
-int    parse_format(const char *format, int i, va_list va)
+int    parse_format(const char *format, int i, va_list va, t_struct *list)
 {
-    t_struct list;
+    //t_struct list;
 
-	define_list(&list);
+	define_list(list);
 	while (format[i] == '#' || format[i] == '0' || format[i] == '-'
 		|| format[i] == '+' || format[i] == ' ' || format[i] == '.'
 		|| (format[i] >= 49 && format[i] <= 57) || format[i] == 'h'
@@ -362,28 +493,29 @@ int    parse_format(const char *format, int i, va_list va)
 	{
 		if (format[i] == '#' || format[i] == '0' || format[i] == '-'
 		|| format[i] == '+' || format[i] == ' ')
-			found_flags(format, i, &list);
+			found_flags(format, i, list);
 		if (format[i] >= 49 && format[i] <= 57)
 		{
-			found_number(format, i, &list);
+			found_number(format, i, list);
 			while (format[i] >= 49 && format[i] <= 57)
 				i++;
+			i--;
 		}
 		if (format[i] == '.')
 		{
 			i++;
-			list.len++;
-			found_prec(format, i, &list);
+			list->len++;
+			found_prec(format, i, list);
 			while (format[i] >= 49 && format[i] <= 57)
 				i++;
+			i--;
 		}
 		if (format[i] == 'h' || format[i] == 'l')
-			found_h_hh_l_ll(format, i, &list);
+			found_h_hh_l_ll(format, i, list);
 		i++;
 	}
-	parse_format_continue(format, i, &list);
-//	printf("---- %c - %d - %c - %c - %d ----", list.plus, list.prec, list.hh, list.spec, list.width);
-	return (ft_out(&list, va));
+	parse_format_continue(format, i, list);
+	return (ft_out(list, va));
 }
 
 
@@ -393,6 +525,7 @@ int    ft_printf(const char *format, ...)
     int i;
 	int len;
 	va_list va;
+	t_struct list;
 
 	i = 0;
 	len = 0;
@@ -404,7 +537,9 @@ int    ft_printf(const char *format, ...)
 		else
 		{
 			i++;
-			len = len + parse_format(format, i, va);
+			len = len + parse_format(format, i, va, &list);
+			i = i + list.len;
+			list.len = 0;
 		}
 		i++;
 	}
@@ -420,12 +555,43 @@ int    ft_printf(const char *format, ...)
 int main()
 {
 	int k;
-	k = 20;
+	int p;
+	char *c;
+	char *d;
+	d = "hello";
+	c = "John";
+	
+	p = -2000000;
+	k = 2000000;
 
-	ft_printf("%5d", k);
-	printf("\n");
+	// ft_printf("%+09d, %0.9d, %+09d, %9d", k, k, k, k);
+	// printf("\n");
+	// ft_printf("%+09d, %09d, %+09d, %9d", p, p, p, p);
+	// printf("\n");
+	// printf("%+09d, %0.9d, %+09d, %9d", k, k, k, k);
+	// printf("\n");
+	// printf("%+09d, %09d, %+09d, %9d", p, p, p, p);
 
-	printf("%5d", k);
+	// ft_printf("%-5%, %%, %   %, %5%");
+	// printf("\n");
+	// printf("%-5%, %%, %   %, %5%");
+
+	// ft_printf("%9c, %2c, %9lc, %9c", d, d, d, d);
+	// printf("\n");
+	// ft_printf("%9c, %2c, %9lc, %9c", c, c, c, c);
+	// printf("\n");
+	// printf("%9c, %2c, %9lc, %9c", d, d, d, d);
+	// printf("\n");
+	// printf("%9c, %2c, %9lc, %9c", c, c, c, c);
+
+	// ft_printf("%-9s, %2s, %9s, %9s", d, d, d, d);
+	// printf("\n");
+	// ft_printf("%-9s, %2s, %9s, %9s", c, c, c, c);
+	// printf("\n");
+	// printf("%-9s, %2s, %9s, %9s", d, d, d, d);
+	// printf("\n");
+	// printf("%-9s, %2s, %9s, %9s", c, c, c, c);
+
 
 	printf("\n");
 	return (0);
