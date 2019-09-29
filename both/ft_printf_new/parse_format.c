@@ -144,6 +144,7 @@ static short			ft_hend_digit(t_struct *list, intmax_t digit, int *len)
 	// if ((list->flags)[2] == '0' && list->prec == -1)
 	// 	(list->flags)[0] = '0';
 	list->size = ft_strlen_digit(list, digit);
+	printf("-- %d -- %d --", list->size, list->width);
 	// if (digit < 0 && list->flags[0] == '0')
 	// 	*len += ft_print_char('-');
 	// else if (digit >= 0 && list->flags[0] == '0' && list->flags[4] == '+')
@@ -160,7 +161,7 @@ static short			ft_hend_digit(t_struct *list, intmax_t digit, int *len)
 	// 	*len += ft_print_char(' ');
 	// while (list->prec != -1 && list->prec > 0)
 	// 	(*len += ft_print_char('0')) && list->prec--;
-	// *len += ft_print_digit(digit, list);
+	*len += ft_print_digit(digit, list);
 	// while (list->width > list->size && (list->flags)[3] == '-')
 	// 	(*len += ft_print_char(' ')) && list->width--;
 	return (*len);
@@ -425,5 +426,7 @@ int main()
 	printf("\n");
 
 	printf("%5d", k);
+
+	printf("\n");
 	return (0);
 }
