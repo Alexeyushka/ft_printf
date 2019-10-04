@@ -19,7 +19,7 @@ ft_printf must achieve the following mandatory requirements:
 ##### 2. Run `make`. 
 This will compile **libftprintf.a**. 
 ##### 3. To use, include `ft_printf.h` and use just like `printf`:
-```
+```c
 #include "ft_printf.h"
 
 int				main(void)
@@ -29,11 +29,11 @@ int				main(void)
 }
 ```
 ##### 4. Compile
-```
+```console
 gcc -o main main.c libftprintf.a
 ```
 ##### 5. Run
-```
+```console
 ./main
 ```
 
