@@ -15,9 +15,9 @@ ft_printf must achieve the following mandatory requirements:
 * Manage the flags `hh`, `h`, `l`, `ll`
 
 ## How to use
-1. `git clone https://github.com/Alexeyushka/ft_printf.git`
-2. Run `make`. This will compile **libftprintf.a**. 
-3. To use, include `ft_printf.h` and use just like `printf`:
+### 1. `git clone https://github.com/Alexeyushka/ft_printf.git`
+### 2. Run `make`. This will compile **libftprintf.a**. 
+### 3. To use, include `ft_printf.h` and use just like `printf`:
 ```
 #include "ft_printf.h"
 
@@ -27,16 +27,16 @@ int				main(void)
 	return (0);
 }
 ```
-4. Compile
+### 4. Compile
 ```
 gcc -o main main.c libftprintf.a
 ```
-5. Run
+### 5. Run
 ```
 ./main
 ```
 
-6.Output
+### 6. Output
 ```
 Hello, 42
 ```
